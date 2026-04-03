@@ -1,0 +1,364 @@
+<!DOCTYPE html>  <html lang="my">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>SR Game Shop</title>  
+    <script src="https://cdn.tailwindcss.com"></script>  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">  
+    <style>  
+        @import url('https://fonts.googleapis.com/css2?family=Pyidaungsu:wght@400;700&display=swap');  
+        body { font-family: 'Pyidaungsu', sans-serif; background-color: #1a1a1a; color: #ffffff; }  
+        .orange-gradient { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }  
+        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }  
+        .btn-orange { background-color: #f97316; color: white; transition: all 0.3s; }  
+        .btn-orange:hover { background-color: #ea580c; transform: translateY(-2px); }  
+        input, select { background-color: #2a2a2a !important; border: 1px solid #444 !important; color: white !important; }  
+    </style>  
+</head>  
+<body>  <!-- Main Container -->  
+<div id="app" class="max-w-md mx-auto min-h-screen relative pb-20">  
+      
+    <!-- Auth Screen -->  
+    <div id="auth-screen" class="p-6 pt-20 hidden">  
+        <div class="text-center mb-8">  
+            <h1 class="text-3xl font-bold text-orange-500">SR Game Shop</h1>  
+            <p class="text-gray-400 mt-2" id="auth-title">အကောင့်ဝင်ပါ</p>  
+        </div>  
+
+        <!-- Login Form -->  
+        <div id="login-form">  
+            <div class="space-y-4">  
+                <input type="text" id="login-phone" placeholder="ဖုန်းနံပါတ်" class="w-full p-4 rounded-xl outline-none">  
+                <input type="password" id="login-pass" placeholder="Password" class="w-full p-4 rounded-xl outline-none">  
+                <button onclick="login()" class="w-full py-4 rounded-xl btn-orange font-bold text-lg">Login ဝင်မည်</button>  
+                <p class="text-center text-gray-400">အကောင့်မရှိသေးပါက <button onclick="toggleAuth(false)" class="text-orange-500 font-bold">Register လုပ်ပါ</button></p>  
+            </div>  
+        </div>  
+
+        <!-- Register Form -->  
+        <div id="register-form" class="hidden">  
+            <div class="space-y-4">  
+                <input type="text" id="reg-name" placeholder="အမည်" class="w-full p-4 rounded-xl outline-none">  
+                <input type="text" id="reg-phone" placeholder="ဖုန်းနံပါတ်" class="w-full p-4 rounded-xl outline-none">  
+                <input type="password" id="reg-pass" placeholder="Password (6-12 လုံး)" class="w-full p-4 rounded-xl outline-none">  
+                <input type="password" id="reg-confirm-pass" placeholder="Password ကိုပြန်ရိုက်ပါ" class="w-full p-4 rounded-xl outline-none">  
+                <button onclick="register()" class="w-full py-4 rounded-xl btn-orange font-bold text-lg">Register လုပ်မည်</button>  
+                <p class="text-center text-gray-400">အကောင့်ရှိပြီးသားဆိုလျှင် <button onclick="toggleAuth(true)" class="text-orange-500 font-bold">Login ဝင်ပါ</button></p>  
+            </div>  
+        </div>  
+    </div>  
+
+    <!-- Main Home Screen -->  
+    <div id="main-screen" class="hidden">  
+        <!-- Header -->  
+        <header class="p-6 flex justify-between items-center sticky top-0 bg-[#1a1a1a] z-10 border-b border-white/10">  
+            <div>  
+                <h2 class="text-xl font-bold">SR Game Shop</h2>  
+                <p class="text-xs text-gray-400">Developer: Thu Rain Tun</p>  
+            </div>  
+            <div class="text-right">  
+                <div class="text-orange-500 font-bold" id="user-balance-display">0 Ks</div>  
+                <div class="text-xs text-gray-400" id="user-name-display">User Name</div>  
+            </div>  
+        </header>  
+
+        <!-- Tabs content -->  
+        <div id="content-area" class="p-4">  
+              
+            <!-- Home Tab -->  
+            <div id="home-tab">  
+                <!-- Banner -->  
+                <div class="orange-gradient h-40 rounded-3xl p-6 flex items-center mb-6 relative overflow-hidden">  
+                    <div>  
+                        <h3 class="text-2xl font-bold">Special Promo!</h3>  
+                        <p class="text-sm opacity-90">ဂိမ်းများကို ဈေးနှုန်းချိုသာစွာဖြင့် ဖြည့်လိုက်ပါ</p>  
+                    </div>  
+                    <i class="fas fa-gamepad absolute -right-4 -bottom-4 text-7xl opacity-20 rotate-12"></i>  
+                </div>  
+
+                <!-- Categories -->  
+                <div class="grid grid-cols-1 gap-4">  
+                    <!-- MLBB -->  
+                    <div onclick="showGame('mlbb')" class="glass-card p-4 rounded-2xl flex items-center space-x-4 cursor-pointer hover:bg-white/10 transition">  
+                        <div class="w-16 h-16 rounded-xl overflow-hidden bg-blue-900 flex items-center justify-center">  
+                            <i class="fas fa-shield-alt text-3xl"></i>  
+                        </div>  
+                        <div class="flex-1">  
+                            <h4 class="font-bold text-lg">Mobile Legends (MLBB)</h4>  
+                            <p class="text-sm text-gray-400">Diamonds, Weekly Pass</p>  
+                        </div>  
+                        <i class="fas fa-chevron-right text-gray-600"></i>  
+                    </div>  
+
+                    <!-- PUBG -->  
+                    <div onclick="showGame('pubg')" class="glass-card p-4 rounded-2xl flex items-center space-x-4 cursor-pointer hover:bg-white/10 transition">  
+                        <div class="w-16 h-16 rounded-xl overflow-hidden bg-green-900 flex items-center justify-center">  
+                            <i class="fas fa-crosshairs text-3xl"></i>  
+                        </div>  
+                        <div class="flex-1">  
+                            <h4 class="font-bold text-lg">PUBG Mobile</h4>  
+                            <p class="text-sm text-gray-400">UC, Royal Pass</p>  
+                        </div>  
+                        <i class="fas fa-chevron-right text-gray-600"></i>  
+                    </div>  
+
+                    <!-- Free Fire -->  
+                    <div onclick="showGame('ff')" class="glass-card p-4 rounded-2xl flex items-center space-x-4 cursor-pointer hover:bg-white/10 transition">  
+                        <div class="w-16 h-16 rounded-xl overflow-hidden bg-red-900 flex items-center justify-center">  
+                            <i class="fas fa-fire text-3xl"></i>  
+                        </div>  
+                        <div class="flex-1">  
+                            <h4 class="font-bold text-lg">Free Fire</h4>  
+                            <p class="text-sm text-gray-400">Diamonds, Membership</p>  
+                        </div>  
+                        <i class="fas fa-chevron-right text-gray-600"></i>  
+                    </div>  
+                </div>  
+            </div>  
+
+            <!-- Wallet Tab -->  
+            <div id="wallet-tab" class="hidden">  
+                <h3 class="text-xl font-bold mb-6">ပိုက်ဆံဖြည့်ရန်</h3>  
+                  
+                <div class="glass-card p-6 rounded-3xl space-y-6">  
+                    <div class="flex items-center space-x-4">  
+                        <div class="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center">  
+                            <i class="fas fa-university text-orange-500"></i>  
+                        </div>  
+                        <div>  
+                            <p class="text-sm text-gray-400">ငွေလွှဲရန်</p>  
+                            <p class="font-bold">Kpay / Wave Money</p>  
+                        </div>  
+                    </div>  
+
+                    <div class="p-4 bg-white/5 rounded-xl border border-white/10">  
+                        <p class="text-xs text-gray-400">နံပါတ်</p>  
+                        <div class="flex justify-between items-center mt-1">  
+                            <span class="text-lg font-mono">09451055329</span>  
+                            <button onclick="copyText('09451055329')" class="text-orange-500 text-sm">Copy</button>  
+                        </div>  
+                        <p class="text-xs text-gray-400 mt-2">အမည်</p>  
+                        <p class="font-bold">Daw Tin Zar Latt</p>  
+                    </div>  
+
+                    <div class="space-y-4 pt-4 border-t border-white/10">  
+                        <input type="number" id="deposit-amount" placeholder="လွှဲထားသော ပမာဏ" class="w-full p-4 rounded-xl outline-none">  
+                        <div class="relative">  
+                            <input type="file" id="deposit-ss" class="hidden" accept="image/*" onchange="updateFileName()">  
+                            <label for="deposit-ss" class="flex items-center justify-center w-full p-4 border-2 border-dashed border-gray-600 rounded-xl cursor-pointer hover:border-orange-500">  
+                                <i class="fas fa-cloud-upload-alt mr-2 text-orange-500"></i>  
+                                <span id="ss-name">Screenshot တင်ပါ</span>  
+                            </label>  
+                        </div>  
+                        <button onclick="requestDeposit()" class="w-full py-4 rounded-xl btn-orange font-bold">Admin ထံ အတည်ပြုချက်တောင်းမည်</button>  
+                        <p class="text-[10px] text-center text-gray-500">* Admin က အတည်ပြုမှသာ ပိုက်ဆံ ဝင်မည်ဖြစ်သည်</p>  
+                    </div>  
+                </div>  
+            </div>  
+
+            <!-- Orders Tab -->  
+            <div id="orders-tab" class="hidden">  
+                <h3 class="text-xl font-bold mb-4">Order မှတ်တမ်း</h3>  
+                <div id="orders-list" class="space-y-3">  
+                    <div class="text-center py-10 text-gray-500">မှတ်တမ်းမရှိသေးပါ</div>  
+                </div>  
+            </div>  
+
+            <!-- Profile Tab -->  
+            <div id="profile-tab" class="hidden">  
+                <div class="text-center py-8">  
+                    <div class="w-24 h-24 rounded-full orange-gradient mx-auto mb-4 flex items-center justify-center text-3xl font-bold">  
+                        <span id="profile-initial">S</span>  
+                    </div>  
+                    <h3 class="text-2xl font-bold" id="profile-name">User Name</h3>  
+                    <p class="text-gray-400" id="profile-phone">09xxxxxxxxx</p>  
+                </div>  
+
+                <div class="grid grid-cols-2 gap-4 mb-6">  
+                    <div class="glass-card p-4 rounded-2xl text-center">  
+                        <p class="text-xs text-gray-400">Current Balance</p>  
+                        <p class="text-xl font-bold text-orange-500" id="profile-balance">0 Ks</p>  
+                    </div>  
+                    <div class="glass-card p-4 rounded-2xl text-center">  
+                        <p class="text-xs text-gray-400">Total Orders</p>  
+                        <p class="text-xl font-bold" id="profile-orders">0</p>  
+                    </div>  
+                </div>  
+
+                <div class="space-y-2">  
+                    <button onclick="contactAdmin()" class="w-full p-4 glass-card rounded-xl flex items-center justify-between">  
+                        <div class="flex items-center"><i class="fab fa-telegram mr-3 text-blue-400"></i> Contact Admin</div>  
+                        <i class="fas fa-chevron-right text-xs"></i>  
+                    </button>  
+                    <button onclick="showAI()" class="w-full p-4 glass-card rounded-xl flex items-center justify-between">  
+                        <div class="flex items-center"><i class="fas fa-robot mr-3 text-purple-400"></i> ✨ AI Game Assistant</div>  
+                        <i class="fas fa-chevron-right text-xs"></i>  
+                    </button>  
+                    <button onclick="logout()" class="w-full p-4 glass-card rounded-xl text-red-500 flex items-center">  
+                        <i class="fas fa-sign-out-alt mr-3"></i> Logout ထွက်မည်  
+                    </button>  
+                </div>  
+            </div>  
+
+            <!-- Game Detail View -->  
+            <div id="game-detail" class="hidden">  
+                <button onclick="goBack()" class="mb-4 text-gray-400"><i class="fas fa-arrow-left mr-2"></i> နောက်သို့</button>  
+                  
+                <h3 id="game-title" class="text-2xl font-bold mb-4">MLBB Diamonds</h3>  
+                  
+                <div class="glass-card p-4 rounded-2xl mb-6 space-y-4">  
+                    <div id="id-input-area">  
+                        <!-- Dynamic Inputs -->  
+                    </div>  
+                </div>  
+
+                <div id="price-list" class="grid grid-cols-1 gap-3">  
+                    <!-- Prices go here -->  
+                </div>  
+            </div>  
+
+            <!-- AI Assistant View -->  
+            <div id="ai-view" class="hidden">  
+                <button onclick="goBack()" class="mb-4 text-gray-400"><i class="fas fa-arrow-left mr-2"></i> နောက်သို့</button>  
+                <div class="glass-card p-6 rounded-3xl">  
+                    <div class="flex items-center space-x-3 mb-4">  
+                        <div class="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center">  
+                            <i class="fas fa-magic"></i>  
+                        </div>  
+                        <h3 class="font-bold">Gemini AI Assistant</h3>  
+                    </div>  
+                    <div id="ai-chat" class="h-64 overflow-y-auto mb-4 space-y-2 text-sm p-2 bg-black/30 rounded-lg">  
+                        <div class="text-purple-300">မင်္ဂလာပါ! SR Game Shop ရဲ့ AI Assistant ဖြစ်ပါတယ်။ ဘာများကူညီပေးရမလဲ?</div>  
+                    </div>  
+                    <div class="flex gap-2">  
+                        <input type="text" id="ai-input" placeholder="မေးမြန်းရန်..." class="flex-1 p-3 rounded-xl outline-none">  
+                        <button onclick="askAI()" class="p-3 bg-purple-600 rounded-xl"><i class="fas fa-paper-plane"></i></button>  
+                    </div>  
+                </div>  
+            </div>  
+
+        </div>  
+
+        <!-- Bottom Navigation -->  
+        <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#1a1a1a]/95 backdrop-blur-lg border-t border-white/10 flex justify-around py-3 px-2 z-20">  
+            <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center text-orange-500">  
+                <i class="fas fa-home text-xl"></i>  
+                <span class="text-[10px] mt-1">Home</span>  
+            </button>  
+            <button onclick="switchTab('wallet')" id="nav-wallet" class="flex flex-col items-center text-gray-500">  
+                <i class="fas fa-wallet text-xl"></i>  
+                <span class="text-[10px] mt-1">Wallet</span>  
+            </button>  
+            <button onclick="switchTab('orders')" id="nav-orders" class="flex flex-col items-center text-gray-500">  
+                <i class="fas fa-history text-xl"></i>  
+                <span class="text-[10px] mt-1">Orders</span>  
+            </button>  
+            <button onclick="switchTab('profile')" id="nav-profile" class="flex flex-col items-center text-gray-500">  
+                <i class="fas fa-user text-xl"></i>  
+                <span class="text-[10px] mt-1">Profile</span>  
+            </button>  
+        </nav>  
+    </div>  
+
+    <!-- Custom Notification Modal -->  
+    <div id="modal" class="fixed inset-0 bg-black/80 z-[100] hidden flex items-center justify-center p-6">  
+        <div class="glass-card w-full max-w-xs p-6 rounded-3xl text-center">  
+            <div id="modal-icon" class="text-5xl mb-4"></div>  
+            <h4 id="modal-title" class="text-xl font-bold mb-2">ခေါင်းစဉ်</h4>  
+            <p id="modal-msg" class="text-gray-400 text-sm mb-6">စာသားများ...</p>  
+            <button onclick="closeModal()" class="w-full py-3 rounded-xl btn-orange font-bold">သိပါပြီ</button>  
+        </div>  
+    </div>  
+
+</div>  
+
+<!-- Firebase Scripts (Mock for now to make it runnable in canvas, but structured for real Firebase) -->  
+<script>  
+    // --- DATA ---  
+    const prices = {  
+        mlbb: [  
+            { item: "11 Diamonds", price: 1000 },  
+            { item: "22 Diamonds", price: 2000 },  
+            { item: "33 Diamonds", price: 3000 },  
+            { item: "44 Diamonds", price: 4000 },  
+            { item: "56 Diamonds", price: 4700 },  
+            { item: "86 Diamonds", price: 6000 },  
+            { item: "172 Diamonds", price: 12500 },  
+            { item: "257 Diamonds", price: 18000 },  
+            { item: "343 Diamonds", price: 24000 },  
+            { item: "429 Diamonds", price: 29000 },  
+            { item: "514 Diamonds", price: 34500 },  
+            { item: "Weekly Pass", price: 7500 },  
+            { item: "Twilight Pass", price: 39000 },  
+            { item: "50+50 Promo", price: 4500 },  
+            { item: "150+150 Promo", price: 12500 },  
+            { item: "250+250 Promo", price: 19000 },  
+            { item: "500+500 Promo", price: 36500 },  
+        ],  
+        pubg: [  
+            { item: "UC 60", price: 4500 },  
+            { item: "UC 325", price: 22000 },  
+            { item: "UC 385", price: 28000 },  
+            { item: "UC 660", price: 42000 },  
+            { item: "UC 720", price: 46000 },  
+            { item: "UC 985", price: 70000 },  
+            { item: "UC 1045", price: 74000 },  
+            { item: "UC 1800", price: 120000 },  
+            { item: "UC 2125", price: 140000 },  
+            { item: "UC 2460", price: 183000 },  
+            { item: "UC 2845", price: 190000 },  
+            { item: "UC 3850", price: 250000 },  
+            { item: "UC 4510", price: 290000 },  
+            { item: "UC 5650", price: 365000 },  
+        ],  
+        ff: [  
+            { item: "100 Diamonds", price: 5000 },  
+            { item: "210 Diamonds", price: 10000 },  
+            { item: "517 Diamonds", price: 24500 },  
+            { item: "1080 Diamonds", price: 50000 },  
+            { item: "2200 Diamonds", price: 100000 },  
+            { item: "Weekly Lite (💎200)", price: 6000 },  
+            { item: "Weekly (💎450)", price: 13000 },  
+            { item: "Monthly (💎2600)", price: 55000 },  
+            { item: "Level Up Pass - Lv6", price: 2000 },  
+            { item: "Level Up Pass - Lv10", price: 4000 },  
+            { item: "Level Up Pass - All (💎1270)", price: 23000 },  
+        ]  
+    };  
+
+    let currentUser = null;  
+    let users = JSON.parse(localStorage.getItem('sr_shop_users')) || {}; // Local simulation for showcase  
+    let orders = JSON.parse(localStorage.getItem('sr_shop_orders')) || [];  
+
+    // --- APP LOGIC ---  
+
+    window.onload = () => {  
+        const savedUser = localStorage.getItem('sr_shop_current_user');  
+        if (savedUser && users[savedUser]) {  
+            currentUser = users[savedUser];  
+            showMain();  
+        } else {  
+            showAuth();  
+        }  
+    };  
+
+    function showAuth() {  
+        document.getElementById('auth-screen').classList.remove('hidden');  
+        document.getElementById('main-screen').classList.add('hidden');
+        <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyALqp9IxejZ2b4d3vJMGuwV0RWPxpQRsaU",
+  authDomain: "diamondshop-b56ab.firebaseapp.com",
+  projectId: "diamondshop-b56ab",
+  storageBucket: "diamondshop-b56ab.firebasestorage.app",
+  messagingSenderId: "504521967191",
+  appId: "1:504521967191:web:215ead398cab81444f8512",
+  measurementId: "G-9RGLMY2F05"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+</script>
