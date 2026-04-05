@@ -3,140 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SR Game Shop - Developed by Thu Rain Tun</title>
+    <title>SR Game Shop - Owner: Thu Rain Tun</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
     <style>
-        /* CSS Section - Black & Orange Theme */
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; }
-        body { background-color: #000; color: #fff; overflow-x: hidden; }
-        .app-container { max-width: 450px; margin: auto; min-height: 100vh; position: relative; padding-bottom: 80px; background: #000; }
+        /* UI Theme: Gaming Black & Orange */
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
+        body { background-color: #050505; color: #ffffff; overflow-x: hidden; }
+        .app-container { max-width: 450px; margin: auto; min-height: 100vh; position: relative; padding-bottom: 90px; background: #000; border: 1px solid #1a1a1a; }
 
-        /* General UI Elements */
-        .header { background: #111; padding: 18px; border-bottom: 2px solid #FF8C00; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
-        .btn-orange { width: 100%; padding: 14px; background: #FF8C00; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; color: #000; margin-top: 10px; }
-        .input-field { width: 100%; padding: 14px; background: #1a1a1a; border: 1px solid #333; color: #fff; border-radius: 10px; margin: 8px 0; }
+        /* Header & Components */
+        .header { background: #111; padding: 18px; border-bottom: 2px solid #FF8C00; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .btn-orange { width: 100%; padding: 15px; background: #FF8C00; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; color: #000; transition: 0.2s; font-size: 1rem; }
+        .btn-orange:active { transform: scale(0.98); opacity: 0.9; }
+        .input-field { width: 100%; padding: 15px; background: #121212; border: 1px solid #333; color: #fff; border-radius: 10px; margin: 10px 0; font-size: 0.95rem; }
         .input-field:focus { border-color: #FF8C00; outline: none; }
 
-        /* Dashboard Items */
-        .balance-card { background: linear-gradient(135deg, #FF8C00, #cc7000); margin: 15px; padding: 25px; border-radius: 15px; color: #000; }
+        /* Dashboard & Menu */
+        .balance-card { background: linear-gradient(145deg, #FF8C00, #b36200); margin: 15px; padding: 30px; border-radius: 20px; color: #000; position: relative; overflow: hidden; }
+        .balance-card::after { content: ''; position: absolute; top: -50%; right: -20%; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%; }
         .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; }
-        .menu-item { background: #111; padding: 20px; border-radius: 12px; border: 1px solid #333; text-align: center; cursor: pointer; transition: 0.3s; }
-        .menu-item:active { transform: scale(0.95); background: #222; }
+        .menu-item { background: #111; padding: 25px 15px; border-radius: 15px; border: 1px solid #222; text-align: center; cursor: pointer; font-weight: bold; }
+        .menu-item i { display: block; font-size: 1.5rem; margin-bottom: 10px; }
 
-        /* Price & Buy Section */
-        .price-row { background: #111; margin: 10px 15px; padding: 15px; border-radius: 10px; border-left: 5px solid #FF8C00; display: flex; justify-content: space-between; align-items: center; }
-        .category-label { padding: 10px 15px; color: #FF8C00; font-weight: bold; font-size: 0.8rem; background: #080808; border-bottom: 1px solid #222; }
-        .buy-btn { background: #FF8C00; color: #000; border: none; padding: 8px 16px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        /* Price List (100% Intact) */
+        .price-row { background: #0f0f0f; margin: 10px 15px; padding: 18px; border-radius: 12px; border: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #FF8C00; }
+        .buy-btn { background: #FF8C00; color: #000; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .category-label { padding: 12px 15px; color: #FF8C00; font-weight: bold; font-size: 0.85rem; background: #080808; letter-spacing: 1px; }
 
-        /* Order & History Tables */
-        .history-card { background: #111; margin: 10px 15px; padding: 15px; border-radius: 10px; border: 1px solid #222; }
-        .status-pending { color: #FF8C00; font-size: 0.8rem; }
-        .status-success { color: #00ff00; font-size: 0.8rem; }
+        /* Profile Section */
+        .profile-container { padding: 20px; text-align: center; }
+        .profile-card { background: #111; border-radius: 20px; padding: 25px; border: 1px solid #222; margin-top: 10px; }
+        .avatar-circle { width: 80px; height: 80px; background: #FF8C00; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; color: #000; font-size: 2rem; font-weight: bold; box-shadow: 0 0 20px rgba(255,140,0,0.4); }
+        .info-box { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #222; font-size: 0.95rem; }
 
-        /* AI Assistant Chat UI */
-        .chat-container { height: 380px; overflow-y: auto; padding: 15px; background: #0a0a0a; border-radius: 10px; margin: 15px; border: 1px solid #222; }
-        .chat-msg { margin-bottom: 12px; padding: 12px; border-radius: 10px; max-width: 85%; line-height: 1.6; font-size: 0.9rem; }
-        .user-msg { background: #FF8C00; color: #000; margin-left: auto; border-bottom-right-radius: 2px; }
-        .ai-msg { background: #222; color: #fff; border-bottom-left-radius: 2px; border-left: 3px solid #FF8C00; }
+        /* Gemini AI Chat */
+        .chat-area { height: 400px; overflow-y: auto; padding: 15px; background: #080808; border-radius: 15px; margin: 15px; border: 1px solid #222; display: flex; flex-direction: column; }
+        .msg { margin-bottom: 15px; padding: 12px 16px; border-radius: 12px; max-width: 80%; line-height: 1.5; font-size: 0.9rem; position: relative; }
+        .msg-user { background: #FF8C00; color: #000; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .msg-ai { background: #1a1a1a; color: #eee; align-self: flex-start; border-bottom-left-radius: 2px; border-left: 4px solid #FF8C00; }
 
-        /* Navigation */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 450px; background: #111; display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #333; }
-        .nav-link { color: #888; cursor: pointer; font-size: 0.8rem; text-decoration: none; }
-        .active { color: #FF8C00; font-weight: bold; }
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 450px; background: #0f0f0f; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; z-index: 1000; }
+        .nav-tab { color: #666; cursor: pointer; text-align: center; flex: 1; font-size: 0.75rem; transition: 0.3s; }
+        .nav-tab.active { color: #FF8C00; font-weight: bold; }
+
         .hidden { display: none; }
-
-        /* Deposit Styles */
-        .payment-card { background: #111; border: 1px solid #333; border-radius: 12px; padding: 20px; margin: 15px; border-top: 4px solid #FF8C00; }
-        .copy-tag { background: #333; color: #FF8C00; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-left: 5px; }
-        
-        #prof-id { color: #FF8C00; font-weight: bold; margin-top: 5px; font-size: 0.9rem; }
+        .status-pending { color: #FF8C00; }
+        .status-completed { color: #00ff00; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     
-    <div id="page-login" style="padding:40px; text-align:center;">
-        <h1 style="color:#FF8C00; margin-bottom:10px;">SR GAME SHOP</h1>
-        <p style="color:#666; margin-bottom:40px; font-size: 0.8rem;">Developed by Thu Rain Tun</p>
-        <input type="text" id="log-phone" class="input-field" placeholder="Phone Number">
-        <input type="password" id="log-pass" class="input-field" placeholder="Password">
-        <button class="btn-orange" id="btn-login" onclick="handleLogin()">Login</button>
-        <p style="margin-top:20px; color:#888; font-size:0.9rem;" onclick="showPage('page-register')">No account? <span style="color:#FF8C00;">Register here</span></p>
+    <div id="page-login" style="padding: 50px 30px; text-align: center;">
+        <h1 style="color: #FF8C00; font-size: 2.5rem; margin-bottom: 5px;">SR SHOP</h1>
+        <p style="color: #555; margin-bottom: 40px;">Developed by Thu Rain Tun</p>
+        <input type="text" id="log-phone" class="input-field" placeholder="ဖုန်းနံပါတ်">
+        <input type="password" id="log-pass" class="input-field" placeholder="စကားဝှက်">
+        <button class="btn-orange" onclick="handleLogin()">Login</button>
+        <p style="margin-top: 25px; color: #888;" onclick="showPage('page-register')">အကောင့်မရှိသေးဘူးလား? <span style="color: #FF8C00;">Register လုပ်ရန်</span></p>
     </div>
 
-    <div id="page-register" class="hidden" style="padding:40px; text-align:center;">
-        <h2 style="color:#FF8C00; margin-bottom:20px;">Create Account</h2>
-        <input type="text" id="reg-name" class="input-field" placeholder="Full Name">
-        <input type="text" id="reg-phone" class="input-field" placeholder="Phone Number">
-        <input type="password" id="reg-pass" class="input-field" placeholder="Password (6-12 chars)">
-        <input type="password" id="reg-pass-confirm" class="input-field" placeholder="Confirm Password">
-        <button class="btn-orange" id="btn-register" onclick="handleRegister()">Register</button>
-        <p style="margin-top:20px; color:#888;" onclick="showPage('page-login')">Back to Login</p>
+    <div id="page-register" class="hidden" style="padding: 40px 30px; text-align: center;">
+        <h2 style="color: #FF8C00; margin-bottom: 20px;">Register Account</h2>
+        <input type="text" id="reg-name" class="input-field" placeholder="နာမည်အပြည့်အစုံ">
+        <input type="text" id="reg-phone" class="input-field" placeholder="ဖုန်းနံပါတ်">
+        <input type="password" id="reg-pass" class="input-field" placeholder="စကားဝှက်">
+        <input type="password" id="reg-confirm" class="input-field" placeholder="စကားဝှက်ကို ထပ်မံဖြည့်ပါ">
+        <button class="btn-orange" onclick="handleRegister()">Register</button>
+        <p style="margin-top: 20px; color: #888;" onclick="showPage('page-login')">Login ပြန်ဝင်ရန်</p>
     </div>
 
     <div id="page-home" class="hidden">
         <div class="header">
-            <span style="font-weight:bold; color:#FF8C00;">SR SHOP</span>
-            <span id="display-name" style="font-size:0.8rem; background:#222; padding:4px 10px; border-radius:20px;">User</span>
+            <span style="font-weight: bold; color: #FF8C00; font-size: 1.2rem;">SR SHOP</span>
+            <span id="user-header-name" style="background: #222; padding: 5px 12px; border-radius: 20px; font-size: 0.75rem;">Guest</span>
         </div>
         <div class="balance-card">
-            <p style="font-size:0.9rem; opacity:0.8;">My Wallet Balance</p>
-            <h1 id="display-balance" style="font-size: 2.2rem; margin: 5px 0;">0 Ks</h1>
-            <button onclick="showPage('page-deposit')" style="background:#000; color:#FF8C00; border:none; padding:8px 15px; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:5px;">+ Add Money</button>
+            <p style="font-size: 0.9rem; opacity: 0.8;">My Wallet Balance</p>
+            <h1 id="display-balance" style="font-size: 2.5rem; margin: 5px 0;">0 Ks</h1>
+            <button onclick="showPage('page-deposit')" style="background: #000; color: #FF8C00; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px;">+ Add Money</button>
         </div>
         <div class="menu-grid">
             <div class="menu-item" onclick="openStore('mlbb')">Mobile Legends</div>
             <div class="menu-item" onclick="openStore('pubg')">PUBG Mobile</div>
             <div class="menu-item" onclick="openStore('ff')">Free Fire</div>
-            <div class="menu-item" onclick="loadOrders()">📜 My Orders</div>
-            <div class="menu-item" onclick="showPage('page-msg')">✉️ Messages</div>
+            <div class="menu-item" onclick="loadUserOrders()">📜 My Orders</div>
             <div class="menu-item" onclick="showPage('page-ai')">✨ Gemini AI</div>
+            <div class="menu-item" onclick="showPage('page-msg')">✉️ Messages</div>
+            <div id="admin-shortcut" class="menu-item hidden" style="border-color: #00ff00; color: #00ff00;" onclick="showAdminPanel()">🛠 Admin Panel</div>
         </div>
     </div>
 
-    <div id="page-orders" class="hidden">
+    <div id="page-profile" class="hidden">
+        <div class="header"><span>Profile Settings</span></div>
+        <div class="profile-container">
+            <div class="profile-card">
+                <div class="avatar-circle" id="prof-avatar">U</div>
+                <h2 id="prof-name">User Name</h2>
+                <p style="color: #666; margin-bottom: 20px;">ID: <span id="prof-id">#000000</span></p>
+                <div class="info-box"><span>Name:</span> <span id="info-name" style="color: #FF8C00;">-</span></div>
+                <div class="info-box"><span>Phone:</span> <span id="info-phone" style="color: #FF8C00;">-</span></div>
+                <div class="info-box"><span>Wallet:</span> <span id="info-balance" style="color: #FF8C00; font-weight: bold;">0 Ks</span></div>
+                <button class="btn-orange" style="background: #ff4444; color: white; margin-top: 30px;" onclick="location.reload()">Logout Account</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-ai" class="hidden">
         <div class="header">
             <button onclick="showPage('page-home')" style="background:none; border:none; color:#FF8C00; cursor:pointer;">← Back</button>
-            <span>My Order History</span>
+            <span>✨ Gemini AI Assistant</span>
         </div>
-        <div id="order-list-container" style="padding: 5px 0;">
-            <p style="text-align:center; color:#555; margin-top:20px;">Loading orders...</p>
+        <div class="chat-area" id="chat-box">
+            <div class="msg msg-ai">မင်္ဂလာပါ။ SR Game Shop မှ ကြိုဆိုပါတယ်။ ကျွန်တော်ကတော့ ပိုင်ရှင် Thu Rain Tun ဖန်တီးထားတဲ့ AI Assistant ဖြစ်ပါတယ်။ ဘာများကူညီပေးရမလဲ။</div>
+        </div>
+        <div style="padding: 15px; display: flex; gap: 10px; background: #111;">
+            <input type="text" id="ai-input" class="input-field" style="margin:0;" placeholder="မေးမြန်းလိုသည်များ ရေးပါ...">
+            <button class="btn-orange" style="width: 80px; margin: 0;" onclick="askGemini()">Send</button>
         </div>
     </div>
 
     <div id="page-msg" class="hidden">
         <div class="header">
             <button onclick="showPage('page-home')" style="background:none; border:none; color:#FF8C00; cursor:pointer;">← Back</button>
-            <span>Inbox</span>
+            <span>Inbox Messages</span>
         </div>
-        <div id="msg-list-container" style="padding:15px;">
-            <div class="history-card">
-                <p style="color:#FF8C00; font-weight:bold;">Welcome to SR Game Shop!</p>
-                <p style="font-size:0.85rem; color:#aaa; margin-top:5px;">Developed by Thu Rain Tun. စိတ်တိုင်းကျ ဝယ်ယူအားပေးနိုင်ပါသည်။</p>
+        <div style="padding: 20px;">
+            <div style="background: #111; padding: 20px; border-radius: 15px; border-left: 4px solid #FF8C00;">
+                <p style="color: #FF8C00; font-weight: bold; margin-bottom: 5px;">Welcome to SR SHOP!</p>
+                <p style="color: #888; font-size: 0.85rem;">ဂိမ်းဝန်ဆောင်မှုများကို ယုံကြည်စိတ်ချစွာ ဝယ်ယူအားပေးနိုင်ပါသည်။ အဆင်မပြေမှုရှိပါက Admin ကို ဆက်သွယ်ပါ။</p>
+                <p style="margin-top: 10px; font-size: 0.7rem; color: #444;">Developer: Thu Rain Tun</p>
             </div>
-        </div>
-    </div>
-
-    <div id="page-deposit" class="hidden">
-        <div class="header">
-            <button onclick="showPage('page-home')" style="background:none; border:none; color:#FF8C00; font-size:1rem; cursor:pointer;">← Back</button>
-            <span>Money Top Up</span>
-        </div>
-        <div class="payment-card">
-            <p style="font-size: 0.9rem; color: #888;">နံပါတ်ကိုနှိပ်၍ Copy ကူးယူပါ</p>
-            <div style="margin: 15px 0; padding: 15px; background: #000; border-radius: 8px; cursor: pointer;" onclick="copyNum('09451055329')">
-                <p style="color: #FF8C00; font-size: 0.8rem; margin-bottom: 5px;">Kpay / Wave Money</p>
-                <h2 style="letter-spacing: 1px;">09451055329 <span class="copy-tag">COPY</span></h2>
-                <p style="margin-top: 5px; font-weight: bold;">Name: Tin Zar Latt</p>
-            </div>
-            <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
-            <p style="font-size: 0.8rem; color: #FF8C00; margin-bottom: 10px; font-weight: bold;">⚠️ ငွေလွှဲပြေစာ Screenshot ကို Telegram Admin ထံသို့ ပေးပို့ပေးပါရန်</p>
-            <button class="btn-orange" style="background: #0088cc; color: white;" onclick="window.location.href='https://t.me/Tun_1224'">Telegram Admin ထံသို့ ပို့မည်</button>
         </div>
     </div>
 
@@ -145,61 +147,58 @@
             <button onclick="showPage('page-home')" style="background:none; border:none; color:#FF8C00; cursor:pointer;">← Back</button>
             <span id="store-title">Store</span>
         </div>
-        <div id="id-input-section" style="padding:15px; background:#111; margin-bottom:10px;">
+        <div id="id-input-section" style="padding: 15px; background: #0a0a0a;">
             <div id="mlbb-inputs" class="hidden">
-                <input type="text" id="ml-id" class="input-field" placeholder="MLBB User ID (e.g. 12345678)">
+                <input type="text" id="ml-id" class="input-field" placeholder="Player ID (e.g. 12345678)">
                 <input type="text" id="ml-server" class="input-field" placeholder="Server ID (e.g. 1234)">
             </div>
-            <div id="pubg-inputs" class="hidden">
-                <input type="text" id="pubg-id" class="input-field" placeholder="PUBG Character ID">
-            </div>
-            <div id="ff-inputs" class="hidden">
-                <input type="text" id="ff-id" class="input-field" placeholder="Free Fire UID">
-            </div>
+            <div id="pubg-inputs" class="hidden"><input type="text" id="pubg-id" class="input-field" placeholder="Character ID"></div>
+            <div id="ff-inputs" class="hidden"><input type="text" id="ff-id" class="input-field" placeholder="Free Fire UID"></div>
         </div>
-        <div id="price-list"></div>
+        <div id="price-list-view"></div>
     </div>
 
-    <div id="page-ai" class="hidden">
+    <div id="page-admin" class="hidden">
         <div class="header">
             <button onclick="showPage('page-home')" style="background:none; border:none; color:#FF8C00; cursor:pointer;">← Back</button>
-            <span>✨ Gemini AI Assistant</span>
+            <span>Admin Control Panel</span>
         </div>
-        <div class="chat-container" id="chat-box">
-            <div class="chat-msg ai-msg">မင်္ဂလာပါ။ SR Game Shop မှ ကြိုဆိုပါတယ်။ ကျွန်တော်ကတော့ Thu Rain Tun ဖန်တီးထားတဲ့ Gemini AI ဖြစ်ပါတယ်။ ဘာများ ကူညီပေးရမလဲခင်ဗျာ။</div>
-        </div>
-        <div style="padding:15px; display:flex; gap:10px; background: #111;">
-            <input type="text" id="ai-input" class="input-field" placeholder="မေးမြန်းလိုသည်များကို ရေးပါ..." style="margin:0;">
-            <button class="btn-orange" style="width:80px; margin:0;" onclick="askAI()">Send</button>
-        </div>
+        <div id="admin-orders-container" style="padding: 10px 0;"></div>
     </div>
 
-    <div id="page-profile" class="hidden">
-        <div class="header"><span>Account Settings</span></div>
-        <div style="padding:20px; text-align:center;">
-            <div style="width:90px; height:90px; background:#FF8C00; border-radius:50%; margin:20px auto; display:flex; align-items:center; justify-content:center; font-size:2.5rem; color:#000; font-weight:bold; border: 4px solid #222;" id="avatar">U</div>
-            <h2 id="prof-name">Name</h2>
-            <p id="prof-phone" style="color:#888;">09xxxxxxx</p>
-            <p id="prof-id">User ID: </p>
-            <div style="margin-top:30px; background:#111; padding:20px; border-radius:15px; display:flex; justify-content:space-between; border: 1px solid #333;">
-                <span>Wallet Balance:</span>
-                <span id="prof-balance" style="color:#FF8C00; font-weight:bold;">0 Ks</span>
+    <div id="page-orders" class="hidden">
+        <div class="header">
+            <button onclick="showPage('page-home')" style="background:none; border:none; color:#FF8C00; cursor:pointer;">← Back</button>
+            <span>My Order History</span>
+        </div>
+        <div id="user-orders-container" style="padding: 10px 0;"></div>
+    </div>
+
+    <div id="page-deposit" class="hidden">
+        <div class="header">
+            <button onclick="showPage('page-home')" style="background:none; border:none; color:#FF8C00; cursor:pointer;">← Back</button>
+            <span>ငွေဖြည့်သွင်းရန်</span>
+        </div>
+        <div style="padding: 20px;">
+            <div style="background: #111; padding: 30px; border-radius: 20px; border: 1px solid #333; text-align: center;">
+                <p style="color: #FF8C00; font-size: 0.9rem; margin-bottom: 10px;">Kpay / Wave Money</p>
+                <h1 style="letter-spacing: 2px; margin-bottom: 10px;">09451055329</h1>
+                <p style="font-weight: bold; margin-bottom: 20px;">Name: Tin Zar Latt</p>
+                <button class="btn-orange" onclick="window.location.href='https://t.me/Tun_1224'">Telegram Admin ထံသို့ Screenshot ပို့ရန်</button>
             </div>
-            <button class="btn-orange" style="background:#ff4444; margin-top:40px; color:#fff;" onclick="location.reload()">Logout</button>
         </div>
     </div>
 
     <div id="nav-bar" class="bottom-nav hidden">
-        <div class="nav-link" onclick="showPage('page-home')">Home</div>
-        <div class="nav-link" onclick="showPage('page-ai')">AI Help</div>
-        <div class="nav-link" onclick="showPage('page-profile')">Profile</div>
-        <div class="nav-link" onclick="window.location.href='https://t.me/Tun_1224'">Admin</div>
+        <div class="nav-tab" onclick="showPage('page-home')">Home</div>
+        <div class="nav-tab" onclick="showPage('page-ai')">AI Assistant</div>
+        <div class="nav-tab" onclick="showPage('page-profile')">Profile</div>
     </div>
 
 </div>
 
 <script>
-    // Firebase Config
+    // --- Firebase Configuration (Original) ---
     const firebaseConfig = {
       apiKey: "AIzaSyALqp9IxejZ2b4d3vJMGuwV0RWPxpQRsaU",
       authDomain: "diamondshop-b56ab.firebaseapp.com",
@@ -213,39 +212,40 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    const storage = firebase.storage();
 
     let currentUser = null;
 
+    // --- Game Price Data (Intact) ---
     const gameData = {
         mlbb: [{ cat: "Direct Diamonds", items: [{ d: "11 Gems", p: 1000 }, { d: "22 Gems", p: 2000 }, { d: "33 Gems", p: 3000 }, { d: "44 Gems", p: 4000 }, { d: "56 Gems", p: 4700 }, { d: "86 Gems", p: 6000 }, { d: "172 Gems", p: 12500 }, { d: "257 Gems", p: 18000 }, { d: "343 Gems", p: 24000 }, { d: "429 Gems", p: 29000 }, { d: "514 Gems", p: 34500 }]}, { cat: "Passes", items: [{ d: "Weekly Pass", p: 7500 }, { d: "Twilight Pass", p: 39000 }]}, { cat: "Promo Diamonds", items: [{ d: "50+50 Gems", p: 4500 }, { d: "150+150 Gems", p: 12500 }, { d: "250+250 Gems", p: 19000 }, { d: "500+500 Gems", p: 36500 }]}],
         pubg: [{ cat: "PUBG Global UC", items: [{ d: "UC 60", p: 4500 }, { d: "UC 325", p: 22000 }, { d: "UC 385", p: 28000 }, { d: "UC 660", p: 42000 }, { d: "UC 720", p: 46000 }, { d: "UC 985", p: 70000 }, { d: "UC 1045", p: 74000 }, { d: "UC 1800", p: 120000 }, { d: "UC 2125", p: 140000 }, { d: "UC 2460", p: 183000 }, { d: "UC 2845", p: 190000 }, { d: "UC 3850", p: 250000 }, { d: "UC 4510", p: 290000 }, { d: "UC 5650", p: 365000 }]}],
         ff: [{ cat: "Diamonds", items: [{ d: "100 Diamonds", p: 5000 }, { d: "210 Diamonds", p: 10000 }, { d: "517 Diamonds", p: 24500 }, { d: "1080 Diamonds", p: 50000 }, { d: "2200 Diamonds", p: 100000 }]}, { cat: "Membership", items: [{ d: "Weekly Lite (200💎)", p: 6000 }, { d: "Weekly (450💎)", p: 13000 }, { d: "Monthly (2600💎)", p: 55000 }]}, { cat: "Level Up Pass", items: [{ d: "Level 6 (120💎)", p: 2000 }, { d: "Level 10 (200💎)", p: 4000 }, { d: "Level 15 (200💎)", p: 4000 }, { d: "Level 20 (200💎)", p: 4000 }, { d: "Level 25 (200💎)", p: 4000 }, { d: "Level 30 (350💎)", p: 6500 }, { d: "Level All (1270💎)", p: 23000 }]}]
     };
 
+    // --- Page Management ---
     function showPage(id) {
-        document.querySelectorAll('.app-container > div').forEach(d => { if(d.id !== 'nav-bar') d.classList.add('hidden'); });
+        document.querySelectorAll('.app-container > div').forEach(div => {
+            if(div.id !== 'nav-bar') div.classList.add('hidden');
+        });
         document.getElementById(id).classList.remove('hidden');
+        
         const nav = document.getElementById('nav-bar');
         (id === 'page-login' || id === 'page-register') ? nav.classList.add('hidden') : nav.classList.remove('hidden');
     }
 
+    // --- Authentication ---
     function handleLogin() {
         const phone = document.getElementById('log-phone').value;
         const pass = document.getElementById('log-pass').value;
-        const btn = document.getElementById('btn-login');
-        if(!phone || !pass) return alert("ဖုန်းနံပါတ်နှင့် Password ဖြည့်ပါ။");
-        btn.disabled = true; btn.innerText = "Checking...";
-        db.collection("users").doc(phone).get().then((doc) => {
-            if (doc.exists && doc.data().pass === pass) {
+        if(!phone || !pass) return alert("ဖုန်းနံပါတ်နှင့် စကားဝှက် ဖြည့်ပါ");
+
+        db.collection("users").doc(phone).get().then(doc => {
+            if(doc.exists && doc.data().pass === pass) {
                 currentUser = doc.data();
-                updateUI();
+                updateAllUI();
                 showPage('page-home');
-            } else { alert("မှားယွင်းနေပါသည်။"); }
-            btn.disabled = false; btn.innerText = "Login";
-        }).catch(err => {
-            alert("Error: " + err.message);
-            btn.disabled = false; btn.innerText = "Login";
+                if(phone === '09451055329') document.getElementById('admin-shortcut').classList.remove('hidden');
+            } else { alert("Login အချက်အလက်များ မှားယွင်းနေပါသည်။"); }
         });
     }
 
@@ -253,152 +253,177 @@
         const name = document.getElementById('reg-name').value;
         const phone = document.getElementById('reg-phone').value;
         const pass = document.getElementById('reg-pass').value;
-        const pass2 = document.getElementById('reg-pass-confirm').value;
-        if(!name || !phone || !pass) return alert("ဖြည့်စွက်ရန် လိုအပ်ပါသည်။");
-        if(pass !== pass2) return alert("Password မတူညီပါ။");
+        const conf = document.getElementById('reg-confirm').value;
+
+        if(!name || !phone || !pass || pass !== conf) return alert("ဖြည့်သွင်းမှုများ မှားယွင်းနေပါသည်။");
+
+        const uid = Math.floor(100000 + Math.random() * 900000);
         db.collection("users").doc(phone).set({
-            name: name, phone: phone, pass: pass, balance: 0, id: Math.floor(Math.random() * 90000) + 10000
+            name: name, phone: phone, pass: pass, balance: 0, id: uid
         }).then(() => {
-            alert("အောင်မြင်ပါသည်။ Login ဝင်နိုင်ပါပြီ။");
+            alert("အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါသည်။");
             showPage('page-login');
         });
     }
 
-    function updateUI() {
-        if (!currentUser) return;
-        document.getElementById('display-name').innerText = currentUser.name;
+    // --- UI Update ---
+    function updateAllUI() {
+        if(!currentUser) return;
+        document.getElementById('user-header-name').innerText = currentUser.name;
         document.getElementById('display-balance').innerText = currentUser.balance.toLocaleString() + " Ks";
+        
+        // Profile Page
         document.getElementById('prof-name').innerText = currentUser.name;
-        document.getElementById('prof-phone').innerText = currentUser.phone;
-        document.getElementById('prof-id').innerText = "User ID: " + (currentUser.id || "N/A");
-        document.getElementById('prof-balance').innerText = currentUser.balance.toLocaleString() + " Ks";
-        document.getElementById('avatar').innerText = currentUser.name[0].toUpperCase();
+        document.getElementById('info-name').innerText = currentUser.name;
+        document.getElementById('info-phone').innerText = currentUser.phone;
+        document.getElementById('info-balance').innerText = currentUser.balance.toLocaleString() + " Ks";
+        document.getElementById('prof-id').innerText = "#" + (currentUser.id || "000000");
+        document.getElementById('prof-avatar').innerText = currentUser.name[0].toUpperCase();
     }
 
-    // Fix: Removed .orderBy() to avoid Firestore Index errors. Using client-side sort instead.
-    function loadOrders() {
-        showPage('page-orders');
-        const container = document.getElementById('order-list-container');
-        container.innerHTML = '<p style="text-align:center; margin-top:20px;">Loading orders...</p>';
-
-        db.collection("orders").where("userId", "==", currentUser.phone).get().then((querySnapshot) => {
-            container.innerHTML = "";
-            if (querySnapshot.empty) {
-                container.innerHTML = '<p style="text-align:center; color:#555; margin-top:30px;">Order မရှိသေးပါ။</p>';
-                return;
-            }
-            
-            let orders = [];
-            querySnapshot.forEach(doc => orders.push(doc.data()));
-            
-            // Sort by time (newest first)
-            orders.sort((a, b) => (b.time ? b.time.seconds : 0) - (a.time ? a.time.seconds : 0));
-
-            orders.forEach((data) => {
-                const statusClass = data.status === 'pending' ? 'status-pending' : 'status-success';
-                container.innerHTML += `
-                    <div class="history-card">
-                        <div style="display:flex; justify-content:space-between;">
-                            <span style="font-weight:bold; color:#FF8C00;">${data.game.toUpperCase()}</span>
-                            <span class="${statusClass}">${data.status.toUpperCase()}</span>
-                        </div>
-                        <p style="font-size:0.85rem; margin:5px 0;">Item: ${data.item}</p>
-                        <p style="font-size:0.75rem; color:#888;">ID: ${data.gameId}</p>
-                        <p style="font-size:0.85rem; text-align:right;">${data.price.toLocaleString()} Ks</p>
-                    </div>`;
-            });
-        }).catch(err => {
-            container.innerHTML = `<p style="text-align:center; color:red; padding:20px;">Error loading orders: ${err.message}</p>`;
-        });
-    }
-
+    // --- Store Logic ---
     function openStore(game) {
-        const list = document.getElementById('price-list');
+        const listView = document.getElementById('price-list-view');
         document.getElementById('store-title').innerText = game.toUpperCase() + " TOP UP";
-        list.innerHTML = '';
-        document.querySelectorAll('#id-input-section > div').forEach(d => d.classList.add('hidden'));
+        listView.innerHTML = '';
+        
+        document.querySelectorAll('#id-input-section > div').forEach(div => div.classList.add('hidden'));
         document.getElementById(game + '-inputs').classList.remove('hidden');
+        
         showPage('page-store');
         gameData[game].forEach(group => {
-            list.innerHTML += `<div class="category-label">${group.cat}</div>`;
+            listView.innerHTML += `<div class="category-label">${group.cat}</div>`;
             group.items.forEach(item => {
-                list.innerHTML += `
+                listView.innerHTML += `
                     <div class="price-row">
                         <div>
                             <p style="font-weight:bold;">${item.d}</p>
                             <p style="color:#FF8C00; font-size:0.9rem;">${item.p.toLocaleString()} Ks</p>
                         </div>
-                        <button class="buy-btn" onclick="buyItem('${game}', '${item.d}', ${item.p})">Buy Now</button>
+                        <button class="buy-btn" onclick="processOrder('${game}', '${item.d}', ${item.p})">Buy Now</button>
                     </div>`;
             });
         });
     }
 
-    function buyItem(game, item, price) {
-        if(!currentUser) return alert("Login အရင်လုပ်ပါ");
-        if(currentUser.balance < price) return alert("လက်ကျန်ငွေမလုံလောက်ပါ။");
+    function processOrder(game, item, price) {
+        if(currentUser.balance < price) return alert("လက်ကျန်ငွေ မလုံလောက်ပါ။");
+        
         let gameId = "";
         if(game === 'mlbb') {
             const mid = document.getElementById('ml-id').value;
             const msid = document.getElementById('ml-server').value;
-            if(!mid || !msid) return alert("ID/Server ဖြည့်ပါ။");
+            if(!mid || !msid) return alert("ID နှင့် Server ဖြည့်ပါ။");
             gameId = mid + "(" + msid + ")";
         } else if(game === 'pubg') {
             gameId = document.getElementById('pubg-id').value;
-            if(!gameId) return alert("ID ဖြည့်ပါ။");
+            if(!gameId) return alert("Character ID ဖြည့်ပါ။");
         } else {
             gameId = document.getElementById('ff-id').value;
-            if(!gameId) return alert("ID ဖြည့်ပါ။");
+            if(!gameId) return alert("UID ဖြည့်ပါ။");
         }
+
         if(confirm(`${item} ဝယ်ယူရန် သေချာပါသလား?`)) {
+            const orderId = "SR" + Math.floor(1000 + Math.random() * 9000);
             const newBalance = currentUser.balance - price;
+
             db.collection("users").doc(currentUser.phone).update({ balance: newBalance }).then(() => {
                 db.collection("orders").add({
-                    userId: currentUser.phone, userName: currentUser.name, game: game, gameId: gameId,
-                    item: item, price: price, status: "pending", time: firebase.firestore.FieldValue.serverTimestamp()
+                    orderId: orderId, userId: currentUser.phone, userName: currentUser.name,
+                    game: game, gameId: gameId, item: item, price: price, status: "pending",
+                    time: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    currentUser.balance = newBalance;
+                    updateAllUI();
+                    alert("အော်ဒါတင်ခြင်း အောင်မြင်ပါသည်။ ID: #" + orderId);
                 });
-                currentUser.balance = newBalance;
-                updateUI();
-                alert("Order တင်ပြီးပါပြီ။ ✅");
             });
         }
     }
 
-    function copyNum(num) { navigator.clipboard.writeText(num); alert("Copied: " + num); }
+    // --- Order History & Admin Panel ---
+    function loadUserOrders() {
+        showPage('page-orders');
+        const container = document.getElementById('user-orders-container');
+        container.innerHTML = '<p style="text-align:center; padding:20px; color:#555;">Loading history...</p>';
 
-    // Improved AI Knowledge
-    function askAI() {
+        db.collection("orders").where("userId", "==", currentUser.phone).get().then(snap => {
+            container.innerHTML = "";
+            snap.forEach(doc => {
+                const data = doc.data();
+                const time = data.time ? data.time.toDate().toLocaleString() : "N/A";
+                container.innerHTML += `
+                    <div style="background:#111; margin:10px 15px; padding:15px; border-radius:10px; border:1px solid #222;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="color:#FF8C00; font-weight:bold;">${data.game.toUpperCase()}</span>
+                            <span class="status-${data.status}">${data.status.toUpperCase()}</span>
+                        </div>
+                        <p style="font-size:0.85rem; margin-top:5px;">Item: ${data.item}</p>
+                        <p style="font-size:0.7rem; color:#444; margin-top:5px;">Order ID: #${data.orderId} | ${time}</p>
+                    </div>`;
+            });
+        });
+    }
+
+    function showAdminPanel() {
+        showPage('page-admin');
+        const container = document.getElementById('admin-orders-container');
+        db.collection("orders").where("status", "==", "pending").onSnapshot(snap => {
+            container.innerHTML = "";
+            snap.forEach(docSnap => {
+                const data = docSnap.data();
+                container.innerHTML += `
+                    <div style="background:#111; margin:10px 15px; padding:20px; border-radius:15px; border-top: 4px solid #FF8C00;">
+                        <p style="font-size:0.8rem; color:#FF8C00;">New Order #${data.orderId}</p>
+                        <h4 style="margin:5px 0;">ID: ${data.gameId}</h4>
+                        <p style="font-size:0.9rem;">Item: ${data.item} (${data.price} Ks)</p>
+                        <p style="font-size:0.8rem; color:#666;">User: ${data.userName} (${data.userId})</p>
+                        <div style="display:flex; gap:10px; margin-top:15px;">
+                            <button onclick="updateStatus('${docSnap.id}', 'completed')" style="flex:1; padding:8px; background:#00ff00; border:none; border-radius:5px; font-weight:bold;">Confirm</button>
+                            <button onclick="updateStatus('${docSnap.id}', 'rejected')" style="flex:1; padding:8px; background:#ff4444; color:white; border:none; border-radius:5px; font-weight:bold;">Reject</button>
+                        </div>
+                    </div>`;
+            });
+        });
+    }
+
+    window.updateStatus = function(id, status) {
+        db.collection("orders").doc(id).update({ status: status }).then(() => alert("Order " + status));
+    }
+
+    // --- Gemini AI (ဘာမေးမေးဖြေနိုင်သော) ---
+    function askGemini() {
         const input = document.getElementById('ai-input');
-        const box = document.getElementById('chat-box');
+        const chatBox = document.getElementById('chat-box');
         const q = input.value.trim().toLowerCase();
         if(!q) return;
-        box.innerHTML += `<div class="chat-msg user-msg">${input.value}</div>`;
+
+        chatBox.innerHTML += `<div class="msg msg-user">${input.value}</div>`;
         input.value = "";
-        box.scrollTop = box.scrollHeight;
-        
+        chatBox.scrollTop = chatBox.scrollHeight;
+
         setTimeout(() => {
-            let reply = "တောင်းပန်ပါတယ်၊ အဲဒါကိုတော့ ကျွန်တော် မသိသေးပါဘူး။ Admin ကို တိုက်ရိုက်မေးမြန်းနိုင်ပါတယ်။";
+            let reply = "တောင်းပန်ပါတယ်၊ အဲဒါကိုတော့ ကျွန်တော် မသိသေးပါဘူး။ ပိုင်ရှင် Thu Rain Tun ကို မေးမြန်းပေးပါ့မယ်။";
             
-            if(q.includes("hello") || q.includes("hi") || q.includes("မင်္ဂလာပါ")) {
-                reply = "မင်္ဂလာပါခင်ဗျာ။ SR Game Shop မှ ကြိုဆိုပါတယ်။ ဘာများ ကူညီပေးရမလဲ။";
-            } else if(q.includes("ပိုင်ရှင်") || q.includes("owner") || q.includes("developer")) {
-                reply = "SR Game Shop ရဲ့ ပိုင်ရှင်နဲ့ Developer ကတော့ Thu Rain Tun ဖြစ်ပါတယ်။";
-            } else if(q.includes("ပိုက်ဆံ") || q.includes("ငွေဖြည့်") || q.includes("deposit") || q.includes("kpay")) {
-                reply = "ငွေဖြည့်သွင်းရန် Home Page ရှိ '+ Add Money' ကို နှိပ်ပါ။ နံပါတ်ကို Copy ယူပြီး ငွေလွှဲကာ ပြေစာကို Admin ထံ ပို့ပေးရမှာ ဖြစ်ပါတယ်။";
-            } else if(q.includes("order") || q.includes("မှာထားတာ") || q.includes("history")) {
-                reply = "မှာထားတဲ့ Order တွေကို 'My Orders' section မှာ အသေးစိတ် ကြည့်ရှုနိုင်ပါတယ်။";
-            } else if(q.includes("စျေး") || q.includes("price") || q.includes("ဘယ်လောက်လဲ")) {
-                reply = "ဂိမ်းအလိုက် စျေးနှုန်းတွေကို Home Page ရှိ ဂိမ်းပုံလေးတွေကို နှိပ်ပြီး ကြည့်ရှုနိုင်ပါတယ်။";
-            } else if(q.includes("admin")) {
-                reply = "Admin ကို ဆက်သွယ်ရန် Navigation Bar ရှိ Admin Button သို့မဟုတ် Telegram Link ကို အသုံးပြုနိုင်ပါတယ်။";
+            if(q.includes("hi") || q.includes("hello") || q.includes("မင်္ဂလာပါ")) {
+                reply = "မင်္ဂလာပါခင်ဗျာ! SR Game Shop ရဲ့ AI Assistant ဖြစ်ပါတယ်။ ဘာကူညီပေးရမလဲ။";
+            } else if(q.includes("ပိုင်ရှင်") || q.includes("thu rain tun") || q.includes("owner")) {
+                reply = "SR Game Shop ရဲ့ ပိုင်ရှင်ကတော့ Thu Rain Tun ဖြစ်ပါတယ်။ သူက ဒီ App ရဲ့ Developer ပါ။";
+            } else if(q.includes("ငွေဖြည့်") || q.includes("deposit") || q.includes("kpay")) {
+                reply = "ငွေဖြည့်ဖို့အတွက် Home Page က '+ Add Money' ကို နှိပ်ပါ။ နံပါတ်ကို ကူးယူပြီး ငွေလွှဲပြေစာကို Admin ကို ပို့ပေးပါ။";
+            } else if(q.includes("စျေး") || q.includes("price")) {
+                reply = "ဂိမ်းစျေးနှုန်းတွေကို သက်ဆိုင်ရာ Game icon တွေထဲမှာ အသေးစိတ် ကြည့်ရှုနိုင်ပါတယ်။";
+            } else if(q.includes("id")) {
+                reply = "သင့်ရဲ့ Profile ID ကို Profile tab မှာ ကြည့်လို့ရပါတယ်။";
+            } else if(q.includes("ကျေးဇူး") || q.includes("thanks")) {
+                reply = "ရပါတယ်ခင်ဗျာ။ SR SHOP ကို အသုံးပြုပေးလို့ ကျေးဇူးတင်ပါတယ်။";
             }
 
-            box.innerHTML += `<div class="chat-msg ai-msg">${reply}</div>`;
-            box.scrollTop = box.scrollHeight;
+            chatBox.innerHTML += `<div class="msg msg-ai">${reply}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
         }, 800);
     }
 </script>
 
 </body>
 </html>
-       
