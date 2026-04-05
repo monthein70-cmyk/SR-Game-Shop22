@@ -3,348 +3,402 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SR Game Shop - Mobile & PC</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
-        :root {
-            --primary: #ff8c00;
-            --bg: #000000;
-            --card: #111111;
-            --border: #222222;
-        }
-        body {
-            background-color: var(--bg);
-            color: #ffffff;
-            font-family: 'Inter', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-            overflow-x: hidden;
-        }
-        .orange-text { color: var(--primary); }
-        .orange-bg { background-color: var(--primary); }
-        .card { background-color: var(--card); border: 1px solid var(--border); border-radius: 16px; }
-        
-        /* PC Sidebar Hide on Mobile */
-        @media (min-width: 1024px) {
-            .mobile-nav { display: none; }
-            .pc-sidebar { display: flex; }
-            .main-wrapper { margin-left: 260px; }
-        }
-        @media (max-width: 1023px) {
-            .pc-sidebar { display: none; }
-            .mobile-nav { display: flex; }
-            .main-wrapper { margin-left: 0; padding-bottom: 80px; }
-        }
+    <title>SR Game Shop - Developed by Thu Rain Tun</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
-        .nav-item.active { color: var(--primary); background: rgba(255, 140, 0, 0.1); border-radius: 12px; }
-        .input-style { 
-            background-color: #1a1a1a !important; 
-            color: white !important; 
-            border: 1px solid #333 !important;
-            transition: 0.3s;
-        }
-        .input-style:focus { border-color: var(--primary) !important; outline: none; }
-        
-        .price-btn {
-            background: #111;
-            border: 1px solid #222;
-            width: 100%;
-            padding: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-radius: 12px;
-            transition: 0.2s;
-        }
-        .price-btn:hover { border-color: var(--primary); background: #181818; }
-        .price-btn:active { transform: scale(0.98); }
-        
-        .loader {
-            border: 3px solid #222;
-            border-top: 3px solid var(--primary);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    <style>
+        /* CSS Section - Black & Orange Theme */
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; }
+        body { background-color: #000; color: #fff; overflow-x: hidden; }
+        .app-container { max-width: 450px; margin: auto; min-height: 100vh; position: relative; padding-bottom: 80px; background: #000; }
+
+        /* General UI Elements */
+        .header { background: #111; padding: 18px; border-bottom: 2px solid #FF8C00; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
+        .btn-orange { width: 100%; padding: 14px; background: #FF8C00; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; color: #000; margin-top: 10px; }
+        .input-field { width: 100%; padding: 14px; background: #1a1a1a; border: 1px solid #333; color: #fff; border-radius: 10px; margin: 8px 0; }
+        .input-field:focus { border-color: #FF8C00; outline: none; }
+
+        /* Dashboard Items */
+        .balance-card { background: linear-gradient(135deg, #FF8C00, #cc7000); margin: 15px; padding: 25px; border-radius: 15px; color: #000; }
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; }
+        .menu-item { background: #111; padding: 20px; border-radius: 12px; border: 1px solid #333; text-align: center; cursor: pointer; transition: 0.3s; }
+        .menu-item:active { transform: scale(0.95); background: #222; }
+
+        /* Price & Buy Section */
+        .price-row { background: #111; margin: 10px 15px; padding: 15px; border-radius: 10px; border-left: 5px solid #FF8C00; display: flex; justify-content: space-between; align-items: center; }
+        .category-label { padding: 10px 15px; color: #FF8C00; font-weight: bold; font-size: 0.8rem; background: #080808; border-bottom: 1px solid #222; }
+        .buy-btn { background: #FF8C00; color: #000; border: none; padding: 8px 16px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+
+        /* Order & History Tables */
+        .history-card { background: #111; margin: 10px 15px; padding: 15px; border-radius: 10px; border: 1px solid #222; }
+        .status-pending { color: #FF8C00; font-size: 0.8rem; }
+        .status-success { color: #00ff00; font-size: 0.8rem; }
+
+        /* AI Assistant Chat UI */
+        .chat-container { height: 380px; overflow-y: auto; padding: 15px; background: #0a0a0a; border-radius: 10px; margin: 15px; border: 1px solid #222; }
+        .chat-msg { margin-bottom: 12px; padding: 12px; border-radius: 10px; max-width: 85%; line-height: 1.6; font-size: 0.9rem; }
+        .user-msg { background: #FF8C00; color: #000; margin-left: auto; border-bottom-right-radius: 2px; }
+        .ai-msg { background: #222; color: #fff; border-bottom-left-radius: 2px; border-left: 3px solid #FF8C00; }
+
+        /* Navigation */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 450px; background: #111; display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #333; }
+        .nav-link { color: #888; cursor: pointer; font-size: 0.8rem; text-decoration: none; }
+        .active { color: #FF8C00; font-weight: bold; }
         .hidden { display: none; }
+
+        /* Deposit Styles */
+        .payment-card { background: #111; border: 1px solid #333; border-radius: 12px; padding: 20px; margin: 15px; border-top: 4px solid #FF8C00; }
+        .copy-tag { background: #333; color: #FF8C00; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-left: 5px; }
+        
+        #prof-id { color: #FF8C00; font-weight: bold; margin-top: 5px; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
-    <!-- Splash Screen -->
-    <div id="loading-screen" class="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center">
-        <div class="loader mb-4"></div>
-        <h1 class="text-3xl font-black italic orange-text">SR GAME SHOP</h1>
+<div class="app-container">
+    
+    <div id="page-login" style="padding:40px; text-align:center;">
+        <h1 style="color:#FF8C00; margin-bottom:10px;">SR GAME SHOP</h1>
+        <p style="color:#666; margin-bottom:40px; font-size: 0.8rem;">Developed by Thu Rain Tun</p>
+        <input type="text" id="log-phone" class="input-field" placeholder="Phone Number">
+        <input type="password" id="log-pass" class="input-field" placeholder="Password">
+        <button class="btn-orange" id="btn-login" onclick="handleLogin()">Login</button>
+        <p style="margin-top:20px; color:#888; font-size:0.9rem;" onclick="showPage('page-register')">No account? <span style="color:#FF8C00;">Register here</span></p>
     </div>
 
-    <!-- Auth View -->
-    <div id="auth-view" class="min-h-screen flex items-center justify-center p-6 hidden">
-        <div class="w-full max-w-sm card p-8 space-y-8">
-            <div class="text-center">
-                <h1 class="text-5xl font-black orange-text italic">SR</h1>
-                <p class="text-gray-500 mt-4 font-bold text-xs tracking-widest uppercase" id="auth-subtitle">Login to Account</p>
-            </div>
+    <div id="page-register" class="hidden" style="padding:40px; text-align:center;">
+        <h2 style="color:#FF8C00; margin-bottom:20px;">Create Account</h2>
+        <input type="text" id="reg-name" class="input-field" placeholder="Full Name">
+        <input type="text" id="reg-phone" class="input-field" placeholder="Phone Number">
+        <input type="password" id="reg-pass" class="input-field" placeholder="Password (6-12 chars)">
+        <input type="password" id="reg-pass-confirm" class="input-field" placeholder="Confirm Password">
+        <button class="btn-orange" id="btn-register" onclick="handleRegister()">Register</button>
+        <p style="margin-top:20px; color:#888;" onclick="showPage('page-login')">Back to Login</p>
+    </div>
 
-            <div id="login-container" class="space-y-4">
-                <input type="tel" id="login-phone" class="input-style w-full p-4 rounded-xl" placeholder="ဖုန်းနံပါတ်">
-                <input type="password" id="login-pass" class="input-style w-full p-4 rounded-xl" placeholder="Password">
-                <button onclick="handleLogin()" class="orange-bg text-black w-full py-4 rounded-xl font-bold text-lg">ဝင်မည်</button>
-                <p class="text-center text-sm text-gray-500">အကောင့်မရှိသေးပါက <button onclick="toggleAuth(false)" class="orange-text font-bold">ဒီမှာဖွင့်ပါ</button></p>
-            </div>
+    <div id="page-home" class="hidden">
+        <div class="header">
+            <span style="font-weight:bold; color:#FF8C00;">SR SHOP</span>
+            <span id="display-name" style="font-size:0.8rem; background:#222; padding:4px 10px; border-radius:20px;">User</span>
+        </div>
+        <div class="balance-card">
+            <p style="font-size:0.9rem; opacity:0.8;">My Wallet Balance</p>
+            <h1 id="display-balance" style="font-size: 2.2rem; margin: 5px 0;">0 Ks</h1>
+            <button onclick="showPage('page-deposit')" style="background:#000; color:#FF8C00; border:none; padding:8px 15px; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:5px;">+ Add Money</button>
+        </div>
+        <div class="menu-grid">
+            <div class="menu-item" onclick="openStore('mlbb')">Mobile Legends</div>
+            <div class="menu-item" onclick="openStore('pubg')">PUBG Mobile</div>
+            <div class="menu-item" onclick="openStore('ff')">Free Fire</div>
+            <div class="menu-item" onclick="loadOrders()">📜 My Orders</div>
+            <div class="menu-item" onclick="showPage('page-msg')">✉️ Messages</div>
+            <div class="menu-item" onclick="showPage('page-ai')">✨ Gemini AI</div>
+        </div>
+    </div>
 
-            <div id="register-container" class="space-y-4 hidden">
-                <input type="text" id="reg-name" class="input-style w-full p-4 rounded-xl" placeholder="နာမည်">
-                <input type="tel" id="reg-phone" class="input-style w-full p-4 rounded-xl" placeholder="ဖုန်းနံပါတ်">
-                <input type="password" id="reg-pass" class="input-style w-full p-4 rounded-xl" placeholder="Password (6 လုံးအထက်)">
-                <input type="password" id="reg-confirm" class="input-style w-full p-4 rounded-xl" placeholder="Confirm Password">
-                <button onclick="handleRegister()" class="orange-bg text-black w-full py-4 rounded-xl font-bold text-lg text-black">Register လုပ်မည်</button>
-                <p class="text-center text-sm text-gray-500">အကောင့်ရှိပြီးသားလား? <button onclick="toggleAuth(true)" class="orange-text font-bold">ဝင်ရန်</button></p>
+    <div id="page-orders" class="hidden">
+        <div class="header">
+            <button onclick="showPage('page-home')" style="background:none; border:none; color:#FF8C00; cursor:pointer;">← Back</button>
+            <span>My Order History</span>
+        </div>
+        <div id="order-list-container" style="padding: 5px 0;">
+            <p style="text-align:center; color:#555; margin-top:20px;">Loading orders...</p>
+        </div>
+    </div>
+
+    <div id="page-msg" class="hidden">
+        <div class="header">
+            <button onclick="showPage('page-home')" style="background:none; border:none; color:#FF8C00; cursor:pointer;">← Back</button>
+            <span>Inbox</span>
+        </div>
+        <div id="msg-list-container" style="padding:15px;">
+            <div class="history-card">
+                <p style="color:#FF8C00; font-weight:bold;">Welcome to SR Game Shop!</p>
+                <p style="font-size:0.85rem; color:#aaa; margin-top:5px;">Developed by Thu Rain Tun. စိတ်တိုင်းကျ ဝယ်ယူအားပေးနိုင်ပါသည်။</p>
             </div>
         </div>
     </div>
 
-    <!-- App View -->
-    <div id="app-view" class="hidden min-h-screen flex">
-        
-        <!-- PC SIDEBAR -->
-        <aside class="pc-sidebar fixed left-0 top-0 bottom-0 w-64 border-r border-white/5 bg-[#080808] flex-col p-6 space-y-8 z-40">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 orange-bg rounded-xl flex items-center justify-center text-black font-black italic">SR</div>
-                <h1 class="text-lg font-black italic">GAME SHOP</h1>
+    <div id="page-deposit" class="hidden">
+        <div class="header">
+            <button onclick="showPage('page-home')" style="background:none; border:none; color:#FF8C00; font-size:1rem; cursor:pointer;">← Back</button>
+            <span>Money Top Up</span>
+        </div>
+        <div class="payment-card">
+            <p style="font-size: 0.9rem; color: #888;">နံပါတ်ကိုနှိပ်၍ Copy ကူးယူပါ</p>
+            <div style="margin: 15px 0; padding: 15px; background: #000; border-radius: 8px; cursor: pointer;" onclick="copyNum('09451055329')">
+                <p style="color: #FF8C00; font-size: 0.8rem; margin-bottom: 5px;">Kpay / Wave Money</p>
+                <h2 style="letter-spacing: 1px;">09451055329 <span class="copy-tag">COPY</span></h2>
+                <p style="margin-top: 5px; font-weight: bold;">Name: Tin Zar Latt</p>
             </div>
+            <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
+            <p style="font-size: 0.8rem; color: #FF8C00; margin-bottom: 10px; font-weight: bold;">⚠️ ငွေလွှဲပြေစာ Screenshot ကို Telegram Admin ထံသို့ ပေးပို့ပေးပါရန်</p>
+            <button class="btn-orange" style="background: #0088cc; color: white;" onclick="window.location.href='https://t.me/Tun_1224'">Telegram Admin ထံသို့ ပို့မည်</button>
+        </div>
+    </div>
+
+    <div id="page-store" class="hidden">
+        <div class="header">
+            <button onclick="showPage('page-home')" style="background:none; border:none; color:#FF8C00; cursor:pointer;">← Back</button>
+            <span id="store-title">Store</span>
+        </div>
+        <div id="id-input-section" style="padding:15px; background:#111; margin-bottom:10px;">
+            <div id="mlbb-inputs" class="hidden">
+                <input type="text" id="ml-id" class="input-field" placeholder="MLBB User ID (e.g. 12345678)">
+                <input type="text" id="ml-server" class="input-field" placeholder="Server ID (e.g. 1234)">
+            </div>
+            <div id="pubg-inputs" class="hidden">
+                <input type="text" id="pubg-id" class="input-field" placeholder="PUBG Character ID">
+            </div>
+            <div id="ff-inputs" class="hidden">
+                <input type="text" id="ff-id" class="input-field" placeholder="Free Fire UID">
+            </div>
+        </div>
+        <div id="price-list"></div>
+    </div>
+
+    <div id="page-ai" class="hidden">
+        <div class="header">
+            <button onclick="showPage('page-home')" style="background:none; border:none; color:#FF8C00; cursor:pointer;">← Back</button>
+            <span>✨ Gemini AI Assistant</span>
+        </div>
+        <div class="chat-container" id="chat-box">
+            <div class="chat-msg ai-msg">မင်္ဂလာပါ။ SR Game Shop မှ ကြိုဆိုပါတယ်။ ကျွန်တော်ကတော့ Thu Rain Tun ဖန်တီးထားတဲ့ Gemini AI ဖြစ်ပါတယ်။ ဘာများ ကူညီပေးရမလဲခင်ဗျာ။</div>
+        </div>
+        <div style="padding:15px; display:flex; gap:10px; background: #111;">
+            <input type="text" id="ai-input" class="input-field" placeholder="မေးမြန်းလိုသည်များကို ရေးပါ..." style="margin:0;">
+            <button class="btn-orange" style="width:80px; margin:0;" onclick="askAI()">Send</button>
+        </div>
+    </div>
+
+    <div id="page-profile" class="hidden">
+        <div class="header"><span>Account Settings</span></div>
+        <div style="padding:20px; text-align:center;">
+            <div style="width:90px; height:90px; background:#FF8C00; border-radius:50%; margin:20px auto; display:flex; align-items:center; justify-content:center; font-size:2.5rem; color:#000; font-weight:bold; border: 4px solid #222;" id="avatar">U</div>
+            <h2 id="prof-name">Name</h2>
+            <p id="prof-phone" style="color:#888;">09xxxxxxx</p>
+            <p id="prof-id">User ID: </p>
+            <div style="margin-top:30px; background:#111; padding:20px; border-radius:15px; display:flex; justify-content:space-between; border: 1px solid #333;">
+                <span>Wallet Balance:</span>
+                <span id="prof-balance" style="color:#FF8C00; font-weight:bold;">0 Ks</span>
+            </div>
+            <button class="btn-orange" style="background:#ff4444; margin-top:40px; color:#fff;" onclick="location.reload()">Logout</button>
+        </div>
+    </div>
+
+    <div id="nav-bar" class="bottom-nav hidden">
+        <div class="nav-link" onclick="showPage('page-home')">Home</div>
+        <div class="nav-link" onclick="showPage('page-ai')">AI Help</div>
+        <div class="nav-link" onclick="showPage('page-profile')">Profile</div>
+        <div class="nav-link" onclick="window.location.href='https://t.me/Tun_1224'">Admin</div>
+    </div>
+
+</div>
+
+<script>
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyALqp9IxejZ2b4d3vJMGuwV0RWPxpQRsaU",
+      authDomain: "diamondshop-b56ab.firebaseapp.com",
+      databaseURL: "https://diamondshop-b56ab-default-rtdb.firebaseio.com",
+      projectId: "diamondshop-b56ab",
+      storageBucket: "diamondshop-b56ab.firebasestorage.app",
+      messagingSenderId: "504521967191",
+      appId: "1:504521967191:web:215ead398cab81444f8512",
+      measurementId: "G-9RGLMY2F05"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+
+    let currentUser = null;
+
+    const gameData = {
+        mlbb: [{ cat: "Direct Diamonds", items: [{ d: "11 Gems", p: 1000 }, { d: "22 Gems", p: 2000 }, { d: "33 Gems", p: 3000 }, { d: "44 Gems", p: 4000 }, { d: "56 Gems", p: 4700 }, { d: "86 Gems", p: 6000 }, { d: "172 Gems", p: 12500 }, { d: "257 Gems", p: 18000 }, { d: "343 Gems", p: 24000 }, { d: "429 Gems", p: 29000 }, { d: "514 Gems", p: 34500 }]}, { cat: "Passes", items: [{ d: "Weekly Pass", p: 7500 }, { d: "Twilight Pass", p: 39000 }]}, { cat: "Promo Diamonds", items: [{ d: "50+50 Gems", p: 4500 }, { d: "150+150 Gems", p: 12500 }, { d: "250+250 Gems", p: 19000 }, { d: "500+500 Gems", p: 36500 }]}],
+        pubg: [{ cat: "PUBG Global UC", items: [{ d: "UC 60", p: 4500 }, { d: "UC 325", p: 22000 }, { d: "UC 385", p: 28000 }, { d: "UC 660", p: 42000 }, { d: "UC 720", p: 46000 }, { d: "UC 985", p: 70000 }, { d: "UC 1045", p: 74000 }, { d: "UC 1800", p: 120000 }, { d: "UC 2125", p: 140000 }, { d: "UC 2460", p: 183000 }, { d: "UC 2845", p: 190000 }, { d: "UC 3850", p: 250000 }, { d: "UC 4510", p: 290000 }, { d: "UC 5650", p: 365000 }]}],
+        ff: [{ cat: "Diamonds", items: [{ d: "100 Diamonds", p: 5000 }, { d: "210 Diamonds", p: 10000 }, { d: "517 Diamonds", p: 24500 }, { d: "1080 Diamonds", p: 50000 }, { d: "2200 Diamonds", p: 100000 }]}, { cat: "Membership", items: [{ d: "Weekly Lite (200💎)", p: 6000 }, { d: "Weekly (450💎)", p: 13000 }, { d: "Monthly (2600💎)", p: 55000 }]}, { cat: "Level Up Pass", items: [{ d: "Level 6 (120💎)", p: 2000 }, { d: "Level 10 (200💎)", p: 4000 }, { d: "Level 15 (200💎)", p: 4000 }, { d: "Level 20 (200💎)", p: 4000 }, { d: "Level 25 (200💎)", p: 4000 }, { d: "Level 30 (350💎)", p: 6500 }, { d: "Level All (1270💎)", p: 23000 }]}]
+    };
+
+    function showPage(id) {
+        document.querySelectorAll('.app-container > div').forEach(d => { if(d.id !== 'nav-bar') d.classList.add('hidden'); });
+        document.getElementById(id).classList.remove('hidden');
+        const nav = document.getElementById('nav-bar');
+        (id === 'page-login' || id === 'page-register') ? nav.classList.add('hidden') : nav.classList.remove('hidden');
+    }
+
+    function handleLogin() {
+        const phone = document.getElementById('log-phone').value;
+        const pass = document.getElementById('log-pass').value;
+        const btn = document.getElementById('btn-login');
+        if(!phone || !pass) return alert("ဖုန်းနံပါတ်နှင့် Password ဖြည့်ပါ။");
+        btn.disabled = true; btn.innerText = "Checking...";
+        db.collection("users").doc(phone).get().then((doc) => {
+            if (doc.exists && doc.data().pass === pass) {
+                currentUser = doc.data();
+                updateUI();
+                showPage('page-home');
+            } else { alert("မှားယွင်းနေပါသည်။"); }
+            btn.disabled = false; btn.innerText = "Login";
+        }).catch(err => {
+            alert("Error: " + err.message);
+            btn.disabled = false; btn.innerText = "Login";
+        });
+    }
+
+    function handleRegister() {
+        const name = document.getElementById('reg-name').value;
+        const phone = document.getElementById('reg-phone').value;
+        const pass = document.getElementById('reg-pass').value;
+        const pass2 = document.getElementById('reg-pass-confirm').value;
+        if(!name || !phone || !pass) return alert("ဖြည့်စွက်ရန် လိုအပ်ပါသည်။");
+        if(pass !== pass2) return alert("Password မတူညီပါ။");
+        db.collection("users").doc(phone).set({
+            name: name, phone: phone, pass: pass, balance: 0, id: Math.floor(Math.random() * 90000) + 10000
+        }).then(() => {
+            alert("အောင်မြင်ပါသည်။ Login ဝင်နိုင်ပါပြီ။");
+            showPage('page-login');
+        });
+    }
+
+    function updateUI() {
+        if (!currentUser) return;
+        document.getElementById('display-name').innerText = currentUser.name;
+        document.getElementById('display-balance').innerText = currentUser.balance.toLocaleString() + " Ks";
+        document.getElementById('prof-name').innerText = currentUser.name;
+        document.getElementById('prof-phone').innerText = currentUser.phone;
+        document.getElementById('prof-id').innerText = "User ID: " + (currentUser.id || "N/A");
+        document.getElementById('prof-balance').innerText = currentUser.balance.toLocaleString() + " Ks";
+        document.getElementById('avatar').innerText = currentUser.name[0].toUpperCase();
+    }
+
+    // Fix: Removed .orderBy() to avoid Firestore Index errors. Using client-side sort instead.
+    function loadOrders() {
+        showPage('page-orders');
+        const container = document.getElementById('order-list-container');
+        container.innerHTML = '<p style="text-align:center; margin-top:20px;">Loading orders...</p>';
+
+        db.collection("orders").where("userId", "==", currentUser.phone).get().then((querySnapshot) => {
+            container.innerHTML = "";
+            if (querySnapshot.empty) {
+                container.innerHTML = '<p style="text-align:center; color:#555; margin-top:30px;">Order မရှိသေးပါ။</p>';
+                return;
+            }
             
-            <nav class="flex-1 space-y-2">
-                <button onclick="switchTab('home')" class="nav-item active w-full p-4 flex items-center gap-4 transition text-sm font-bold">
-                    <i class="fas fa-home w-5"></i> Home
-                </button>
-                <button onclick="switchTab('wallet')" class="nav-item w-full p-4 flex items-center gap-4 transition text-sm font-bold">
-                    <i class="fas fa-wallet w-5"></i> Wallet
-                </button>
-                <button onclick="switchTab('orders')" class="nav-item w-full p-4 flex items-center gap-4 transition text-sm font-bold">
-                    <i class="fas fa-receipt w-5"></i> My Orders
-                </button>
-                <button onclick="switchTab('profile')" class="nav-item w-full p-4 flex items-center gap-4 transition text-sm font-bold">
-                    <i class="fas fa-user w-5"></i> Profile
-                </button>
-            </nav>
+            let orders = [];
+            querySnapshot.forEach(doc => orders.push(doc.data()));
+            
+            // Sort by time (newest first)
+            orders.sort((a, b) => (b.time ? b.time.seconds : 0) - (a.time ? a.time.seconds : 0));
 
-            <div class="card p-4 bg-orange-500/5 border-orange-500/20">
-                <p class="text-[10px] text-gray-500 font-bold uppercase">Balance</p>
-                <p id="pc-balance" class="text-xl font-black orange-text">0 Ks</p>
-            </div>
-        </aside>
-
-        <!-- MAIN WRAPPER -->
-        <div class="main-wrapper flex-1">
-            <header class="p-4 lg:p-6 flex justify-between items-center bg-black/60 backdrop-blur-xl sticky top-0 z-30 border-b border-white/5 lg:hidden">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 orange-bg rounded-xl flex items-center justify-center text-black font-black italic">SR</div>
-                    <h2 id="mobile-user-name" class="font-bold text-sm">User</h2>
-                </div>
-                <div class="text-right">
-                    <p id="mobile-balance" class="orange-text font-black text-sm">0 Ks</p>
-                    <p class="text-[8px] text-gray-500 uppercase font-bold">Balance</p>
-                </div>
-            </header>
-
-            <main class="max-w-5xl mx-auto p-4 lg:p-10">
-                
-                <!-- Home Tab -->
-                <div id="tab-home" class="tab-content space-y-8">
-                    <div class="card p-8 lg:p-12 relative overflow-hidden h-48 lg:h-64 flex flex-col justify-center">
-                        <div class="absolute inset-0 bg-gradient-to-r from-orange-600/30 to-transparent z-10"></div>
-                        <h1 class="relative z-20 text-3xl lg:text-5xl font-black italic leading-tight uppercase">Premium <br><span class="orange-text">Top Up Center</span></h1>
-                    </div>
-
-                    <section>
-                        <h3 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-6">Featured Games</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div onclick="openGame('mlbb')" class="card p-6 flex flex-col items-center text-center gap-4 hover:border-orange-500/50 transition cursor-pointer">
-                                <i class="fas fa-shield-halved text-4xl text-blue-500"></i>
-                                <span class="font-bold tracking-tight">MOBILE LEGENDS</span>
-                            </div>
-                            <div onclick="openGame('pubg')" class="card p-6 flex flex-col items-center text-center gap-4 hover:border-orange-500/50 transition cursor-pointer">
-                                <i class="fas fa-crosshairs text-4xl text-yellow-500"></i>
-                                <span class="font-bold tracking-tight">PUBG MOBILE</span>
-                            </div>
-                            <div onclick="openGame('ff')" class="card p-6 flex flex-col items-center text-center gap-4 hover:border-orange-500/50 transition cursor-pointer">
-                                <i class="fas fa-bolt text-4xl text-red-500"></i>
-                                <span class="font-bold tracking-tight">FREE FIRE</span>
-                            </div>
+            orders.forEach((data) => {
+                const statusClass = data.status === 'pending' ? 'status-pending' : 'status-success';
+                container.innerHTML += `
+                    <div class="history-card">
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="font-weight:bold; color:#FF8C00;">${data.game.toUpperCase()}</span>
+                            <span class="${statusClass}">${data.status.toUpperCase()}</span>
                         </div>
-                    </section>
-
-                    <div class="card p-6 border-orange-500/30 bg-orange-500/5 flex items-center justify-between" onclick="switchTab('ai')">
-                        <div class="flex items-center gap-5">
-                            <div class="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-black text-xl shadow-lg shadow-orange-500/20">
-                                <i class="fas fa-robot"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold">SR AI Chatbot</h4>
-                                <p class="text-xs text-gray-400">စက္ကန့်ပိုင်းအတွင်း အလိုအလျောက် ဖြေကြားပေးမည်</p>
-                            </div>
-                        </div>
-                        <i class="fas fa-chevron-right text-gray-700"></i>
-                    </div>
-                </div>
-
-                <!-- Shop Tab -->
-                <div id="tab-shop" class="tab-content hidden space-y-6">
-                    <button onclick="switchTab('home')" class="text-gray-500 text-sm flex items-center gap-2 hover:text-white"><i class="fas fa-arrow-left"></i> နောက်သို့</button>
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div class="card p-6 space-y-6 h-fit sticky top-24">
-                            <h2 id="game-title" class="text-2xl font-black orange-text">Shop</h2>
-                            <div id="id-fields" class="space-y-4"></div>
-                        </div>
-                        <div id="price-list" class="space-y-2"></div>
-                    </div>
-                </div>
-
-                <!-- Wallet Tab -->
-                <div id="tab-wallet" class="tab-content hidden max-w-lg mx-auto space-y-8">
-                    <h2 class="text-3xl font-black orange-text italic">WALLET</h2>
-                    <div class="card p-6 space-y-6">
-                        <div class="bg-orange-500/10 border border-orange-500/20 p-6 rounded-2xl text-center">
-                            <p class="text-xs text-orange-500 font-bold mb-2 uppercase">Payment Method</p>
-                            <p class="text-2xl font-black tracking-widest mb-1">09451055329</p>
-                            <p class="text-sm font-bold">Daw Tin Zar Latt (KPay/Wave)</p>
-                        </div>
-                        <div class="space-y-4">
-                            <input type="number" id="dep-amt" class="input-style w-full p-4 rounded-xl" placeholder="ပမာဏ (Ks)">
-                            <div class="space-y-1">
-                                <label class="text-[10px] text-gray-500 ml-2 font-bold uppercase">Screenshot တင်ပါ</label>
-                                <input type="file" id="dep-file" class="card w-full p-4 text-xs">
-                            </div>
-                            <button onclick="handleDep()" class="orange-bg text-black w-full py-4 rounded-xl font-bold text-lg">ငွေဖြည့်မည်</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Orders Tab -->
-                <div id="tab-orders" class="tab-content hidden space-y-6">
-                    <h2 class="text-3xl font-black orange-text italic">ORDER HISTORY</h2>
-                    <div id="orders-list" class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div class="col-span-full text-center py-24 text-gray-700 italic">မှတ်တမ်းမရှိသေးပါ</div>
-                    </div>
-                </div>
-
-                <!-- AI Tab -->
-                <div id="tab-ai" class="tab-content hidden h-[70vh] flex flex-col">
-                    <div class="flex-1 card overflow-y-auto p-6 space-y-4" id="chat-box">
-                        <div class="bg-white/5 p-4 rounded-2xl rounded-tl-none max-w-[80%] text-sm">
-                            မင်္ဂလာပါ! ကျွန်တော်က SR Game Shop AI ပါ။ ဘာမေးချင်ပါသလဲ?
-                        </div>
-                    </div>
-                    <div class="mt-4 flex gap-3">
-                        <input type="text" id="ai-input" class="flex-1 input-style p-4 rounded-xl" placeholder="Ask AI...">
-                        <button onclick="askAI()" class="orange-bg text-black w-14 h-14 rounded-xl flex items-center justify-center text-xl">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Profile Tab -->
-                <div id="tab-profile" class="tab-content hidden max-w-md mx-auto space-y-8">
-                    <div class="text-center">
-                        <div class="w-24 h-24 orange-bg rounded-3xl mx-auto flex items-center justify-center text-black text-4xl font-black italic mb-4">SR</div>
-                        <h2 id="p-name" class="text-2xl font-black uppercase">Name</h2>
-                        <p id="p-phone" class="text-gray-500">Phone</p>
-                    </div>
-                    <div class="space-y-3">
-                        <a href="https://t.me/Tun_1224" target="_blank" class="card p-5 flex justify-between items-center hover:bg-white/5 transition">
-                            <span class="font-bold"><i class="fab fa-telegram mr-3 text-blue-500"></i> Contact Admin</span>
-                            <i class="fas fa-chevron-right text-gray-800"></i>
-                        </a>
-                        <div class="card p-5 flex justify-between items-center">
-                            <span class="font-bold"><i class="fas fa-code mr-3 text-orange-500"></i> Developer</span>
-                            <span class="text-xs text-gray-500">Thu Rain Tun</span>
-                        </div>
-                        <button onclick="logout()" class="w-full py-5 text-red-500 font-bold hover:bg-red-500/5 rounded-xl transition">Logout အကောင့်ထွက်ရန်</button>
-                    </div>
-                </div>
-
-            </main>
-        </div>
-
-        <!-- MOBILE NAV -->
-        <nav class="mobile-nav fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-xl border-t border-white/5 p-4 flex justify-around items-center z-50">
-            <button onclick="switchTab('home')" class="nav-item active flex flex-col items-center gap-1 p-2">
-                <i class="fas fa-home text-lg"></i>
-                <span class="text-[8px] font-black uppercase">Home</span>
-            </button>
-            <button onclick="switchTab('wallet')" class="nav-item flex flex-col items-center gap-1 p-2">
-                <i class="fas fa-wallet text-lg"></i>
-                <span class="text-[8px] font-black uppercase">Wallet</span>
-            </button>
-            <button onclick="switchTab('orders')" class="nav-item flex flex-col items-center gap-1 p-2">
-                <i class="fas fa-history text-lg"></i>
-                <span class="text-[8px] font-black uppercase">Orders</span>
-            </button>
-            <button onclick="switchTab('profile')" class="nav-item flex flex-col items-center gap-1 p-2">
-                <i class="fas fa-user text-lg"></i>
-                <span class="text-[8px] font-black uppercase">Profile</span>
-            </button>
-        </nav>
-    </div>
-
-    <!-- Confirm Modal -->
-    <div id="buy-modal" class="fixed inset-0 z-[200] bg-black/95 hidden flex items-center justify-center p-6">
-        <div class="card w-full max-w-md p-8 space-y-6">
-            <h3 class="text-2xl font-black orange-text italic">အတည်ပြုပါ</h3>
-            <div id="modal-body" class="space-y-4 py-4 border-y border-white/5 text-sm"></div>
-            <div class="flex gap-3">
-                <button onclick="closeModal()" class="flex-1 py-4 bg-white/5 rounded-xl font-bold">CANCEL</button>
-                <button id="final-btn" class="flex-[2] py-4 orange-bg text-black rounded-xl font-bold uppercase tracking-widest">BUY NOW</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="toast" class="fixed top-8 left-1/2 -translate-x-1/2 px-8 py-4 rounded-full bg-orange-500 text-black font-black text-sm z-[300] hidden shadow-2xl"></div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, query, onSnapshot, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'sr-shop-multi';
-
-        let user = null, userData = null, curGame = null, curItem = null;
-
-        // UI HELPERS
-        window.switchTab = (t) => {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-            document.getElementById(`tab-${t}`).classList.remove('hidden');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            // Sync Mobile & PC navs
-            document.querySelectorAll(`.nav-item`).forEach(btn => {
-                if(btn.getAttribute('onclick').includes(t)) btn.classList.add('active');
+                        <p style="font-size:0.85rem; margin:5px 0;">Item: ${data.item}</p>
+                        <p style="font-size:0.75rem; color:#888;">ID: ${data.gameId}</p>
+                        <p style="font-size:0.85rem; text-align:right;">${data.price.toLocaleString()} Ks</p>
+                    </div>`;
             });
-            window.scrollTo(0,0);
-        };
+        }).catch(err => {
+            container.innerHTML = `<p style="text-align:center; color:red; padding:20px;">Error loading orders: ${err.message}</p>`;
+        });
+    }
 
-        window.toggleAuth = (isLogin) => {
-            document.getElementById('login-container').classList.toggle('hidden', !isLogin);
-            document.getElementById('register-container').classList.toggle('hidden', isLogin);
-            document.getElementById('auth-subtitle').innerText = isLogin ? 'Login to Account' : 'Register New Account';
-        };
+    function openStore(game) {
+        const list = document.getElementById('price-list');
+        document.getElementById('store-title').innerText = game.toUpperCase() + " TOP UP";
+        list.innerHTML = '';
+        document.querySelectorAll('#id-input-section > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById(game + '-inputs').classList.remove('hidden');
+        showPage('page-store');
+        gameData[game].forEach(group => {
+            list.innerHTML += `<div class="category-label">${group.cat}</div>`;
+            group.items.forEach(item => {
+                list.innerHTML += `
+                    <div class="price-row">
+                        <div>
+                            <p style="font-weight:bold;">${item.d}</p>
+                            <p style="color:#FF8C00; font-size:0.9rem;">${item.p.toLocaleString()} Ks</p>
+                        </div>
+                        <button class="buy-btn" onclick="buyItem('${game}', '${item.d}', ${item.p})">Buy Now</button>
+                    </div>`;
+            });
+        });
+    }
 
-        window.showToast = (m) => {
-            const t = document.getElementById('toast'); t.innerText = m; t.classList.remove('hidden');
-            setTimeout(() => t.classList.add('hidden'), 3000);
-        };
+    function buyItem(game, item, price) {
+        if(!currentUser) return alert("Login အရင်လုပ်ပါ");
+        if(currentUser.balance < price) return alert("လက်ကျန်ငွေမလုံလောက်ပါ။");
+        let gameId = "";
+        if(game === 'mlbb') {
+            const mid = document.getElementById('ml-id').value;
+            const msid = document.getElementById('ml-server').value;
+            if(!mid || !msid) return alert("ID/Server ဖြည့်ပါ။");
+            gameId = mid + "(" + msid + ")";
+        } else if(game === 'pubg') {
+            gameId = document.getElementById('pubg-id').value;
+            if(!gameId) return alert("ID ဖြည့်ပါ။");
+        } else {
+            gameId = document.getElementById('ff-id').value;
+            if(!gameId) return alert("ID ဖြည့်ပါ။");
+        }
+        if(confirm(`${item} ဝယ်ယူရန် သေချာပါသလား?`)) {
+            const newBalance = currentUser.balance - price;
+            db.collection("users").doc(currentUser.phone).update({ balance: newBalance }).then(() => {
+                db.collection("orders").add({
+                    userId: currentUser.phone, userName: currentUser.name, game: game, gameId: gameId,
+                    item: item, price: price, status: "pending", time: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                currentUser.balance = newBalance;
+                updateUI();
+                alert("Order တင်ပြီးပါပြီ။ ✅");
+            });
+        }
+    }
 
-        // FIREBASE AUTH
-        onAuthStateChanged(auth, async (u) => {
-            if (u) {
-                const s = await getDoc(doc(db, 'artifacts', appId, 'users', u.uid, 'profile', 'info'));
-                if(s.exists()) {
-                    user = u; userData = s.data();
-                    loadData(u.uid);
-                    document.getElementById('loa
+    function copyNum(num) { navigator.clipboard.writeText(num); alert("Copied: " + num); }
+
+    // Improved AI Knowledge
+    function askAI() {
+        const input = document.getElementById('ai-input');
+        const box = document.getElementById('chat-box');
+        const q = input.value.trim().toLowerCase();
+        if(!q) return;
+        box.innerHTML += `<div class="chat-msg user-msg">${input.value}</div>`;
+        input.value = "";
+        box.scrollTop = box.scrollHeight;
+        
+        setTimeout(() => {
+            let reply = "တောင်းပန်ပါတယ်၊ အဲဒါကိုတော့ ကျွန်တော် မသိသေးပါဘူး။ Admin ကို တိုက်ရိုက်မေးမြန်းနိုင်ပါတယ်။";
+            
+            if(q.includes("hello") || q.includes("hi") || q.includes("မင်္ဂလာပါ")) {
+                reply = "မင်္ဂလာပါခင်ဗျာ။ SR Game Shop မှ ကြိုဆိုပါတယ်။ ဘာများ ကူညီပေးရမလဲ။";
+            } else if(q.includes("ပိုင်ရှင်") || q.includes("owner") || q.includes("developer")) {
+                reply = "SR Game Shop ရဲ့ ပိုင်ရှင်နဲ့ Developer ကတော့ Thu Rain Tun ဖြစ်ပါတယ်။";
+            } else if(q.includes("ပိုက်ဆံ") || q.includes("ငွေဖြည့်") || q.includes("deposit") || q.includes("kpay")) {
+                reply = "ငွေဖြည့်သွင်းရန် Home Page ရှိ '+ Add Money' ကို နှိပ်ပါ။ နံပါတ်ကို Copy ယူပြီး ငွေလွှဲကာ ပြေစာကို Admin ထံ ပို့ပေးရမှာ ဖြစ်ပါတယ်။";
+            } else if(q.includes("order") || q.includes("မှာထားတာ") || q.includes("history")) {
+                reply = "မှာထားတဲ့ Order တွေကို 'My Orders' section မှာ အသေးစိတ် ကြည့်ရှုနိုင်ပါတယ်။";
+            } else if(q.includes("စျေး") || q.includes("price") || q.includes("ဘယ်လောက်လဲ")) {
+                reply = "ဂိမ်းအလိုက် စျေးနှုန်းတွေကို Home Page ရှိ ဂိမ်းပုံလေးတွေကို နှိပ်ပြီး ကြည့်ရှုနိုင်ပါတယ်။";
+            } else if(q.includes("admin")) {
+                reply = "Admin ကို ဆက်သွယ်ရန် Navigation Bar ရှိ Admin Button သို့မဟုတ် Telegram Link ကို အသုံးပြုနိုင်ပါတယ်။";
+            }
+
+            box.innerHTML += `<div class="chat-msg ai-msg">${reply}</div>`;
+            box.scrollTop = box.scrollHeight;
+        }, 800);
+    }
+</script>
+
+</body>
+</html>
+       
