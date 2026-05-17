@@ -3,487 +3,864 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SR Game Shop - Owner: Thu Rain Tun</title>
+    <title>SR Game Shop - Thu Rain Tun</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        /* UI Theme: Gaming Black & Orange (100% Intact) */
-        * { box-sizing: border-box; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
-        body { background-color: #050505; color: #ffffff; overflow-x: hidden; }
-        .app-container { max-width: 450px; margin: auto; min-height: 100vh; position: relative; padding-bottom: 90px; background: #000; border: 1px solid #1a1a1a; }
-
-        .header { background: #111; padding: 18px; border-bottom: 2px solid #FF8C00; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .btn-orange { width: 100%; padding: 15px; background: #FF8C00; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; color: #000; transition: 0.2s; font-size: 1rem; }
-        .btn-orange:active { transform: scale(0.98); opacity: 0.9; }
-        .input-field { width: 100%; padding: 15px; background: #121212; border: 1px solid #333; color: #fff; border-radius: 10px; margin: 10px 0; font-size: 0.95rem; }
-        .input-field:focus { border-color: #FF8C00; outline: none; }
-
-        .balance-card { background: linear-gradient(145deg, #FF8C00, #b36200); margin: 15px; padding: 30px; border-radius: 20px; color: #000; position: relative; overflow: hidden; }
-        .balance-card::after { content: ''; position: absolute; top: -50%; right: -20%; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%; }
+        :root { --primary: #FF8C00; --bg: #000; --card: #111; --border: #222; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg); color: #fff; line-height: 1.6; }
         
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; }
-        .menu-item { background: #111; padding: 25px 15px; border-radius: 15px; border: 1px solid #222; text-align: center; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .menu-item:active { background: #1a1a1a; border-color: #FF8C00; }
-
-        .price-row { background: #0f0f0f; margin: 10px 15px; padding: 18px; border-radius: 12px; border: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #FF8C00; }
-        .buy-btn { background: #FF8C00; color: #000; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .category-label { padding: 12px 15px; color: #FF8C00; font-weight: bold; font-size: 0.85rem; background: #080808; letter-spacing: 1px; text-transform: uppercase; }
-
-        .chat-area { height: 400px; overflow-y: auto; padding: 15px; background: #080808; border-radius: 15px; margin: 15px; border: 1px solid #222; display: flex; flex-direction: column; }
-        .msg { margin-bottom: 15px; padding: 12px 16px; border-radius: 12px; max-width: 80%; line-height: 1.5; font-size: 0.9rem; }
-        .msg-user { background: #FF8C00; color: #000; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .msg-ai { background: #1a1a1a; color: #eee; align-self: flex-start; border-bottom-left-radius: 2px; border-left: 4px solid #FF8C00; }
-
-        /* Profile Style */
-        .profile-info-box { background: #111; padding: 15px; border-radius: 12px; border: 1px solid #222; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .info-label { color: #555; font-size: 0.85rem; }
-        .info-value { color: #fff; font-weight: bold; }
-
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 450px; background: #0f0f0f; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; z-index: 1000; }
-        .nav-tab { color: #666; cursor: pointer; text-align: center; flex: 1; font-size: 0.75rem; transition: 0.3s; }
-        .nav-tab.active { color: #FF8C00; font-weight: bold; }
-
+        .app-shell { max-width: 450px; margin: auto; min-height: 100vh; position: relative; border: 1px solid var(--border); background: #000; }
+        
+        /* Utility */
         .hidden { display: none !important; }
-        .status-pending { color: #FF8C00; font-weight: bold; }
-        .status-completed { color: #00ff00; font-weight: bold; }
+        .orange-text { color: var(--primary); font-weight: bold; }
+        .header { background: #0a0a0a; padding: 18px; border-bottom: 2px solid var(--primary); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        
+        /* Inputs & Buttons */
+        .input-group { padding: 20px; }
+        .input-field { width: 100%; padding: 15px; background: #121212; border: 1px solid #333; color: #fff; border-radius: 12px; margin-bottom: 12px; outline: none; }
+        .btn-main { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 12px; font-weight: bold; color: #000; cursor: pointer; font-size: 1rem; }
+
+        /* Home Page Grid */
+        .menu-grid { display: grid; grid-template-columns: 1fr; gap: 15px; padding: 20px; }
+        .menu-card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--border); display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.2s; }
+        .menu-card:active { transform: scale(0.97); background: #1a1a1a; }
+
+        /* Admin & History Cards */
+        .list-card { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
+        .action-bar { display: flex; gap: 8px; margin-top: 10px; }
+        .btn-act { flex: 1; padding: 8px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; font-size: 0.8rem; }
+
+        /* Profile & Messages */
+        .profile-wrap { text-align: center; padding: 40px 20px; }
+        .avatar { width: 80px; height: 80px; background: var(--primary); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; color: #000; font-size: 2rem; }
+        
+        .chat-box { height: 400px; overflow-y: auto; padding: 15px; background: #080808; display: flex; flex-direction: column; gap: 10px; }
+        .msg-bubble { padding: 12px 15px; border-radius: 12px; max-width: 85%; font-size: 0.9rem; }
+        .msg-admin { background: #1a1a1a; border-left: 4px solid var(--primary); align-self: flex-start; }
+        
+        /* Navigation */
+        .nav-bar { position: fixed; bottom: 0; width: 100%; max-width: 450px; background: #0a0a0a; display: flex; border-top: 1px solid var(--border); padding: 10px 0; }
+        .nav-item { flex: 1; text-align: center; color: #666; font-size: 0.75rem; cursor: pointer; }
+        .nav-item.active { color: var(--primary); font-weight: bold; }
+
+        /* Black Screen Prevention */
+        #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; color: var(--primary); }
+   
+        .price-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #111; border-radius: 10px; overflow: hidden; }
+        .price-table th, .price-table td { padding: 12px; text-align: left; border-bottom: 1px solid #222; }
+        .price-table th { background: #1a1a1a; color: var(--primary); font-size: 0.9rem; }
+        .price-table td { font-size: 0.85rem; }
+
+        .btn-edit { 
+    background: #FF8C00; 
+    color: #000; 
+    border: none; 
+    padding: 10px 20px; /* အနားသတ်တွေကို ပိုကျယ်အောင် လုပ်ထားတယ် */
+    border-radius: 8px; 
+    font-size: 0.9rem; 
+    font-weight: bold; /* စာလုံးအထူ */
+    cursor: pointer; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3); /* အရိပ်လေးထည့်ထားတယ် */
+    transition: 0.2s;
+}
+
     </style>
 </head>
 <body>
 
-<div class="app-container">
+<div id="loading-screen">Loading SR Shop...</div>
+
+<div class="app-shell" id="main-app">
     
-    <div id="page-login" class="hidden" style="padding: 50px 30px; text-align: center;">
-        <h1 style="color: #FF8C00; font-size: 2.5rem; margin-bottom: 5px;">SR SHOP</h1>
-        <p style="color: #555; margin-bottom: 40px;">Developed by Thu Rain Tun</p>
-        <input type="text" id="log-phone" class="input-field" placeholder="ဖုန်းနံပါတ်">
-        <input type="password" id="log-pass" class="input-field" placeholder="စကားဝှက်">
-        <button class="btn-orange" onclick="handleLogin()">Login</button>
-        <p style="margin-top: 25px; color: #888;" onclick="showPage('page-register')">အကောင့်မရှိသေးဘူးလား? <span style="color: #FF8C00;">Register လုပ်ရန်</span></p>
+    <div id="page-login" class="hidden" style="padding-top: 80px; text-align: center;">
+        <h1 style="color: var(--primary); font-size: 2.5rem; margin-bottom: 5px;">SR SHOP</h1>
+        <p style="color: #444; margin-bottom: 40px;">Owner: Thu Rain Tun</p>
+        <div class="input-group">
+            <input type="text" id="l-phone" class="input-field" placeholder="ဖုန်းနံပါတ်">
+            <input type="password" id="l-pass" class="input-field" placeholder="စကားဝှက်">
+            <button class="btn-main" onclick="handleLogin()">LOGIN</button>
+            <p style="margin-top: 25px; color: #888;" onclick="showPage('page-register')">အကောင့်မရှိသေးပါက <span class="orange-text">Register လုပ်ရန်</span></p>
+        </div>
     </div>
 
-    <div id="page-register" class="hidden" style="padding: 40px 30px; text-align: center;">
-        <h2 style="color: #FF8C00; margin-bottom: 20px;">Register Account</h2>
-        <input type="text" id="reg-name" class="input-field" placeholder="နာမည်အပြည့်အစုံ">
-        <input type="text" id="reg-phone" class="input-field" placeholder="ဖုန်းနံပါတ်">
-        <input type="password" id="reg-pass" class="input-field" placeholder="စကားဝှက်">
-        <input type="password" id="reg-confirm" class="input-field" placeholder="စကားဝှက်ကို ထပ်မံဖြည့်ပါ">
-        <button class="btn-orange" onclick="handleRegister()">Register</button>
-        <p style="margin-top: 20px; color: #888;" onclick="showPage('page-login')">Login ပြန်ဝင်ရန်</p>
+    <div id="page-register" class="hidden" style="padding-top: 50px; text-align: center;">
+        <h2 class="orange-text">Register</h2>
+        <div class="input-group">
+            <input type="text" id="r-name" class="input-field" placeholder="နာမည်အပြည့်အစုံ">
+            <input type="text" id="r-phone" class="input-field" placeholder="ဖုန်းနံပါတ်">
+            <input type="password" id="r-pass" class="input-field" placeholder="စကားဝှက်">
+            <input type="password" id="r-confirm" class="input-field" placeholder="စကားဝှက်ကို ပြန်ရိုက်ပါ">
+            <button class="btn-main" onclick="handleRegister()">CREATE ACCOUNT</button>
+            <p style="margin-top: 20px; color: #888;" onclick="showPage('page-login')">Back to Login</p>
+        </div>
     </div>
 
     <div id="page-home" class="hidden">
         <div class="header">
-            <span style="font-weight: bold; color: #FF8C00; font-size: 1.2rem;">SR SHOP</span>
-            <span id="user-header-name" style="background: #222; padding: 5px 12px; border-radius: 20px; font-size: 0.75rem;">Guest</span>
+            <span class="orange-text" style="font-size: 1.2rem;">SR SHOP</span>
+            <span id="h-username" style="font-size: 0.8rem; background: #222; padding: 5px 12px; border-radius: 20px;">Guest</span>
         </div>
-        <div class="balance-card">
-            <p style="font-size: 0.9rem; opacity: 0.8;">My Wallet Balance</p>
-            <h1 id="display-balance" style="font-size: 2.5rem; margin: 5px 0;">0 Ks</h1>
-            <button onclick="showPage('page-deposit')" style="background: #000; color: #FF8C00; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px;">+ Add Money</button>
-        </div>
-        <div style="margin: 20px; padding: 15px; background: #1a1a1a; border: 1px dashed #FF8C00; border-radius: 12px; text-align: center;">
-    <p style="color: #bbb; font-size: 0.9rem; margin-bottom: 10px;">အကူအညီလိုအပ်ပါက Admin ကို ဆက်သွယ်ပါ</p>
-    
-    <a href="https://t.me/tun_1224" target="_blank" 
-       style="display: flex; align-items: center; justify-content: center; background: #0088cc; color: white; text-decoration: none; padding: 12px; border-radius: 8px; font-weight: bold;">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" width="25" style="margin-right: 10px;">
-        Contact Admin (Telegram)
-    </a>
-    </div>
-
         <div class="menu-grid">
-            <div class="menu-item" onclick="openStore('mlbb')">Mobile Legends</div>
-            <div class="menu-item" onclick="openStore('pubg')">PUBG Mobile</div>
-            <div class="menu-item" onclick="openStore('ff')">Free Fire</div>
-            <div class="menu-item" onclick="loadUserOrders()">📜 My Orders</div>
-            <div class="menu-item" onclick="showPage('page-ai')">✨ Gemini AI</div>
-            <div class="menu-item" onclick="showPage('page-msg')">✉️ Messages</div>
+            <div class="menu-card" onclick="loadUserOrders()">📜 Order History</div>
+            <div class="menu-card" onclick="showPage('page-ai')">✨ Gemini AI</div>
+            <div class="menu-card" onclick="showPage('page-msg')">✉️ Message</div>
+            <div class="menu-card" onclick="loadPriceList()">💎 Price List</div>
+            <div id="adm-btn" class="menu-card hidden" style="border-color: #00ff00; color: #00ff00;" onclick="loadAdminPanel()">🛠 Admin Panel</div>
         </div>
     </div>
 
-    <div id="page-store" class="hidden">
+    <div id="page-prices" class="hidden">
         <div class="header">
-            <button onclick="showPage('page-home')" style="background:none; border:none; color:#FF8C00; cursor:pointer;">← Back</button>
-            <span id="store-title">Store</span>
+            <button onclick="showPage('page-home')" style="background:none; border:none; color:var(--primary);">← Back</button> 
+            <span>Price List</span>
         </div>
-        <div id="id-input-section" style="padding: 15px; background: #0a0a0a;">
-            <div id="mlbb-inputs" class="hidden">
-                <input type="text" id="ml-id" class="input-field" placeholder="Player ID">
-                <input type="text" id="ml-server" class="input-field" placeholder="Server ID">
+        <div style="padding: 15px;">
+            <div id="price-container">
+                <p style="text-align:center; color:#666;">Loading prices...</p>
             </div>
-            <div id="pubg-inputs" class="hidden"><input type="text" id="pubg-id" class="input-field" placeholder="Character ID"></div>
-            <div id="ff-inputs" class="hidden"><input type="text" id="ff-id" class="input-field" placeholder="Free Fire UID"></div>
-        </div>
-        <div id="price-list-view"></div>
-    </div>
-
-    <div id="page-profile" class="hidden">
-        <div class="header"><span>Profile Settings</span></div>
-        <div style="padding: 20px;">
-            <div style="text-align: center; margin-bottom: 25px;">
-                <div id="prof-avatar" style="width:80px; height:80px; background:#FF8C00; border-radius:50%; margin:0 auto 15px; display:flex; align-items:center; justify-content:center; color:#000; font-size:2rem; font-weight:bold;">U</div>
-                <h2 id="prof-name-top" style="color: #FF8C00;">User Name</h2>
-            </div>
-            
-            <div class="profile-info-box">
-                <span class="info-label">Name:</span>
-                <span class="info-value" id="prof-display-name">-</span>
-            </div>
-            <div class="profile-info-box">
-                <span class="info-label">Phone:</span>
-                <span class="info-value" id="prof-display-phone">-</span>
-            </div>
-            <div class="profile-info-box">
-                <span class="info-label">User ID:</span>
-                <span class="info-value" id="prof-display-id">#000000</span>
-            </div>
-            <div class="profile-info-box" style="border-left: 4px solid #FF8C00;">
-                <span class="info-label">Current Balance:</span>
-                <span class="info-value" id="prof-display-balance" style="color: #FF8C00;">0 Ks</span>
-            </div>
-
-            <button class="btn-orange" style="background: #ff4444; color: white; margin-top: 30px;" onclick="handleLogout()">Logout Account</button>
         </div>
     </div>
-
-    <div id="page-orders" class="hidden">
-        <div class="header">
-            <button onclick="showPage('page-home')" style="background:none; border:none; color:#FF8C00; cursor:pointer;">← Back</button>
-            <span>My Order History</span>
-        </div>
-        <div id="user-orders-container" style="padding-top: 10px;"></div>
-    </div>
-
-    <div id="page-msg" class="hidden">
-        <div class="header">
-            <button onclick="showPage('page-home')" style="background:none; border:none; color:#FF8C00; cursor:pointer;">← Back</button>
-            <span>Inbox Messages</span>
-        </div>
-        <div style="padding: 20px;">
-            <div style="background: #111; padding: 20px; border-radius: 15px; border-left: 4px solid #FF8C00;">
-                <p style="color: #FF8C00; font-weight: bold; margin-bottom: 5px;">Welcome to SR SHOP!</p>
-                <p style="color: #888; font-size: 0.85rem;">ဂိမ်းဝန်ဆောင်မှုများကို ယုံကြည်စိတ်ချစွာ ဝယ်ယူအားပေးနိုင်ပါသည်။</p>
-                <p style="margin-top: 10px; font-size: 0.7rem; color: #444;">Developer: Thu Rain Tun</p>
-            </div>
-        </div>
+   
+    <div id="page-history" class="hidden">
+        <div class="header"><button onclick="showPage('page-home')" style="background:none; border:none; color:var(--primary);">← Back</button> <span>History</span></div>
+        <div id="history-list" style="padding: 15px;"></div>
     </div>
 
     <div id="page-ai" class="hidden">
-        <div class="header">
-            <button onclick="showPage('page-home')" style="background:none; border:none; color:#FF8C00; cursor:pointer;">← Back</button>
-            <span>✨ Gemini AI Assistant</span>
-        </div>
-        <div class="chat-area" id="chat-box">
-            <div class="msg msg-ai">မင်္ဂလာပါ။ SR Game Shop မှ ကြိုဆိုပါတယ်။</div>
-        </div>
-        <div style="padding: 15px; display: flex; gap: 10px; background: #111;">
-            <input type="text" id="ai-input" class="input-field" style="margin:0;" placeholder="မေးမြန်းလိုသည်များ...">
-            <button class="btn-orange" style="width: 80px; margin: 0;" onclick="askGemini()">Send</button>
+    <div class="header">
+        <button onclick="showPage('page-home')" style="background:none; border:none; color:#FF8C00; font-size: 1.2rem; cursor: pointer;">← Back</button>
+        <span>✨ Admin AI Assistant</span>
+        <div style="width: 40px;"></div>
+    </div>
+
+    <div id="chat-box" style="height: calc(100vh - 200px); overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px;">
+        <div class="msg-ai" style="background: #222; color: #ddd; padding: 12px; border-radius: 15px; border-left: 4px solid #FF8C00; align-self: flex-start; max-width: 80%;">
+            မင်္ဂလာပါ Admin **Thu Rain Tun**။ Admin Panel ဆိုင်ရာ လုပ်ဆောင်ချက်တွေကို ကျွန်တော် ကူညီပေးနိုင်ပါတယ်။ ဘာများ သိလိုပါသလဲခင်ဗျာ။
         </div>
     </div>
 
-    <div id="page-deposit" class="hidden">
-        <div class="header">
-            <button onclick="showPage('page-home')" style="background:none; border:none; color:#FF8C00; cursor:pointer;">← Back</button>
-            <span>ငွေဖြည့်သွင်းရန်</span>
-        </div>
-        <div style="padding: 20px; text-align: center;">
-            <div style="background: #111; padding: 30px; border-radius: 20px; border: 1px solid #333;">
-                <p style="color: #FF8C00;">Kpay / Wave Money</p>
-                <h1 style="margin: 10px 0;">09451055329</h1>
-                <p style="font-weight: bold; margin-bottom: 20px;">Name: Daw Tin Zar Latt</p>
-                <button class="btn-orange" onclick="window.location.href='https://t.me/srgameshop473_bot'">Screenshot ပို့ရန်</button>
+    <div style="position: fixed; bottom: 70px; left: 0; right: 0; padding: 10px; background: #000; display: flex; gap: 10px; border-top: 1px solid #222;">
+        <input type="text" id="ai-input" placeholder="မေးမြန်းလိုသည်များ..." style="flex: 1; background: #111; border: 1px solid #333; color: white; padding: 12px; border-radius: 10px; outline: none;">
+        <button onclick="askGemini()" style="background: #FF8C00; color: black; border: none; padding: 0 20px; border-radius: 10px; font-weight: bold; cursor: pointer;">Send</button>
+    </div>
+</div>
+
+
+    <div id="page-msg" class="hidden">
+        <div class="header"><span>Inbox Messages</span></div>
+        <div id="user-inbox" style="padding: 15px;">
+            <div class="msg-bubble msg-admin" style="max-width: 100%; margin-bottom: 10px;">
+                <p class="orange-text">Welcome to SR SHOP!</p>
+                <p style="font-size: 0.85rem; color: #aaa;">ကျွန်ုပ်တို့၏ ဝန်ဆောင်မှုကို အသုံးပြုပေးသည့်အတွက် ကျေးဇူးတင်ပါသည်။ အဆင်မပြေမှုရှိပါက Admin ကို ဆက်သွယ်ပါ။</p>
             </div>
+            <div id="dynamic-messages"></div>
         </div>
     </div>
 
-    <div id="nav-bar" class="bottom-nav hidden">
-        <div class="nav-tab" onclick="showPage('page-home')">Home</div>
-        <div class="nav-tab" onclick="showPage('page-ai')">AI</div>
-        <div class="nav-tab" onclick="showPage('page-profile')">Profile</div>
+    <div id="page-profile" class="hidden">
+        <div class="header"><span>Profile</span></div>
+        <div class="profile-wrap">
+            <div class="avatar" id="p-avatar">U</div>
+            <h2 id="p-name" class="orange-text">-</h2>
+            <p style="color: #666; margin-bottom: 30px;">User ID: <span id="p-id">#000000</span></p>
+            <div style="text-align: left; padding: 0 15px;">
+                <div style="padding: 15px 0; border-bottom: 1px solid #222; display: flex; justify-content: space-between;">
+                    <span>Phone:</span> <span id="p-phone" class="orange-text">-</span>
+                </div>
+            </div>
+            <button class="btn-main" style="background: #ff4444; color:#fff; margin-top: 40px;" onclick="logout()">LOGOUT</button>
+        </div>
+    </div>
+
+    <div id="page-admin" class="hidden">
+        <div class="header"><button onclick="showPage('page-home')" style="background:none; border:none; color:var(--primary);">← Back</button> <span>Admin Panel</span></div>
+        <div class="list-card" style="margin-top:20px; border: 1px solid #FF8C00;">
+    <h3 style="color:#FF8C00;">App Update Control</h3>
+    <p style="font-size:0.8rem; color:#888;">Customer App တွေကို Update လုပ်ခိုင်းဖို့ ဒီမှာပြင်ပါ</p>
+    <input type="text" id="newVersion" placeholder="Version (ဥပမာ- 1.0.2)" style="width:100%; padding:10px; margin-top:10px; background:#222; color:#fff; border:1px solid #444;">
+    <input type="text" id="updateUrl" placeholder="Download Link (https://...)" style="width:100%; padding:10px; margin-top:10px; background:#222; color:#fff; border:1px solid #444;">
+    <button onclick="pushUpdate()" style="width:100%; padding:12px; margin-top:10px; background:#FF8C00; border:none; color:#000; font-weight:bold; cursor:pointer;">Push Update to Customers</button>
+</div>
+      
+      <div style="background: #161616; padding: 25px; border-radius: 16px; border: 2px solid #ff8c00; margin: 15px; color: #fff; font-family: sans-serif; box-shadow: 0 4px 15px rgba(255,140,0,0.15);">
+    <h3 style="color: #ff8c00; margin-top: 0; font-size: 1.3rem; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px;">🎮 Game Icon Update Panel</h3>
+    
+    <div style="margin-top: 15px;">
+        <label style="font-size: 0.9rem; color: #aaa;">၁။ ပြောင်းလဲမည့် Icon နေရာကို ရွေးပါ -</label>
+        <select id="admin-game-select" style="width: 100%; padding: 12px; margin: 8px 0 18px 0; background: #222; color: #fff; border: 1px solid #444; border-radius: 8px; font-weight: bold; font-size: 0.95rem;">
+            <option value="mlbb">Mobile Legends</option>
+            <option value="pubg">PUBG Mobile</option>
+            <option value="ff">Free Fire</option>
+            <option value="orders">My Orders</option>
+            <option value="ai">Gemini AI</option>
+            <option value="messages">Messages</option>
+        </select>
+    </div>
+
+    <div>
+        <label style="font-size: 0.9rem; color: #aaa;">၂။ PNG ပုံအသစ် တင်သွင်းရန် -</label>
+        <input type="file" id="admin-icon-file" accept="image/png, image/jpeg" style="width: 100%; margin: 8px 0 20px 0; color: #ccc; font-size: 0.9rem;">
+    </div>
+
+    <button id="admin-upload-btn" onclick="uploadGameIconFromAdmin()" style="background: linear-gradient(135deg, #ff8c00, #e06c00); color: #fff; border: none; width: 100%; padding: 14px; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;">
+        Upload New PNG Icon
+    </button>
+</div>
+      
+        <div style="padding: 15px;">
+            <h3 class="orange-text" style="margin-bottom: 15px;">Pending Orders</h3>
+            <div id="adm-order-list"></div>
+            <div style="padding: 10px;">
+    <input type="text" id="orderSearchInput" placeholder="Order ID နဲ့ ရှာရန်.... (ဥပမာ- SR1234)" 
+           style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #222; color: white;"
+           onkeyup="searchOrders()">
+         </div>
+  
+  <h3 class="orange-text" style="margin: 30px 0 15px;">Customer Management</h3>
+       <div style="margin-bottom: 15px;">
+    <input type="text" id="userSearchInput" placeholder="နာမည် သို့မဟုတ် ဖုန်းဖြင့်ရှာရန်..." 
+           onkeyup="searchUser()"
+           style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #FF8C00; background: #111; color: white; outline: none;">
+</div>
+
+<div id="adm-user-list"></div>
+            <div id="adm-user-list"></div>
+
+            <h3 class="orange-text" style="margin: 30px 0 15px;">Price Management</h3>
+            <div id="adm-price-list"></div>
+            <div style="height: 50px;"></div> 
+        </div>
+    </div>
+
+    <div id="footer-nav" class="nav-bar hidden">
+        <div class="nav-item" onclick="showPage('page-home')">Home</div>
+        <div class="nav-item" onclick="showPage('page-ai')">Gemini</div>
+        <div class="nav-item" onclick="showPage('page-profile')">Profile</div>
     </div>
 
 </div>
 
 <script>
-    // --- Firebase Config (100% Intact) ---
+    // --- Firebase Init ---
     const firebaseConfig = {
       apiKey: "AIzaSyALqp9IxejZ2b4d3vJMGuwV0RWPxpQRsaU",
       authDomain: "diamondshop-b56ab.firebaseapp.com",
-      databaseURL: "https://diamondshop-b56ab-default-rtdb.firebaseio.com",
       projectId: "diamondshop-b56ab",
       storageBucket: "diamondshop-b56ab.firebasestorage.app",
       messagingSenderId: "504521967191",
-      appId: "1:504521967191:web:215ead398cab81444f8512",
-      measurementId: "G-9RGLMY2F05"
+      appId: "1:504521967191:web:215ead398cab81444f8512"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+
     let currentUser = null;
-    
-    // --- Customer App Update Logic ---
-const currentVersion = "1.0.1"; // ဒီ Version ကို App အသစ်ထုတ်တိုင်း ပြောင်းပေးပါ
 
-db.collection("appSettings").doc("versionControl").onSnapshot((doc) => {
-    if (doc.exists) {
-        const latestVersion = doc.data().version;
-        const updateUrl = doc.data().url;
-
-        if (latestVersion !== currentVersion) {
-            // Version မတူရင် Screen တစ်ခုလုံးကို Update စာသားပဲ ပြမယ်
-            document.body.innerHTML = `
-                <div style="text-align:center; padding:50px; background:#000; color:white; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif;">
-                    <h2 style="color:#FF8C00;">Update ရရှိနိုင်ပါပြီ!</h2>
-                    <p style="font-size:1.1rem;">Version အသစ် (${latestVersion}) ထွက်ရှိလာပါပြီ။</p>
-                    <p style="color:#888;">ဆက်လက်အသုံးပြုနိုင်ရန် Version အသစ်ကို ဒေါင်းလုဒ်ဆွဲပါ။</p>
-                    <br>
-                    <a href="${updateUrl}" target="_blank" style="background:#FF8C00; padding:15px 40px; border-radius:30px; text-decoration:none; color:black; font-weight:bold; font-size:1.2rem; box-shadow: 0 4px 15px rgba(255,140,0,0.3);">
-                        UPDATE NOW
-                    </a>
-                </div>
-            `;
-        }
-    }
-});
-
-    window.onload = function() {
-        const savedPhone = localStorage.getItem("sr_user_phone");
-        if (savedPhone) {
-            db.collection("users").doc(savedPhone).get().then(doc => {
-                if (doc.exists) {
+    // --- Core System ---
+    window.onload = () => {
+        const session = localStorage.getItem('sr_auth');
+        if (session) {
+            const auth = JSON.parse(session);
+            db.collection("users").doc(auth.phone).get().then(doc => {
+                if (doc.exists && doc.data().pass === auth.pass) {
+                    if(doc.data().status === 'banned') { logout(); return; }
                     currentUser = doc.data();
-                    updateUI();
-                    showPage('page-home');
-                } else { showPage('page-login'); }
-            }).catch(() => showPage('page-login'));
-        } else { showPage('page-login'); }
+                    launchApp();
+                } else { showPage('page-login'); hideLoader(); }
+            }).catch(() => { showPage('page-login'); hideLoader(); });
+        } else {
+            showPage('page-login');
+            hideLoader();
+        }
     };
 
-    function showPage(id) {
-        document.querySelectorAll('.app-container > div').forEach(div => {
-            if(div.id !== 'nav-bar') div.classList.add('hidden');
+function showPage(id) {
+        document.querySelectorAll('.app-shell > div').forEach(div => {
+            if(div.id !== 'footer-nav') div.classList.add('hidden');
         });
         document.getElementById(id).classList.remove('hidden');
-        const nav = document.getElementById('nav-bar');
-        (id === 'page-login' || id === 'page-register') ? nav.classList.add('hidden') : nav.classList.remove('hidden');
+        document.getElementById('footer-nav').classList.toggle('hidden', id === 'page-login' || id === 'page-register');
+    }
+    
+function hideLoader() { document.getElementById('loading-screen').style.display = 'none'; }
+
+    function showPage(id) {
+        document.querySelectorAll('.app-shell > div').forEach(div => {
+            if(div.id !== 'footer-nav') div.classList.add('hidden');
+        });
+        document.getElementById(id).classList.remove('hidden');
+        document.getElementById('footer-nav').classList.toggle('hidden', id === 'page-login' || id === 'page-register');
     }
 
+    function launchApp() {
+        document.getElementById('h-username').innerText = currentUser.name;
+        document.getElementById('p-name').innerText = currentUser.name;
+        document.getElementById('p-phone').innerText = currentUser.phone;
+        document.getElementById('p-id').innerText = "#" + currentUser.id;
+        document.getElementById('p-avatar').innerText = currentUser.name[0].toUpperCase();
+        
+        if(currentUser.phone === '09451055329') document.getElementById('adm-btn').classList.remove('hidden');
+        
+        loadInbox();
+        showPage('page-home');
+        hideLoader();
+    }
+
+    // --- Auth Logic ---
     function handleLogin() {
-        const phone = document.getElementById('log-phone').value;
-        const pass = document.getElementById('log-pass').value;
-        if(!phone || !pass) return alert("ဖြည့်စွက်ပေးပါ။");
-        db.collection("users").doc(phone).get().then(doc => {
-            if(doc.exists && doc.data().pass === pass) {
+        const ph = document.getElementById('l-phone').value;
+        const ps = document.getElementById('l-pass').value;
+        if(!ph || !ps) return alert("အချက်အလက်ပြည့်စုံစွာဖြည့်ပါ။");
+
+        db.collection("users").doc(ph).get().then(doc => {
+            if(doc.exists && doc.data().pass === ps) {
+                if(doc.data().status === 'banned') return alert("အကောင့်ပိတ်ခံထားရပါသည်။");
                 currentUser = doc.data();
-                localStorage.setItem("sr_user_phone", phone);
-                updateUI();
-                showPage('page-home');
-            } else { alert("အချက်အလက်မှားယွင်းနေပါသည်။"); }
+                localStorage.setItem('sr_auth', JSON.stringify({phone:ph, pass:ps}));
+                launchApp();
+            } else alert("ဖုန်းနံပါတ် သို့မဟုတ် စကားဝှက် မှားယွင်းနေပါသည်။");
         });
     }
 
     function handleRegister() {
-        const name = document.getElementById('reg-name').value;
-        const phone = document.getElementById('reg-phone').value;
-        const pass = document.getElementById('reg-pass').value;
-        const conf = document.getElementById('reg-confirm').value;
-        if(!name || !phone || !pass) return alert("အကုန်ဖြည့်ပါ။");
-        if(pass !== conf) return alert("စကားဝှက်မတူပါ။");
-        const userData = { name: name, phone: phone, pass: pass, balance: 0, id: Math.floor(100000 + Math.random() * 900000) };
-        db.collection("users").doc(phone).set(userData).then(() => {
-            alert("အောင်မြင်ပါပြီ။");
-            showPage('page-login');
+        const n = document.getElementById('r-name').value;
+        const ph = document.getElementById('r-phone').value;
+        const ps = document.getElementById('r-pass').value;
+        const cp = document.getElementById('r-confirm').value;
+
+        if(!n || !ph || !ps) return alert("အချက်အလက်အားလုံးဖြည့်ပါ။");
+        if(ps !== cp) return alert("Confirm Password မတူညီပါ။");
+
+        db.collection("users").doc(ph).get().then(doc => {
+            if(doc.exists) return alert("ဤဖုန်းနံပါတ်မှာ အသုံးပြုပြီးသားဖြစ်နေပါသည်။");
+            const uid = Math.floor(100000 + Math.random() * 900000);
+            db.collection("users").doc(ph).set({
+                name: n, phone: ph, pass: ps, id: uid, status: 'active', balance: 0
+            }).then(() => {
+                alert("အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါသည်။");
+                showPage('page-login');
+            });
         });
     }
 
-    function handleLogout() { localStorage.removeItem("sr_user_phone"); location.reload(); }
+    function logout() { localStorage.clear(); location.reload(); }
 
-    function updateUI() {
-        db.collection("users").doc(currentUser.phone).onSnapshot(doc => {
-            if(doc.exists) {
-                currentUser = doc.data();
-                const balText = currentUser.balance.toLocaleString() + " Ks";
-                
-                // Home UI
-                document.getElementById('user-header-name').innerText = currentUser.name;
-                document.getElementById('display-balance').innerText = balText;
-                
-                // Profile UI (Updated)
-                document.getElementById('prof-name-top').innerText = currentUser.name;
-                document.getElementById('prof-display-name').innerText = currentUser.name;
-                document.getElementById('prof-display-phone').innerText = currentUser.phone;
-                document.getElementById('prof-display-id').innerText = "#" + currentUser.id;
-                document.getElementById('prof-display-balance').innerText = balText;
-                document.getElementById('prof-avatar').innerText = currentUser.name[0].toUpperCase();
-            }
-        });
-    }
-
-    function openStore(game) {
-    const listView = document.getElementById('price-list-view');
-    document.getElementById('store-title').innerText = game.toUpperCase() + " TOP UP";
-    listView.innerHTML = '<p style="text-align:center; padding:20px; color:#FF8C00;">Loading prices...</p>';
-    
-    // UI Inputs ပြောင်းလဲခြင်း
-    document.querySelectorAll('#id-input-section > div').forEach(div => div.classList.add('hidden'));
-    const gameInput = document.getElementById(game + '-inputs');
-    if(gameInput) gameInput.classList.remove('hidden');
-    
-    showPage('page-store');
-
-    // Firestore မှ Data ဆွဲထုတ်ခြင်း
-    db.collection("prices").doc(game).onSnapshot(doc => {
-        if(doc.exists) {
-            const data = doc.data();
-            listView.innerHTML = "";
-            let hasData = false;
-
-            // Firestore ထဲမှာရှိသမျှ Field တွေ (Diamonds, UC, Passes စသဖြင့်) ကို အကုန်ပတ်စစ်မယ်
-            Object.keys(data).forEach(fieldName => {
-                const itemArray = data[fieldName];
-                
-                // အကယ်၍ အဲ့ဒီ field က Array ဖြစ်နေရင် Screen ပေါ်မှာ ထုတ်ပြမယ်
-                if (Array.isArray(itemArray) && itemArray.length > 0) {
-                    renderCat(listView, fieldName.toUpperCase(), itemArray, game);
-                    hasData = true;
-                }
-            });
-
-            if(!hasData) {
-                listView.innerHTML = '<p style="text-align:center; padding:20px; color:#555;">ဈေးနှုန်းစာရင်း ထည့်သွင်းထားခြင်း မရှိသေးပါ။</p>';
-            }
-        } else {
-            listView.innerHTML = '<p style="text-align:center; padding:20px; color:#ff4444;">Document မတွေ့ပါ။</p>';
-        }
-    });
-}
-
-    function renderCat(el, title, items, game) {
-    el.innerHTML += `<div class="category-label">${title}</div>`;
-    items.forEach(item => {
-        // Firestore ထဲမှာ amount သို့မဟုတ် Amount သို့မဟုတ် name လို့ ရေးထားတာကို ရှာမယ်
-        const itemAmount = item.amount || item.Amount || item.name || "Unknown";
-        const itemPrice = item.price || item.Price || 0;
-
-        el.innerHTML += `
-            <div class="price-row">
-                <div>
-                    <p style="font-weight:bold;">${itemAmount}</p>
-                    <p style="color:#FF8C00;">${itemPrice.toLocaleString()} Ks</p>
-                </div>
-                <button class="buy-btn" onclick="processOrder('${game}', '${itemAmount}', ${itemPrice})">Buy Now</button>
-            </div>`;
-    });
-}
-
-
- function processOrder(game, item, price) {
-        if(currentUser.balance < price) return alert("လက်ကျန်ငွေမလုံလောက်ပါ။");
-        let gId = (game === 'mlbb') ? document.getElementById('ml-id').value + "(" + document.getElementById('ml-server').value + ")" : document.getElementById(game + '-id').value;
-        if(!gId || gId === "()") return alert("Game ID ဖြည့်ပါ။");
-        
-        if(confirm(item + " ဝယ်ယူရန် သေချာပါသလား?")) {
-            const oId = "SR" + Math.floor(1000 + Math.random() * 9000);
-            db.collection("users").doc(currentUser.phone).update({ balance: currentUser.balance - price }).then(() => {
-                db.collection("orders").add({
-                    orderId: oId, userId: currentUser.phone, game: game, gameId: gId, item: item, price: price, status: "pending", time: firebase.firestore.FieldValue.serverTimestamp()
-                }).then(() => alert("✅ Order တင်ပြီးပါပြီ။"));
-const msg = `🔔 **SR SHOP - အော်ဒါအသစ်**\n` +
-                    `--------------------------\n` +
-                    `📝 Order ID: #${oId}\n` +
-                    `🎮 ဂိမ်း: ${game}\n` +
-                    `👤 ဝယ်သူ: ${currentUser.name}\n` +
-                    `📞 ဖုန်း: ${currentUser.phone}\n` +
-                    `💎 ပမာဏ: ${item}\n` +
-                    `🆔 Game ID: ${gId}\n` +
-                    `💰 ကျသင့်ငွေ: ${price} Ks\n` +
-                    `--------------------------`;
-
-        sendToTelegram(msg);
-            });
-        }
-    }
-
-function loadUserOrders() {
-        showPage('page-orders');
-        const container = document.getElementById('user-orders-container');
-        container.innerHTML = '<p style="text-align:center; padding:20px; color:#FF8C00;">Loading History...</p>';
-        db.collection("orders").where("userId", "==", currentUser.phone).onSnapshot((snap) => {
-            if (snap.empty) { container.innerHTML = '<p style="text-align:center; padding:50px; color:#555;">No orders found.</p>'; return; }
-            let arr = []; snap.forEach(doc => arr.push(doc.data()));
-            arr.sort((a, b) => (b.time?.seconds || 0) - (a.time?.seconds || 0));
-            let html = "";
-            arr.forEach(d => {
-                html += `<div style="background:#111; margin:10px 15px; padding:18px; border-radius:15px; border:1px solid #222; border-left: 5px solid ${(d.status === 'completed') ? '#00ff00' : '#FF8C00'};">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                        <span style="color:#FF8C00; font-weight:bold;">${d.game.toUpperCase()}</span>
-                        <span style="color:${(d.status === 'completed') ? '#00ff00' : '#FF8C00'}; font-weight:bold;">${d.status.toUpperCase()}</span>
+    // --- User Features ---
+    function loadUserOrders() {
+        showPage('page-history');
+        const list = document.getElementById('history-list');
+        list.innerHTML = "Loading...";
+        db.collection("orders").where("userId", "==", currentUser.phone).onSnapshot(snap => {
+            list.innerHTML = "";
+            if(snap.empty) list.innerHTML = "<p style='text-align:center; color:#444;'>No orders found.</p>";
+            snap.forEach(doc => {
+                const d = doc.data();
+                const date = d.time ? d.time.toDate().toLocaleString() : 'Just now';
+                list.innerHTML += `
+                <div class="list-card">
+                    <div style="display:flex; justify-content:space-between;">
+                        <b class="orange-text">${d.game.toUpperCase()}</b>
+                        <span style="color:${d.status === 'completed' ? '#00ff00' : (d.status === 'rejected' ? '#ff4444' : '#FF8C00')}">${d.status}</span>
                     </div>
-                    <p style="font-size:0.9rem; color:#ccc;">${d.item} - ${d.price.toLocaleString()} Ks</p>
-                    <p style="font-size:0.75rem; color:#555; margin-top:5px;">ID: ${d.gameId} | #${d.orderId}</p>
+                    <p style="font-size:0.85rem; margin:5px 0;">Item: ${d.item}</p>
+                    <p style="font-size:0.7rem; color:#555;">ID: #${d.orderId} | ${date}</p>
                 </div>`;
             });
-            container.innerHTML = html;
         });
     }
 
-    function askGemini() {
-        const input = document.getElementById('ai-input');
-        const chatBox = document.getElementById('chat-box');
-        const q = input.value.trim().toLowerCase();
-        if(!q) return;
-
-        chatBox.innerHTML += `<div class="msg msg-user">${input.value}</div>`;
-        input.value = "";
-        chatBox.scrollTop = chatBox.scrollHeight;
-
-        setTimeout(() => {
-            let reply = "တောင်းပန်ပါတယ်၊ အဲဒါကိုတော့ ကျွန်တော် မသိသေးပါဘူး။ ပိုင်ရှင် Thu Rain Tun ကို တိုက်ရိုက် မေးမြန်းပေးပါ့မယ်။";
-            
-            // ၁။ နှုတ်ဆက်ခြင်း (Greetings)
-            if(q.includes("hi") || q.includes("hello") || q.includes("မင်္ဂလာပါ")) {
-                reply = "မင်္ဂလာပါခင်ဗျာ! SR Game Shop ရဲ့ AI Assistant ဖြစ်ပါတယ်။ လူကြီးမင်းကို ဘာများ ကူညီပေးရမလဲခင်ဗျာ။";
-            } 
-            // ၂။ ပိုင်ရှင်အကြောင်း (Owner Info)
-            else if(q.includes("ပိုင်ရှင်") || q.includes("thu rain tun") || q.includes("owner") || q.includes("developer")) {
-                reply = "SR Game Shop ရဲ့ ပိုင်ရှင်နဲ့ Developer ကတော့ Thu Rain Tun ဖြစ်ပါတယ်။ သူက ဒီ App ကို ကိုယ်တိုင် ရေးသားဖန်တီးထားတာ ဖြစ်ပါတယ်။";
-            } 
-            // ၃။ ငွေဖြည့်နည်း (Deposit Method)
-            else if(q.includes("ငွေဖြည့်") || q.includes("deposit") || q.includes("ပိုက်ဆံဖြည့်") || q.includes("kpay")) {
-                reply = "ငွေဖြည့်သွင်းရန်အတွက်: <br>၁။ Home Page ရှိ <b>'+ Add Money'</b> ကို နှိပ်ပါ။ <br>၂။ ပြထားသော နံပါတ်ကို ကူးယူပြီး ငွေလွှဲပါ။ <br>၃။ ငွေလွှဲပြေစာ (Screenshot) ကို bot ရဲ့ Telegram သို့ ပို့ပေးရပါမယ်။ Admin က စစ်ဆေးပြီး Balance ထည့်ပေးပါလိမ့်မယ်။";
-            } 
-            // ၄။ အော်ဒါတင်နည်း (How to Order)
-            else if(q.includes("order") || q.includes("အော်ဒါ") || q.includes("ဝယ်နည်း") || q.includes("တင်နည်း")) {
-                reply = "အော်ဒါတင်နည်းမှာ: <br>၁။ Home Page မှ မိမိဝယ်လိုသော Game Icon ကို နှိပ်ပါ။ <br>၂။ မိမိရဲ့ Game ID (သို့မဟုတ်) Server ID ကို အမှန်ကန်ဖြည့်ပါ။ <br>၃။ ဝယ်ယူလိုသော ပမာဏဘေးရှိ <b>'Buy Now'</b> ကို နှိပ်ပြီး အတည်ပြုပါ။ <br>၄။ အော်ဒါအခြေအနေကို <b>'My Orders'</b> မှာ ပြန်ကြည့်နိုင်ပါတယ်ခင်ဗျာ။";
-            }
-            // ၅။ ကျေးဇူးတင်ခြင်း
-            else if(q.includes("ကျေးဇူး") || q.includes("thanks")) {
-                reply = "ရပါတယ်ခင်ဗျာ။ SR Game Shop ကို အသုံးပြုပေးလို့ အထူးကျေးဇူးတင်ပါတယ်။";
-            }
-
-            chatBox.innerHTML += `<div class="msg msg-ai">${reply}</div>`;
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }, 800);
+    function loadInbox() {
+        db.collection("messages").where("to", "==", currentUser.phone).onSnapshot(snap => {
+            const container = document.getElementById('dynamic-messages');
+            container.innerHTML = "";
+            snap.forEach(doc => {
+                container.innerHTML += `<div class="msg-bubble msg-admin" style="max-width:100%; margin-bottom:10px;">${doc.data().text}</div>`;
+            });
+        });
     }
-      
-    async function sendToTelegram(msg) {
-    const token = "8526730170:AAHX7Y0p0TMb_XgsmgG594XTDVWv4dtC5_E";
-    const chatId = "8189963333";
-    const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}`;
+
+               // --- Admin Control ---
+    function loadAdminPanel() {
+        showPage('page-admin');
+        const oList = document.getElementById('adm-order-list');
+        const uList = document.getElementById('adm-user-list');
+
+   // Listen for Pending Orders
+        db.collection("orders").where("status", "==", "pending").onSnapshot(snap => {
+            oList.innerHTML = "";
+            snap.forEach(doc => {
+                const d = doc.data();
+                oList.innerHTML += `
+               <div class="list-card">
+            <p class="orange-text" style="font-size: 1.1rem; margin-bottom: 5px;">${d.userName || 'No Name'}</p>
+            <div style="font-size: 0.85rem; color: #bbb; line-height: 1.5;">
+                <p>📞 Phone: ${d.userId}</p> 
+                <p>📝 Order ID: #${d.orderId || 'N/A'}</p>
+                <p>🆔 User ID: #${currentUser.id || d.userId}</p> <hr style="border: 0.5px solid #222; margin: 8px 0;">
+                <p>🎮 Game: <span class="orange-text">${d.game || 'Unknown'}</span></p>
+                <p>💎 Item: ${d.item} (ID: ${d.gameId})</p>
+                </div>
+                    <div class="action-bar">
+                        <button class="btn-act" style="background:#00ff00;" onclick="adminUpdateOrder('${doc.id}', 'completed')">Confirm</button>
+                        <button class="btn-act" style="background:#ff4444;" onclick="adminUpdateOrder('${doc.id}', 'rejected')">Reject</button>
+                    </div>
+                </div>`;
+            });
+        });
+
+// Listen for Users (Next Level UI)
+db.collection("users").onSnapshot(snap => {
+    uList.innerHTML = "";
+    snap.forEach(doc => {
+        const u = doc.data();
+        if(u.phone === currentUser.phone) return;
+
+        // Status အလိုက် အရောင်ခွဲခြားခြင်း
+        const statusColor = u.status === 'active' ? '#00ff00' : '#ff4444';
+        const isBanned = u.status === 'banned';
+
+        uList.innerHTML += `
+        <div class="list-card" style="position: relative; border: 1px solid #222; overflow: hidden; background: linear-gradient(145deg, #111, #080808); box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+            
+            <div style="position: absolute; top: 12px; right: 12px; font-size: 0.65rem; background: ${statusColor}22; color: ${statusColor}; padding: 4px 10px; border-radius: 20px; border: 1px solid ${statusColor}55; font-weight: bold; text-transform: uppercase;">
+                ${u.status || 'active'}
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                <div style="width: 50px; height: 50px; background: #222; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid #333; color: var(--primary); font-size: 1.2rem; font-weight: bold;">
+                    ${(u.name || 'U')[0].toUpperCase()}
+                </div>
+                
+                <div style="flex: 1;">
+                    <h3 style="color: #fff; font-size: 1rem; margin-bottom: 2px;">${u.name || 'Unknown'}</h3>
+                    <p style="font-size: 0.75rem; color: #888;">ID: <span style="color: var(--primary);">#${u.id || '000000'}</span> | 📞 ${u.phone}</p>
+                </div>
+            </div>
+
+            <div style="background: #1a1a1a; padding: 12px; border-radius: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.8rem; color: #aaa;">Current Balance</span>
+                <span style="font-size: 1.1rem; color: var(--primary); font-weight: bold;">${(u.balance || 0).toLocaleString()} <small style="font-size: 0.7rem; color: #888;">Ks</small></span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 8px;">
+                <button onclick="adminUserAction('${u.phone}', 'add')" style="background: #222; color: #00ff00; border: 1px solid #00ff0044; padding: 10px; border-radius: 8px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">
+                    <i class="fas fa-plus"></i> + Cash
+                </button>
+                <button onclick="adminUserAction('${u.phone}', 'sub')" style="background: #222; color: #ff4444; border: 1px solid #ff444444; padding: 10px; border-radius: 8px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">
+                    - Cash
+                </button>
+                <div style="display: flex; gap: 5px;">
+                    <button onclick="adminUserAction('${u.phone}', 'msg')" style="flex: 1; background: var(--primary); color: #000; border: none; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 0.75rem;">MSG</button>
+                    <button onclick="adminUserAction('${u.phone}', 'ban')" style="flex: 1; background: ${isBanned ? '#00ff00' : '#ff4444'}; color: #fff; border: none; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 0.75rem;">
+                        ${isBanned ? 'UNBAN' : 'BAN'}
+                    </button>
+                </div>
+            </div>
+        </div>`;
+    });
+});
+
+// ဈေးနှုန်းဇယားကို ဆွဲထုတ်ခိုင်းခြင်း
+        loadAdminPriceList(); 
+    }
+      function searchUser() {
+    let input = document.getElementById('userSearchInput').value.toLowerCase();
+    let userList = document.getElementById('adm-user-list');
+    let cards = userList.getElementsByClassName('list-card');
+
+    for (let i = 0; i < cards.length; i++) {
+        // Card ထဲမှာရှိတဲ့ နာမည် (p class="orange-text") နဲ့ ဖုန်းနံပါတ် (p tag ဒုတိယတစ်ခု) ကို ယူပါတယ်
+        let name = cards[i].getElementsByTagName('p')[0].innerText.toLowerCase();
+        let details = cards[i].getElementsByTagName('p')[1].innerText.toLowerCase();
+
+        if (name.includes(input) || details.includes(input)) {
+            cards[i].style.display = ""; // ကိုက်ညီရင် ပြမယ်
+        } else {
+            cards[i].style.display = "none"; // မကိုက်ညီရင် ဖျောက်မယ်
+        }
+    }
+}
+
+    async function adminUserAction(phone, type) {
+        if(type === 'add' || type === 'sub') {
+            const amt = parseInt(prompt("Amount (Ks):"));
+            if(!amt) return;
+            const ref = db.collection("users").doc(phone);
+            const doc = await ref.get();
+            let bal = doc.data().balance || 0;
+            bal = (type === 'add') ? bal + amt : bal - amt;
+            await ref.update({ balance: bal });
+            alert("Updated!");
+        } else if(type === 'msg') {
+            const txt = prompt("Customer ဆီပို့မည့် Message ရိုက်ပါ:");
+            if(!txt) return;
+            await db.collection("messages").add({
+                to: phone, text: txt, time: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            alert("Message Sent!");
+        } else if(type === 'ban') {
+            const ref = db.collection("users").doc(phone);
+            const doc = await ref.get();
+            const newStat = doc.data().status === 'banned' ? 'active' : 'banned';
+            await ref.update({ status: newStat });
+        }
+    }
+
+    function adminUpdateOrder(id, status) { db.collection("orders").doc(id).update({ status }); }
     
+    // --- Price Management Functions ---
+
+    async function loadAdminPriceList() {
+    const pList = document.getElementById('adm-price-list');
+    if (!pList) return;
+
+    pList.innerHTML = "<p style='color:#666; text-align:center;'>ဈေးနှုန်းများ ရယူနေသည်...</p>";
+
     try {
-        await fetch(url);
+        const snapshot = await db.collection("prices").get();
+        let html = "";
+
+        if (snapshot.empty) {
+            pList.innerHTML = "<p style='text-align:center; color:#444;'>ဒေတာမရှိသေးပါ။</p>";
+            return;
+        }
+
+        snapshot.forEach(doc => {
+            const docData = doc.data();
+            const docId = doc.id;
+            
+            html += `<h3 style="color: var(--primary); margin-top: 30px; border-left: 5px solid var(--primary); padding-left: 12px;">${docId.toUpperCase()}</h3>`;
+
+            // MLBB အတွက် Diamonds ကို အပေါ်ဆုံးမှာ ထားရန် စီခြင်း
+            const categories = Object.keys(docData).sort((a, b) => {
+                const order = ["diamonds", "passes", "promo"];
+                let indexA = order.indexOf(a.toLowerCase());
+                let indexB = order.indexOf(b.toLowerCase());
+                if (indexA === -1) indexA = 99;
+                if (indexB === -1) indexB = 99;
+                return indexA - indexB;
+            });
+
+            categories.forEach(arrayName => {
+                if (Array.isArray(docData[arrayName])) {
+                    html += `<p style="color: #666; margin: 15px 0 5px; font-size: 0.8rem; font-weight: bold;">CATEGORY: ${arrayName.toUpperCase()}</p>`;
+                    html += `<table class="price-table">
+                        <thead><tr><th>Item</th><th>Price</th><th style="text-align:center;">Action</th></tr></thead>
+                        <tbody>`;
+
+                    docData[arrayName].forEach((item, index) => {
+                        html += `
+                            <tr>
+                                <td>${item.name}</td>
+                                <td class="orange-text" style="font-weight:bold;">${Number(item.price).toLocaleString()} Ks</td>
+                                <td style="text-align:center;">
+                                    <button class="btn-edit" onclick="editPrice('${docId}', '${arrayName}', ${index}, '${item.name}', ${item.price})">
+                                        EDIT
+                                    </button>
+                                </td>
+                            </tr>`;
+                    });
+                    html += `</tbody></table>`;
+                }
+            });
+        });
+
+        pList.innerHTML = html + '<div style="height: 50px;"></div>'; 
+
+    } catch (error) {
+        console.error(error);
+        pList.innerHTML = "<p style='color:red; text-align:center;'>Error loading prices.</p>";
+    }
+}
+
+async function loadPriceList() {
+    showPage('page-prices'); // စာမျက်နှာကို အရင်ဖွင့်ခိုင်းတာပါ
+    const container = document.getElementById('price-container');
+    if (!container) return;
+
+    container.innerHTML = "<p style='text-align:center; color:#666; padding:20px;'>ဈေးနှုန်းများ ရယူနေသည်...</p>";
+
+    try {
+        const snapshot = await db.collection("prices").get();
+        let html = "";
+        
+        if (snapshot.empty) {
+            container.innerHTML = "<p style='text-align:center; color:#444;'>ဒေတာမရှိသေးပါ။</p>";
+            return;
+        }
+
+        snapshot.forEach(doc => {
+            const docData = doc.data();
+            const docId = doc.id.toUpperCase();
+            
+            html += `<h3 style="color:var(--primary); margin-top:20px; border-left:4px solid var(--primary); padding-left:10px;">${docId}</h3>`;
+            html += `<table class="price-table"><thead><tr><th>Item</th><th>Price</th></tr></thead><tbody>`;
+            
+            // MLBB အတွက်ဆိုလျှင် Diamonds ကို အပေါ်ဆုံးပို့ရန် စီခြင်း
+            const keys = Object.keys(docData).sort((a, b) => {
+                const order = ["diamonds", "passes", "promo"];
+                return order.indexOf(a) - order.indexOf(b);
+            });
+
+            keys.forEach(key => {
+                if(Array.isArray(docData[key])) {
+                    docData[key].forEach(item => {
+                        html += `<tr><td>${item.name}</td><td class="orange-text" style="font-weight:bold;">${Number(item.price).toLocaleString()} Ks</td></tr>`;
+                    });
+                }
+            });
+            html += `</tbody></table>`;
+        });
+        container.innerHTML = html + '<div style="height:80px;"></div>';
     } catch(e) {
-        console.log("Telegram Error:", e);
+        console.error(e);
+        container.innerHTML = "<p style='color:red; text-align:center;'>Error loading prices.</p>";
+    }
+}
+async function editPrice(docId, arrayName, index, currentName, currentPrice) {
+    const newPrice = prompt(`${currentName} အတွက် ဈေးနှုန်းအသစ်:`, currentPrice);
+    if (!newPrice || newPrice == currentPrice) return;
+
+    try {
+        const docRef = db.collection("prices").doc(docId);
+        const doc = await docRef.get();
+        let data = doc.data();
+        
+        data[arrayName][index].price = Number(newPrice); 
+
+        await docRef.update({ [arrayName]: data[arrayName] });
+        alert("Updated Successfully!");
+        loadAdminPriceList(); // ပြင်ပြီးတာနဲ့ ဇယားကို refresh ပြန်လုပ်မယ်
+    } catch (e) { 
+        console.error(e);
+        alert("Update failed!"); 
+    }
+}
+       function searchOrders() {
+    // ၁။ ရိုက်လိုက်တဲ့စာသားကို ယူမယ်
+    let input = document.getElementById('orderSearchInput').value.toUpperCase();
+    
+    // ၂။ အော်ဒါ Card အားလုံးကို ယူမယ်
+    let cards = document.getElementsByClassName('list-card');
+
+    // ၃။ တစ်ခုချင်းစီကို လိုက်စစ်မယ်
+    for (let i = 0; i < cards.length; i++) {
+        let card = cards[i];
+        // Card ထဲမှာပါတဲ့ စာသားအားလုံးကို ယူပြီး Order ID ပါမပါ စစ်မယ်
+        if (card.innerText.toUpperCase().indexOf(input) > -1) {
+            card.style.display = ""; // ပါရင် ပြမယ်
+        } else {
+            card.style.display = "none"; // မပါရင် ဖျောက်ထားမယ်
+        }
+    }
+}
+
+    function pushUpdate() {
+    const ver = document.getElementById('newVersion').value;
+    const url = document.getElementById('updateUrl').value;
+
+    if(!ver || !url) return alert("အချက်အလက်အစုံဖြည့်ပါ");
+
+    db.collection("appSettings").doc("versionControl").set({
+        version: ver,
+        url: url
+    }).then(() => {
+        alert("Customer များအားလုံးကို Update လုပ်ရန် လှမ်းပို့လိုက်ပါပြီ!");
+    }).catch(e => alert("Error: " + e.message));
+}
+
+function sendMessage(customerId) {
+    const msg = prompt("Customer ဆီပို့မည့် Message ကို ရိုက်ထည့်ပါ:");
+    
+    if (msg != null && msg.trim() !== "") {
+        // Firebase Firestore ထဲက သက်ဆိုင်ရာ Customer ရဲ့ Data ကို update လုပ်မယ်
+        db.collection("users").doc(customerId).update({
+            adminMsg: msg,
+            msgTime: firebase.firestore.FieldValue.serverTimestamp()
+        })
+        .then(() => {
+            alert("Message ပို့ပြီးပါပြီ!");
+        })
+        .catch((error) => {
+            console.error("Error sending message: ", error);
+            alert("ပို့လို့မရပါဘူး။ ID မှန်မမှန် ပြန်စစ်ပါ။");
+        });
+    }
+}
+
+async function askGemini() {
+    const input = document.getElementById('ai-input');
+    const chatBox = document.getElementById('chat-box');
+    const userText = input.value.trim();
+    const q = userText.toLowerCase();
+
+    if (!userText) return;
+
+    // Admin Message ပြသခြင်း
+    chatBox.innerHTML += `<div class="msg-user" style="background: #FF8C00; color: black; padding: 10px; border-radius: 10px; align-self: flex-end; margin-bottom: 10px;">${userText}</div>`;
+    input.value = "";
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    setTimeout(() => {
+        let reply = "";
+
+        // ၁။ နှုတ်ဆက်ခြင်း
+        if (q.includes("hi") || q.includes("hello") || q.includes("မင်္ဂလာပါ")) {
+            reply = "မင်္ဂလာပါ Admin။ SR Game Shop ရဲ့ Admin အကူဖြစ်ပါတယ်။ ဘာလုပ်ဆောင်ချက်တွေအကြောင်း သိချင်ပါသလဲ?";
+        } 
+        // ၂။ User Ban နည်း
+        else if (q.includes("ban") || q.includes("ပိတ်")) {
+            reply = "User ကို Ban ရန်: Admin Panel > User List > <b>'Ban'</b> ခလုတ်ကို နှိပ်ပါ။";
+        } 
+        // ၃။ Balance ထည့်နည်း
+        else if (q.includes("money") || q.includes("ငွေထည့်") || q.includes("balance")) {
+            reply = "Balance ထည့်ရန်: User List ထဲက <b>'Money +'</b> ကိုနှိပ်ပြီး ဂဏန်းရိုက်ထည့်ပါ။";
+        } 
+        // ၄။ Balance လျှော့နည်း
+        else if (q.includes("နုတ်") || q.includes("money -")) {
+            reply = "Balance လျှော့ရန်: User List ထဲက <b>'Money -'</b> ကိုနှိပ်ပြီး နှုတ်လိုသော ပမာဏ ထည့်ပါ။";
+        }
+        // ၅။ အော်ဒါစစ်နည်း
+        else if (q.includes("order") || q.includes("အော်ဒါ")) {
+            reply = "အော်ဒါကြည့်ရန်: <b>Order History</b> ကဏ္ဍတွင် Pending ဖြစ်နေသည်များကို စစ်ဆေးပါ။";
+        }
+        // ၆။ အော်ဒါ အောင်မြင်ကြောင်းပြနည်း
+        else if (q.includes("complete") || q.includes("အောင်မြင်")) {
+            reply = "အော်ဒါပြီးဆုံးကြောင်းပြရန်: Order list ထဲက <b>'Completed'</b> ခလုတ်ကို နှိပ်ပါ။";
+        }
+        // ၇။ အော်ဒါ ပယ်ဖျက်နည်း
+        else if (q.includes("reject") || q.includes("ပယ်ဖျက်")) {
+            reply = "အော်ဒါပယ်ဖျက်ရန်: <b>'Rejected'</b> ခလုတ်ကိုနှိပ်ပါ။ User ဆီသို့ ငွေပြန်အမ်းရန် မမေ့ပါနှင့်။";
+        }
+        // ၈။ ဈေးနှုန်းပြင်နည်း
+        else if (q.includes("price") || q.includes("ဈေးနှုန်း")) {
+            reply = "ဈေးနှုန်းပြင်ရန်: <b>Price Management</b> ထဲက <b>'EDIT'</b> ကိုနှိပ်ပြီး အသစ်ပြင်ပါ။";
+        }
+        // ၉။ Game အမျိုးအစားထည့်နည်း
+        else if (q.includes("game") || q.includes("ဂိမ်း")) {
+            reply = "ဂိမ်းအသစ်ထည့်ရန်: Database ရှိ <b>'prices'</b> collection ထဲတွင် Document အသစ်ဆောက်ပါ။";
+        }
+        // ၁၀။ Message ပို့နည်း
+        else if (q.includes("msg") || q.includes("စာပို့")) {
+            reply = "User ဆီ စာပို့ရန်: User Card ပေါ်က <b>'Msg'</b> ခလုတ်ကိုနှိပ်ပြီး Notification ပို့ပါ။";
+        }
+        // ၁၁။ Developer အကြောင်း
+        else if (q.includes("developer") || q.includes("ဘယ်သူလုပ်တာလဲ")) {
+            reply = "ဒီ App ကို Developer <b>Thu Rain Tun</b> က ဖန်တီးထားတာဖြစ်ပါတယ်။";
+        }
+        // ၁၂။ Firebase အကြောင်း
+        else if (q.includes("firebase") || q.includes("database")) {
+            reply = "App အချက်အလက်တွေကို <b>Firebase Cloud Firestore</b> မှာ သိမ်းဆည်းထားပါတယ်။";
+        }
+        // ၁၃။ Error တက်လျှင်
+        else if (q.includes("error") || q.includes("မရဘူး")) {
+            reply = "Error တက်ပါက Console (F12) ကိုစစ်ပါ သို့မဟုတ် အင်တာနက်လိုင်း စစ်ဆေးပါ။";
+        }
+        // ၁၄။ Register အသစ်စစ်နည်း
+        else if (q.includes("register") || q.includes("အကောင့်သစ်")) {
+            reply = "User အသစ်များကို User List ၏ အောက်ဆုံးတွင် အမြဲတွေ့နိုင်ပါတယ်။";
+        }
+        // ၁၅။ Login စစ်နည်း
+        else if (q.includes("login") || q.includes("ဝင်မရ")) {
+            reply = "User တစ်ဦး Login ဝင်မရပါက သူ၏ status သည် <b>'banned'</b> ဖြစ်မဖြစ် Database တွင် စစ်ပေးပါ။";
+        }
+        // ၁၆။ Password ပြင်ပေးနည်း
+        else if (q.includes("password") || q.includes("စကားဝှက်")) {
+            reply = "User password ပြင်ရန်: Firebase Console ထဲက User document ထဲတွင် 'password' field ကို ပြင်ပါ။";
+        }
+        // ၁၇။ App Update လုပ်နည်း
+        else if (q.includes("update") || q.includes("ပြင်ချင်")) {
+            reply = "App ပြင်ရန်: HTML/JS Code များကို ပြင်ဆင်ပြီး Firebase Hosting သို့မဟုတ် Server တွင် ပြန်တင်ပါ။";
+        }
+        // ၁၈။ Report ကြည့်နည်း
+        else if (q.includes("report") || q.includes("တိုင်စာ")) {
+            reply = "User များ၏ တိုင်စာများကို <b>Inbox Messages</b> ကဏ္ဍတွင် စစ်ဆေးနိုင်ပါတယ်။";
+        }
+        // ၁၉။ Admin အကောင့်ခွဲနည်း
+        else if (q.includes("admin account")) {
+            reply = "Admin နောက်တစ်ယောက်တိုးရန်: User document ထဲတွင် <b>role: 'admin'</b> ဟု ထည့်ပေးပါ။";
+        }
+        // ၂၀။ Back Button အကြောင်း
+        else if (q.includes("back") || q.includes("ပြန်ထွက်")) {
+            reply = "စာမျက်နှာတစ်ခုမှ ပြန်ထွက်ရန် Header ရှိ <b>'← Back'</b> ခလုတ်ကို သုံးပါ။";
+        }
+        // ၂၁။ အခြား
+        else {
+            reply = "တောင်းပန်ပါတယ် Admin။ အဲ့ဒီအချက်ကိုတော့ ကျွန်တော် မသိသေးပါဘူး။";
+        }
+
+        chatBox.innerHTML += `<div class="msg-ai" style="background: #222; color: #ddd; padding: 10px; border-radius: 10px; border-left: 4px solid #FF8C00; margin-bottom: 10px;">${reply}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }, 600);
+}
+
+async function uploadGameIconFromAdmin() {
+    const gameSelect = document.getElementById("admin-game-select").value;
+    const fileInput = document.getElementById("admin-icon-file").files[0];
+    const btn = document.getElementById("admin-upload-btn");
+
+    if (!fileInput) return alert("ကျေးဇူးပြု၍ ပြောင်းလဲမည့် PNG ပုံအရင်ရွေးပေးပါဗျာ။");
+
+    btn.innerText = "Processing... Cloud ပေါ်တင်နေပါသည်";
+    btn.disabled = true;
+
+    try {
+        const reader = new FileReader();
+        
+        reader.onload = async function () {
+            try {
+                const base64Data = reader.result.split(",")[1];
+
+                // 📦 ImgBB သို့ ပို့ရန် FormData တည်ဆောက်ခြင်း
+                const formData = new FormData();
+                formData.append("image", base64Data);
+
+                // ⚠️ [ပြင်ဆင်ချက်] fetch ထဲတွင် မင်းရဲ့ API Key အမှန်ကို သေချာထည့်ပေးပါ
+                const imgbbRes = await fetch("https://api.imgbb.com/1/upload?key=06fed9e1368ff406bc578eb29ddb4c80", {
+                    method: "POST",
+                    body: formData // 👈 ဒီကောင်လေးကို စနစ်တကျ လှမ်းပို့ခိုင်းလိုက်ပါပြီ
+                });
+                const imgbbData = await imgbbRes.json();
+
+                if (!imgbbData.success) {
+                    throw new Error("ImgBB Upload Failed");
+                }
+
+                const imageUrl = imgbbData.data.url; 
+
+                // 💾 Firebase ထဲသို့ သွားသိမ်းခြင်း
+                await db.collection("game_icons").doc(gameSelect).set({
+                    url: imageUrl,
+                    updatedAt: new Date().toISOString()
+                });
+
+                alert(`✅ ${gameSelect.toUpperCase()} Icon အား အောင်မြင်စွာ လဲလှယ်တင်ပြပြီးပါပြီခင်ဗျာ။`);
+                document.getElementById("admin-icon-file").value = ""; 
+                
+            } catch (innerError) {
+                console.error("Upload Error Inside:", innerError);
+                alert("❌ ပုံတင်ခြင်း သို့မဟုတ် ဒေတာဘေ့စ်သိမ်းခြင်း မအောင်မြင်ပါ။ API Key ကို ပြန်စစ်ပါ။");
+            } finally {
+                btn.innerText = "Upload New PNG Icon";
+                btn.disabled = false;
+            }
+        };
+
+        reader.readAsDataURL(fileInput);
+
+    } catch (error) {
+        console.error("Admin Main Error:", error);
+        alert("❌ စနစ်ချို့ယွင်းမှုကြောင့် ပုံတင်မရဖြစ်သွားပါသည်။");
+        btn.innerText = "Upload New PNG Icon";
+        btn.disabled = false;
     }
 }
 
 
-</script>
-
+     </script>
 </body>
 </html>
