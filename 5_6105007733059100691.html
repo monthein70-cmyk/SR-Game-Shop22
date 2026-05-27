@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SR Game Shop - Owner: Thu Rain Tun</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <style>
+        /* --- UI Theme: Gaming Black & Orange (100% Intact with Anime Animations) --- */
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
+        body { background-color: #050505; color: #ffffff; overflow-x: hidden; }
+        .app-container { max-width: 450px; margin: auto; min-height: 100vh; position: relative; padding-bottom: 90px; background: #000; border: 1px solid #1a1a1a; overflow: hidden; }
+
+        /* --- STREAMING_CHUNK: Defining Anime Transitions and Side Drawer Styles... --- */
+        @keyframes animePageFadeIn {
+            from { opacity: 0; transform: scale(0.96) translateY(10px); filter: brightness(0.5); }
+            to { opacity: 1; transform: scale(1) translateY(0); filter: brightness(1); }
+        }
+
+        @keyframes animeGridPop {
+            0% { opacity: 0; transform: translateY(25px) scale(0.9); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .page-animated {
+            animation: animePageFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .header { background: #111; padding: 18px; border-bottom: 2px solid #FF8C00; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        
+        .btn-orange { 
+            width: 100%; padding: 15px; background: #FF8C00; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; color: #000; 
+            transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s; font-size: 1rem; 
+            box-shadow: 0 4px 10px rgba(255, 140, 0, 0.15);
+        }
+        .btn-orange:hover { box-shadow: 0 0 15px rgba(255, 140, 0, 0.5); }
+        .btn-orange:active { transform: scale(0.94) translateY(2px); filter: brightness(0.9); }
+        
+        .input-field { width: 100%; padding: 15px; background: #121212; border: 1px solid #333; color: #fff; border-radius: 10px; margin: 10px 0; font-size: 0.95rem; transition: all 0.25s ease; }
+        .input-field:focus { border-color: #FF8C00; box-shadow: 0 0 10px rgba(255, 140, 0, 0.3); outline: none; background: #151515; }
+
+        .balance-card { 
+            background: linear-gradient(145deg, #FF8C00, #b36200); margin: 15px; padding: 30px; border-radius: 20px; color: #000; position: relative; overflow: hidden;
+            animation: animeGridPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+            box-shadow: 0 8px 25px rgba(255, 140, 0, 0.25);
+        }
+        .balance-card::after { content: ''; position: absolute; top: -50%; right: -20%; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%; }
+        
+        /* Menu Grid Style */
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; }
+        .menu-item { 
+            background: #111; padding: 25px 15px; border-radius: 15px; border: 1px solid #222; text-align: center; cursor: pointer; font-weight: bold; 
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: animeGridPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
+        .menu-item img { transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .menu-item:hover { border-color: #FF8C00; box-shadow: 0 0 15px rgba(255, 140, 0, 0.25); transform: translateY(-4px); }
+        .menu-item:hover img { transform: scale(1.1) rotate(3deg); }
+        .menu-item:active { transform: scale(0.93) translateY(1px); background: #1a1a1a; }
+
+        /* Price Boxes Style */
+        .store-grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; }
+        .price-box-card {
+            background: #111; border: 1px solid #222; border-radius: 16px; padding: 16px 12px; text-align: center; display: flex; flex-direction: column;
+            justify-content: space-between; align-items: center; position: relative; transition: all 0.25s ease;
+            animation: animeGridPop 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        .price-box-card:hover { border-color: #FF8C00; box-shadow: 0 4px 15px rgba(255, 140, 0, 0.15); transform: translateY(-3px); }
+        .price-box-card img.currency-icon { width: 32px; height: 32px; margin-bottom: 8px; object-fit: contain; }
+        .price-box-amount { font-size: 0.95rem; font-weight: bold; color: #ffffff; margin-bottom: 4px; word-break: break-word; }
+        .price-box-cost { font-size: 0.85rem; color: #FF8C00; font-weight: bold; margin-bottom: 12px; }
+        .price-box-card .buy-btn { width: 100%; background: #FF8C00; color: #000; border: none; padding: 8px 0; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem; transition: all 0.1s ease; }
+        .price-box-card .buy-btn:active { transform: scale(0.95); }
+
+        .category-label { padding: 12px 15px; color: #FF8C00; font-weight: bold; font-size: 0.85rem; background: #080808; letter-spacing: 1px; text-transform: uppercase; border-bottom: 1px solid #111; margin-top: 10px; }
+
+        /* --- STREAMING_CHUNK: Setting Chat Area layout ... --- */
+        /* Gemini Chat Area */
+        .chat-area { height: 400px; overflow-y: auto; padding: 15px; background: #080808; border-radius: 15px; margin: 15px; border: 1px solid #222; display: flex; flex-direction: column; }
+        .msg { margin-bottom: 15px; padding: 12px 16px; border-radius: 12px; max-width: 80%; line-height: 1.5; font-size: 0.9rem; animation: animeGridPop 0.25s ease-out both; }
+        .msg-user { background: #FF8C00; color: #000; align-self: flex-end; border-bottom-right-radius: 2px; transform-origin: right bottom; }
+        .msg-ai { background: #1a1a1a; color: #eee; align-self: flex-start; border-bottom-left-radius: 2px; border-left: 4px solid #FF8C00; transform-origin: left bottom; }
+
+        /* Typing indicator effect */
+        .typing-bubble {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background-color: #FF8C00;
+            border-radius: 50%;
+            margin-right: 3px;
+            animation: bounce 1.2s infinite ease-in-out;
+        }
+        .typing-bubble:nth-child(2) { animation-delay: 0.2s; }
+        .typing-bubble:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* Profile Style */
+        .profile-info-box { background: #111; padding: 15px; border-radius: 12px; border: 1px solid #222; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; }
+        .profile-info-box:hover { border-color: #FF8C00; transform: translateX(3px); }
+        .info-label { color: #555; font-size: 0.85rem; }
+        .info-value { color: #fff; font-weight: bold; }
+
+        /* Bottom Tab Bar Style */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 450px; background: #0f0f0f; display: flex; justify-content: space-around; padding: 10px 0 8px 0; border-top: 2px solid #FF8C00; z-index: 1000; box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.5); }
+        .nav-tab { color: #666; cursor: pointer; text-align: center; flex: 1; font-size: 0.75rem; transition: all 0.25s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; border: none; background: none; }
+        .nav-tab img { width: 22px; height: 22px; margin-bottom: 4px; filter: grayscale(100%) opacity(50%); transition: all 0.25s ease; }
+        .nav-tab.active { color: #FF8C00; font-weight: bold; }
+        .nav-tab.active img { filter: none; transform: scale(1.15); }
+        .nav-tab:active { transform: scale(0.92); }
+
+        .hidden { display: none !important; }
+        .forgot-link { margin-top: 20px; color: #888; font-size: 0.85rem; cursor: pointer; transition: 0.2s; }
+        .forgot-link span { color: #FF8C00; font-weight: bold; text-decoration: underline; margin-left: 5px; }
+
+        /* Custom System Overlay Dialog Box Alert Style */
+        .custom-confirm-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0, 0, 0, 0.8); display: flex; justify-content: center; align-items: center; z-index: 9999999; animation: fadeInOverlay 0.2s ease-out; }
+        .custom-confirm-box { background: #111; border: 2px solid #FF8C00; border-radius: 18px; width: 85%; max-width: 360px; padding: 25px; text-align: center; box-shadow: 0 0 25px rgba(255, 140, 0, 0.3); color: #fff; animation: popConfirm 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .custom-confirm-box h3 { color: #FF8C00; margin-bottom: 12px; font-size: 1.15rem; letter-spacing: 1px; text-transform: uppercase; }
+        .custom-confirm-box p { font-size: 0.95rem; line-height: 1.6; color: #ddd; margin-bottom: 22px; text-align: left; white-space: pre-line; }
+        .custom-confirm-buttons { display: flex; gap: 12px; justify-content: center; }
+        .custom-confirm-btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: bold; font-size: 0.95rem; cursor: pointer; transition: all 0.1s ease; }
+        .custom-confirm-btn.cancel { background: #222; color: #aaa; border: 1px solid #333; }
+        .custom-confirm-btn.ok { background: #FF8C00; color: #000; }
+
+        @keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes popConfirm { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* --- History Tabs Bar System Styles --- */
+        .history-tabs { display: flex; border-bottom: 1px solid #222; background: #080808; margin-bottom: 10px; }
+        .history-tab-btn { flex: 1; padding: 15px; border: none; background: none; color: #666; font-weight: bold; font-size: 0.9rem; cursor: pointer; transition: all 0.2s ease; position: relative; }
+        .history-tab-btn.active { color: #FF8C00; }
+        .history-tab-btn.active::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: #FF8C00; }
+
+        /* Social Media Direct Links Card Style Box */
+        .social-contact-box { display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; padding: 13px; border-radius: 10px; font-weight: bold; font-size: 0.9rem; margin-bottom: 10px; transition: all 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .social-contact-box:active { transform: scale(0.95); }
+
+        /* --- STREAMING_CHUNK: Styling Left Sliding Menu (Drawer Sidebar) --- */
+        /* Left Sliding Sidebar Navigation Menu styling */
+        .sidebar {
+            position: absolute;
+            top: 0;
+            left: -285px;
+            width: 280px;
+            height: 100%;
+            background: #0c0c0c;
+            border-right: 2px solid #FF8C00;
+            z-index: 2000;
+            transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 8px 0 25px rgba(0, 0, 0, 0.8);
+        }
+        .sidebar.open {
+            left: 0;
+        }
+        .sidebar-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(2px);
+            z-index: 1999;
+            display: none;
+        }
+        .sidebar-overlay.show {
+            display: block;
+        }
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #222;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 14px 16px;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.95rem;
+            transition: all 0.25s ease;
+            background: #111;
+            border: 1px solid #1a1a1a;
+        }
+        .sidebar-item:hover {
+            border-color: #FF8C00;
+            background: #181818;
+            color: #FF8C00;
+            transform: translateX(6px);
+            box-shadow: 0 4px 12px rgba(255, 140, 0, 0.1);
+        }
+        .sidebar-item img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+
+        /* Live Order Location Destination Preview Styles */
+        .order-preview-box {
+            background: #0d0d0d;
+            border-left: 4px solid #FF8C00;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px;
+            border-top: 1px solid #222;
+            border-right: 1px solid #222;
+            border-bottom: 1px solid #222;
+            animation: animeGridPop 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        /* Sidebar Scrollbar Tuning Styles */
+        .sidebar {
+            overflow-y: auto;
+        }
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #FF8C00;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+
+    <!-- Sidebar Menu Overlay -->
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar(false)"></div>
+    
+    <!-- Left Drawer Navigation Sidebar -->
+    <div id="side-menu" class="sidebar">
+        <div class="sidebar-header">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-weight: bold; color: #FF8C00; font-size: 1.25rem; letter-spacing: 0.5px;">SR SHOP MENU</span>
+            </div>
+            <button onclick="toggleSidebar(false)" style="background:none; border:none; color:#FF8C00; cursor:pointer; font-size:1.5rem; font-weight:bold; outline:none;">✕</button>
+        </div>
+
+        <!-- Sidebar Premium User Status Widget -->
+        <div id="sidebar-profile-card" style="background: linear-gradient(135deg, #141414, #0d0d0d); border: 1px solid #222; border-left: 3px solid #FF8C00; border-radius: 12px; padding: 14px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; animation: animeGridPop 0.3s ease both;">
+            <div id="sidebar-user-avatar" style="width: 42px; height: 42px; background: #FF8C00; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #000; font-weight: bold; font-size: 1.15rem; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">G</div>
+            <div style="flex: 1; overflow: hidden;">
+                <div id="sidebar-user-name" style="font-size: 0.9rem; font-weight: bold; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Guest User</div>
+                <div id="sidebar-user-balance" style="font-size: 0.8rem; color: #FF8C00; font-weight: bold; margin-top: 2px;">0 Ks</div>
+            </div>
+        </div>
+        
+        <p style="font-size: 0.65rem; color: #555; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; padding-left: 5px;">Main Services</p>
+        <div class="sidebar-item" onclick="toggleSidebar(false); showPage('page-home')">
+            <img src="https://img.icons8.com/?size=100&id=102551&format=png&color=000000" alt="Home"> ပင်မစာမျက်နှာ
+        </div>
+        <div class="sidebar-item" onclick="toggleSidebar(false); showPage('page-deposit')">
+            <img src="https://img.icons8.com/?size=100&id=Yo9kOcztQ9xn&format=png&color=000000" alt="Add Money"> ငွေဖြည့်သွင်းရန်
+        </div>
+        <div class="sidebar-item" onclick="toggleSidebar(false); openHistoryView()">
+            <img src="https://img.icons8.com/?size=100&id=VbVaCDa9Nnb1&format=png&color=000000" alt="History"> အော်ဒါမှတ်တမ်း
+        </div>
+        <div class="sidebar-item" onclick="toggleSidebar(false); loadInbox(); showPage('page-msg')">
+            <img src="https://img.icons8.com/?size=100&id=BPFfi69JReUf&format=png&color=000000" alt="Message"> Message
+        </div>
+        
+        <p style="font-size: 0.65rem; color: #555; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; margin-top: 15px; margin-bottom: 8px; padding-left: 5px;">AI & Help</p>
+        <div class="sidebar-item" onclick="toggleSidebar(false); showPage('page-ai')">
+            <img src="https://img.icons8.com/?size=100&id=dOmpXIF68sld&format=png&color=000000" alt="AI"> SilentX AI Assistant
+        </div>
+        <div class="sidebar-item" onclick="toggleSidebar(false); showPage('page-profile')">
+            <img src="https://img.icons8.com/?size=100&id=NPW07SMh7Aco&format=png&color=000000"> Profile ကြည့်ရန်
+        </div>
+        <div class="sidebar-item" onclick="toggleSidebar(false); showPage('page-other')">
+            <img src="https://img.icons8.com/?size=100&id=13540&format=png&color=000000" alt="Other"> အခြားဝန်ဆောင်မှုများ
+        </div>
+
+        <p style="font-size: 0.65rem; color: #555; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; margin-top: 15px; margin-bottom: 8px; padding-left: 5px;">Security</p>
+        <div class="sidebar-item" onclick="toggleSidebar(false); handleLogout()" style="border-left: 2px solid #ff4444; color: #ff4444; background: rgba(255, 68, 68, 0.02);">
+            <img src="https://img.icons8.com/?size=100&id=8119&format=png&color=ff4444" alt="Logout"> အကောင့်ထွက်ရန်
+        </div>
+        
+        <div style="margin-top: auto; border-top: 1px solid #222; padding-top: 15px;">
+            <p style="font-size: 0.75rem; color: #555; text-align: center; font-weight: bold; letter-spacing: 0.5px; margin-bottom: 8px;">ADMIN: THU RAIN TUN</p>
+            <div style="display: flex; justify-content: center; gap: 15px;">
+                <a href="https://t.me/Tun_1224" target="_blank">
+                    <img src="https://img.icons8.com/?size=100&id=63306&format=png" width="32" height="32" alt="Telegram">
+                </a>
+                <a href="viber://chat?number=%2B959773768702" target="_blank">
+                    <img src="https://i.ibb.co/zVcdy4rz/In-Shot-20260527-100623497.png" width="32" height="32" alt="Viber">
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- --- STREAMING_CHUNK: Formatting Page Login Screen --- -->
+    <div id="page-login" class="hidden page-animated" style="padding: 50px 30px; text-align: center;">
+        <h1 style="color: #FF8C00; font-size: 2.5rem; margin-bottom: 5px; text-shadow: 0 0 15px rgba(255,140,0,0.3);">SR SHOP</h1>
+        <p style="color: #555; margin-bottom: 40px;">Developed by Thu Rain Tun</p>
+        <input type="text" id="log-phone" class="input-field" placeholder="ဖုန်းနံပါတ်">
+        <input type="password" id="log-pass" class="input-field" placeholder="စကားဝှက်">
+        <button class="btn-orange" onclick="handleLogin()">Login</button>
+        <p class="forgot-link" onclick="showPage('page-forgot')">စကားဝှက်မေ့နေပါသလား? <span>Reset လုပ်ရန်</span></p>
+        <p style="margin-top: 25px; color: #888;" onclick="showPage('page-register')">အကောင့်မရှိသေးဘူးလား? <span style="color: #FF8C00;">Register လုပ်ရန်</span></p>
+    </div>
+
+    <div id="page-forgot" class="hidden page-animated" style="padding: 40px 30px; text-align: center;">
+        <h2 style="color: #FF8C00; margin-bottom: 20px;">Reset Password</h2>
+        <input type="text" id="for-phone" class="input-field" placeholder="ဖုန်းနံပါတ်">
+        <input type="text" id="for-userid" class="input-field" placeholder="User ID">
+        <input type="password" id="for-newpass" class="input-field" placeholder="စကားဝှက်အသစ်">
+        <button class="btn-orange" onclick="handleResetPassword()">Reset Password</button>
+        
+        <p style="margin-top: 30px; margin-bottom: 15px; color: #666; font-size: 0.85rem; letter-spacing: 0.5px;">အကူအညီရယူရန် စီမံခန့်ခွဲသူအား ဆက်သွယ်ရန်</p>
+        <div style="padding: 0 5px;">
+            <a href="https://t.me/Tun_1224" target="_blank" class="social-contact-box" style="background: #0088cc;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" width="18" style="margin-right: 8px;"> Telegram: @Tun_1224
+            </a>
+            <a href="viber://chat?number=%2B959773768702" target="_blank" class="social-contact-box" style="background: #7360f2;">
+                <img src="https://i.ibb.co/zVcdy4rz/In-Shot-20260527-100623497.png" width="18" style="margin-right: 8px;"> Viber: 09773768702
+            </a>
+        </div>
+
+        <p style="margin-top: 25px; color: #888; cursor: pointer;" onclick="showPage('page-login')">← Login စာမျက်နှာသို့ ပြန်သွားရန်</p>
+    </div>
+
+    <div id="page-register" class="hidden page-animated" style="padding: 40px 30px; text-align: center;">
+        <h2 style="color: #FF8C00; margin-bottom: 20px;">Register Account</h2>
+        <input type="text" id="reg-name" class="input-field" placeholder="နာမည်အပြည့်အစုံ">
+        <input type="text" id="reg-phone" class="input-field" placeholder="ဖုန်းနံပါတ်">
+        <input type="password" id="reg-pass" class="input-field" placeholder="စကားဝှက်">
+        <input type="password" id="reg-confirm" class="input-field" placeholder="စကားဝှက်ကို ထပ်မံဖြည့်ပါ">
+        <button class="btn-orange" onclick="handleRegister()">Register</button>
+        <p style="margin-top: 20px; color: #888; cursor: pointer;" onclick="showPage('page-login')">Login ပြန်ဝင်ရန်</p>
+    </div>
+
+    <div id="page-home" class="hidden page-animated">
+        <div class="header">
+            <!-- Sidebar Drawer Toggle Hamburger Button on the Left -->
+            <button onclick="toggleSidebar(true)" style="background:none; border:none; color:#FF8C00; cursor:pointer; font-size:1.4rem; display:flex; align-items:center;">
+                <img src="https://img.icons8.com/?size=100&id=3096&format=png&color=FF8C00" width="24" height="24" alt="Menu" style="filter: brightness(1.15);">
+            </button>
+            <span style="font-weight: bold; color: #FF8C00; font-size: 1.2rem; letter-spacing: 0.5px; flex-grow: 1; margin-left: 15px;">SR SHOP</span>
+            <span id="user-header-name" style="background: #222; padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold;">Guest</span>
+        </div>
+        
+        <div class="balance-card">
+            <p style="font-size: 0.9rem; opacity: 0.8; font-weight: bold;">My Wallet Balance</p>
+            <h1 id="display-balance" style="font-size: 2.5rem; margin: 5px 0;">0 Ks</h1>
+            <button onclick="showPage('page-deposit')" style="background: #000; color: #FF8C00; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.2s;" onmousedown="this.style.transform='scale(0.93)'">+ Add Money</button>
+        </div>
+
+        <div style="margin: 15px; padding: 14px; background: #0c0c0c; border: 1px dashed #FF8C00; border-radius: 14px;">
+            <p style="font-size:0.75rem; color:#666; margin-bottom:8px; text-align:center; font-weight:bold;">SUPPORT CONTACTS</p>
+            <a href="https://t.me/Tun_1224" target="_blank" class="social-contact-box" style="background: #0088cc; margin-bottom: 8px;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" width="18" style="margin-right: 8px;"> Contact Admin (Telegram)
+            </a>
+            <a href="viber://chat?number=%2B959773768702" target="_blank" class="social-contact-box" style="background: #7360f2; margin-bottom: 0;">
+                <img src="https://i.ibb.co/zVcdy4rz/In-Shot-20260527-100623497.png" width="18" style="margin-right: 8px;"> Contact Admin (Viber)
+            </a>
+        </div>
+
+        <div class="menu-grid">
+            <div class="menu-item" onclick="openStore('mlbb')">
+                <img id="icon-mlbb" src="https://img.icons8.com/?size=100&id=0rFc1hzhNfbQ&format=png&color=000000" width="100"><br>Mobile Legends
+            </div>
+            <div class="menu-item" onclick="openStore('pubg')">
+                <img id="icon-pubg" src="https://img.icons8.com/color/96/pubg.png" width="100"><br>PUBG Mobile
+            </div>
+            <div class="menu-item" onclick="openStore('ff')">
+                <img id="icon-ff" src="https://img.icons8.com/color/96/free-fire.png" width="100"><br>Free Fire
+            </div>
+            <div class="menu-item" onclick="openHistoryView()">    
+                <img id="icon-orders" src="https://img.icons8.com/fluency/96/scroll.png" width="100"><br>My History
+            </div>
+            <div class="menu-item" onclick="showPage('page-ai')">
+                <img id="icon-ai" src="https://img.icons8.com/fluency/96/artificial-intelligence.png" width="100"><br>Gemini AI
+            </div>
+            <div class="menu-item" onclick="loadInbox(); showPage('page-msg')">
+                <img id="icon-messages" src="https://img.icons8.com/fluency/96/mail.png" width="100"><br> Messages
+            </div>
+        </div>
+    </div>
+
+    <div id="page-store" class="hidden page-animated">
+        <div class="header">
+            <button onclick="showPage('page-home')" style="background:none; border:none; color:#FF8C00; cursor:pointer; font-weight:bold; font-size:1rem;">← Back</button>
+            <span id="store-title" style="font-weight:bold;">Store</span>
+        </div>
+        
+        <!-- Live Order Destination Indicator Section (မှာတဲ့နေရာပြပေးသော ကဒ်) -->
+        <div id="order-target-preview" class="order-preview-box" style="display: none;">
+            <p style="font-size: 0.75rem; color: #888; font-weight: bold; letter-spacing: 0.5px;">🎯 မှာယူမည့်နေရာ (ORDER DESTINATION TARGET)</p>
+            <div id="target-preview-text" style="font-size: 0.95rem; color: #FFF; font-weight: bold; margin-top: 5px; line-height: 1.4;">-</div>
+        </div>
+
+        <div id="id-input-section" style="padding: 15px; background: #0a0a0a;">
+            <div id="mlbb-inputs" class="hidden">
+                <input type="text" id="ml-id" class="input-field" placeholder="Player ID" oninput="updateOrderPreview('mlbb')">
+                <input type="text" id="ml-server" class="input-field" placeholder="Server ID" oninput="updateOrderPreview('mlbb')">
+            </div>
+            <div id="pubg-inputs" class="hidden">
+                <input type="text" id="pubg-id" class="input-field" placeholder="Character ID" oninput="updateOrderPreview('pubg')">
+            </div>
+            <div id="ff-inputs" class="hidden">
+                <input type="text" id="ff-id" class="input-field" placeholder="Free Fire UID" oninput="updateOrderPreview('ff')">
+            </div>
+        </div>
+        <div id="price-list-view"></div>
+    </div>
+
+    <div id="page-profile" class="hidden page-animated">
+        <div class="header">
+            <button onclick="toggleSidebar(true)" style="background:none; border:none; color:#FF8C00; cursor:pointer; font-size:1.4rem; display:flex; align-items:center;">
+                <img src="https://img.icons8.com/?size=100&id=3096&format=png&color=FF8C00" width="24" height="24" alt="Menu" style="filter: brightness(1.15);">
+            </button>
+            <span style="font-weight:bold; flex-grow:1; margin-left:15px;">Profile Settings</span>
+        </div>
+        <div style="padding: 20px;">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <div id="prof-avatar" style="width:80px; height:80px; background:#FF8C00; border-radius:50%; margin:0 auto 15px; display:flex; align-items:center; justify-content:center; color:#000; font-size:2rem; font-weight:bold;">U</div>
+                <h2 id="prof-name-top" style="color: #FF8C00;">User Name</h2>
+            </div>
+            <div class="profile-info-box"><span class="info-label">Name:</span><span class="info-value" id="prof-display-name">-</span></div>
+            <div class="profile-info-box"><span class="info-label">Phone:</span><span class="info-value" id="prof-display-phone">-</span></div>
+            <div class="profile-info-box"><span class="info-label">User ID:</span><span class="info-value" id="prof-display-id">#000000</span></div>
+            <div class="profile-info-box"><span class="info-label">Current Balance:</span><span class="info-value" id="prof-display-balance" style="color: #FF8C00;">0 Ks</span></div>
+            <button class="btn-orange" style="background: #ff4444; color: white; margin-top: 30px; box-shadow: none;" onclick="handleLogout()">Logout Account</button>
+        </div>
+    </div>
+    
+    <div id="page-orders" class="hidden page-animated">
+        <div class="header">
+            <button onclick="showPage('page-home')" style="background:none; border:none; color:#FF8C00; cursor:pointer; font-weight:bold; font-size:1rem;">← Back</button>
+            <span style="font-weight:bold;">My History</span>
+        </div>
+        
+        <div class="history-tabs">
+            <button class="history-tab-btn active" id="tab-btn-topup" onclick="switchHistoryTab('topup')">ဂိမ်းအော်ဒါများ</button>
+            <button class="history-tab-btn" id="tab-btn-deposit" onclick="switchHistoryTab('deposit')">ငွေဖြည့်မှုမှတ်တမ်း</button>
+        </div>
+
+        <div id="history-content-container" style="padding-top: 5px; padding-bottom: 30px;"></div>
+    </div>
+
+    <div id="page-msg" class="hidden page-animated">
+        <div class="header">
+            <button onclick="showPage('page-home')" style="background:none; border:none; color:#FF8C00; cursor:pointer; font-weight:bold; font-size:1rem;" onmousedown="this.style.transform='scale(0.9)'" onmouseup="this.style.transform='scale(1)'">← Back</button>
+            <span>Inbox Messages</span>
+        </div>
+        <div style="padding: 20px;">
+            <div style="background: #111; padding: 20px; border-radius: 15px; border-left: 4px solid #FF8C00; margin-bottom: 20px; animation: animeGridPop 0.3s ease both;">
+                <p style="color: #FF8C00; font-weight: bold; margin-bottom: 5px;">Welcome to SR SHOP!</p>
+                <p style="color: #888; font-size: 0.85rem;">ဂိမ်းဝန်ဆောင်မှုများကို ယုံကြည်စိတ်ချစွာ ဝယ်ယူအားပေးနိုင်ပါသည်။</p>
+                <p style="margin-top: 10px; font-size: 0.7rem; color: #444;">Developer: Thu Rain Tun</p>
+            </div>
+            <div id="msg-list-content">
+                <p style="text-align:center; color:#444; font-size: 0.8rem;">စာမက်ဆေ့ခ်ျများ ရှာဖွေနေသည်...</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-ai" class="hidden page-animated">
+        <div class="header">
+            <button onclick="showPage('page-home')" style="background:none; border:none; color:#FF8C00; cursor:pointer; font-weight:bold; font-size:1rem;">← Back</button>
+            <span style="font-weight:bold;">✨ SilentX AI Assistant</span>
+        </div>
+        <div class="chat-area" id="chat-box">
+            <div class="msg msg-ai">🤖 **SilentX:** မင်္ဂလာပါခင်ဗျာ! 🌟 **SR Game Shop** ရဲ့ AI ဝန်ဆောင်မှုမှ ကြိုဆိုပါတယ်။ ကျွန်တော်ကတော့ **SilentX** ဖြစ်ပါတယ်။ ဘာများ ကူညီပေးရမလဲခင်ဗျာ။ 🚀</div>
+        </div>
+        <div style="padding: 15px; display: flex; gap: 10px; background: #111;">
+            <input type="text" id="ai-input" class="input-field" style="margin:0;" placeholder="SilentX ကို မေးမြန်းလိုသည်များ..." onkeypress="if(event.key === 'Enter') askGemini()">
+            <button class="btn-orange" style="width: 80px; margin: 0;" onclick="askGemini()">Send</button>
+        </div>
+    </div>
+
+    <div id="page-deposit" class="hidden page-animated">
+        <div class="header">
+            <button onclick="showPage('page-home')" style="background:none; border:none; color:#FF8C00; cursor:pointer; font-weight:bold; font-size:1rem;">← Back</button>
+            <span style="font-weight:bold;">ငွေဖြည့်သွင်းရန်</span>
+        </div>
+        <div style="padding: 20px; text-align: center;">
+            <div style="background: #111; padding: 25px; border-radius: 20px; border: 1px solid #333;">
+                <p style="color: #FF8C00; font-weight:bold;">Kpay / Wave Money</p>
+                <h1 style="margin: 10px 0; font-size: 1.8rem; letter-spacing: 1px; color:#fff;">09451055329</h1>
+                <p style="font-weight: bold; margin-bottom: 15px; color: #aaa;">Name: Daw Tin Zar Latt</p>
+                <hr style="border: 0; border-top: 1px solid #222; margin: 15px 0;">
+                
+                <p style="color: #FF8C00; font-size: 0.9rem; font-weight: bold; text-align: left; margin-bottom: 5px;">ငွေဖြည့်ပမာဏ (Ks) ထည့်ပါ</p>
+                <input type="number" id="deposit-amount" class="input-field" placeholder="ဥပမာ - 5000" style="margin-top: 0;">
+                
+                <p style="color: #FF8C00; font-size: 0.9rem; font-weight: bold; text-align: left; margin-top: 10px; margin-bottom: 5px;">ငွေလွဲပြေစာ (Screenshot) တင်ရန်</p>
+                <div class="upload-box" onclick="document.getElementById('slip-file').click()" style="border: 2px dashed #FF8C00; padding: 20px; border-radius: 12px; cursor: pointer; background: #050505; text-align: center;">
+                    <span id="upload-text" style="color: #888; font-size: 0.85rem;">ဒီနေရာကိုနှိပ်ပြီး ပုံရွေးချယ်ပါ</span>
+                    <input type="file" id="slip-file" accept="image/*" style="display: none;" onchange="previewSlip(event)">
+                    <img id="preview-img" style="width: 100%; max-height: 200px; object-fit: contain; display: none; margin-top: 10px; border-radius: 8px;">
+                </div>
+                <button class="btn-orange" id="submit-deposit-btn" style="margin-top:20px;" onclick="submitDepositOrder()">ငွေဖြည့်မှု တင်ပြမည်</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page: Other Things (အခြားဝန်ဆောင်မှုများနှင့် အချက်အလက်များ) -->
+    <div id="page-other" class="hidden page-animated">
+        <div class="header">
+            <button onclick="showPage('page-home')" style="background:none; border:none; color:#FF8C00; cursor:pointer; font-weight:bold; font-size:1rem;">← Back</button>
+            <span style="font-weight:bold;">အခြားဝန်ဆောင်မှုများ (Other Services)</span>
+        </div>
+        <div style="padding: 20px;">
+            <div style="background: #111; padding: 18px; border-radius: 12px; border: 1px solid #222; margin-bottom: 15px; text-align: center; border-left: 4px solid #FF8C00;">
+                <h3 style="color:#FF8C00; margin-bottom:10px; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 8px;">🛡️ Customer Security</h3>
+                <p style="font-size: 0.85rem; color: #ccc; line-height: 1.6;">ကျွန်ုပ်တို့ထံမှ မှာယူသော ဝန်ဆောင်မှုတိုင်းကို Ngwe Hlwe မှန်ကန်ပါက ရာနှုန်းပြည့် အာမခံချက်ရှိစွာ တာဝန်ယူ ဆောင်ရွက်ပေးနေပါသည်ဗျာ။ အကောင့်ဘေးကင်းရေးကို ၁၀၀% အာမခံပါသည်။</p>
+            </div>
+            
+            <div style="background: #111; padding: 18px; border-radius: 12px; border: 1px solid #222; margin-bottom: 15px; text-align: center; border-left: 4px solid #FF8C00;">
+                <h3 style="color:#FF8C00; margin-bottom:10px; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 8px;">🕒 လုပ်ငန်းချိန် (Working Hours)</h3>
+                <p style="font-size: 0.85rem; color: #ccc; line-height: 1.6;">မနက် ၈:၀၀ နာရီ မှ ည ၁၀:၀၀ နာရီအထိ လူကြီးမင်းတို့၏ အော်ဒါများနှင့် ငွေဖြည့်မှုများကို အမြန်ဆုံး ဆောင်ရွက်ပေးလျက် ရှိပါသည်။</p>
+            </div>
+
+            <div style="background: #111; padding: 18px; border-radius: 12px; border: 1px solid #222; margin-bottom: 15px; border-left: 4px solid #FF8C00;">
+                <h3 style="color:#FF8C00; margin-bottom:15px; text-align: center; font-size: 1.1rem;">📞 အရေးပေါ် တိုက်ရိုက်ဆက်သွယ်ရန်</h3>
+                <a href="viber://chat?number=%2B959773768702" target="_blank" class="social-contact-box" style="background: #7360f2; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                    <img src="https://i.ibb.co/zVcdy4rz/In-Shot-20260527-100623497.png" width="22" style="margin-right: 8px;"> Viber တိုက်ရိုက်ဆက်သွယ်ရန်
+                </a>
+                <a href="https://t.me/Tun_1224" target="_blank" class="social-contact-box" style="background: #0088cc; display: flex; align-items: center; justify-content: center;">
+                    <img src="https://img.icons8.com/?size=100&id=63306&format=png" width="22" style="margin-right: 8px;"> Telegram တိုက်ရိုက်ဆက်သွယ်ရန်
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Tab Bar -->
+    <div id="nav-bar" class="bottom-nav hidden">
+        <div class="nav-tab" id="tab-page-home" onclick="showPage('page-home')">
+            <img src="https://img.icons8.com/?size=100&id=12229&format=png&color=000000" alt="Home"><span>Home</span>
+        </div>
+        <div class="nav-tab" id="tab-page-ai" onclick="showPage('page-ai')">
+            <img src="https://img.icons8.com/?size=100&id=59023&format=png&color=000000" alt="AI"><span>AI</span>
+        </div>
+        <div class="nav-tab" id="tab-page-profile" onclick="showPage('page-profile')">
+            <img src="https://img.icons8.com/?size=100&id=NPW07SMh7Aco&format=png&color=000000" alt="Profile"><span>Profile</span>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- STREAMING_CHUNK: Instantiating Firebase config parameters ---
+    // --- Firebase Initialization Engine Configurations ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyALqp9IxejZ2b4d3vJMGuwV0RWPxpQRsaU",
+      authDomain: "diamondshop-b56ab.firebaseapp.com",
+      databaseURL: "https://diamondshop-b56ab-default-rtdb.firebaseio.com",
+      projectId: "diamondshop-b56ab",
+      storageBucket: "diamondshop-b56ab.firebasestorage.app",
+      messagingSenderId: "504521967191",
+      appId: "1:504521967191:web:215ead398cab81444f8512",
+      measurementId: "G-9RGLMY2F05"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    
+    let currentUser = null;
+    let selectedImageBase64 = null;
+    let currentHistoryTab = "topup"; 
+
+    // --- STREAMING_CHUNK: Defining UI Helper functions (sidebar and input updates) ---
+    // Sidebar drawer control logic
+    function toggleSidebar(open) {
+        const sidebar = document.getElementById("side-menu");
+        const overlay = document.getElementById("sidebar-overlay");
+        if (open) {
+            sidebar.classList.add("open");
+            overlay.classList.add("show");
+        } else {
+            sidebar.classList.remove("open");
+            overlay.classList.remove("show");
+        }
+    }
+
+    // Dynamic Live Order Destination Preview update (မှာတဲ့နေရာပြပေးသော logic)
+    function updateOrderPreview(game) {
+        const previewBox = document.getElementById('order-target-preview');
+        const previewText = document.getElementById('target-preview-text');
+        
+        let previewHtml = "";
+        if (game === 'mlbb') {
+            const id = document.getElementById('ml-id').value.trim();
+            const server = document.getElementById('ml-server').value.trim();
+            if (id) {
+                previewHtml = `🎮 Game: <b>Mobile Legends</b><br>🆔 Player ID: <span style="color:#FF8C00;">${id}</span> ${server ? ` | Server: <span style="color:#FF8C00;">(${server})</span>` : ''}`;
+            }
+        } else if (game === 'pubg') {
+            const id = document.getElementById('pubg-id').value.trim();
+            if (id) {
+                previewHtml = `🎮 Game: <b>PUBG Mobile</b><br>🆔 Character ID: <span style="color:#FF8C00;">${id}</span>`;
+            }
+        } else if (game === 'ff') {
+            const id = document.getElementById('ff-id').value.trim();
+            if (id) {
+                previewHtml = `🎮 Game: <b>Free Fire</b><br>🆔 UID: <span style="color:#FF8C00;">${id}</span>`;
+            }
+        }
+        
+        if (previewHtml) {
+            previewText.innerHTML = previewHtml;
+            previewBox.style.display = 'block';
+        } else {
+            previewBox.style.display = 'none';
+        }
+    }
+
+    // --- STREAMING_CHUNK: Setup Overlaid confirmation modal ... ---
+    // --- Overlaid System Dialog Confirmation Promises Box ---
+    function showCustomConfirm(message, isAlertMode = false) {
+        return new Promise((resolve) => {
+            const overlay = document.createElement("div");
+            overlay.className = "custom-confirm-overlay";
+            overlay.innerHTML = `
+                <div class="custom-confirm-box">
+                    <h3>SYSTEM MESSAGE</h3>
+                    <p>${message}</p>
+                    <div class="custom-confirm-buttons">
+                        ${isAlertMode ? '' : '<button class="custom-confirm-btn cancel" id="custom-cancel-btn">CANCEL</button>'}
+                        <button class="custom-confirm-btn ok" id="custom-ok-btn">OK</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            
+            if(!isAlertMode) {
+                overlay.querySelector("#custom-cancel-btn").onclick = function() { overlay.remove(); resolve(false); };
+            }
+            overlay.querySelector("#custom-ok-btn").onclick = function() { overlay.remove(); resolve(true); };
+        });
+    }
+
+    async function callCustomAlert(msg) { await showCustomConfirm(msg, true); }
+
+    function previewSlip(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('upload-text').style.display = 'none';
+            const preview = document.getElementById('preview-img');
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            selectedImageBase64 = e.target.result.split(',')[1];
+        };
+        reader.readAsDataURL(file);
+    }
+    
+    window.onload = function() {
+        const savedPhone = localStorage.getItem("sr_user_phone");
+        if (savedPhone) {
+            db.collection("users").doc(savedPhone).get().then(doc => {
+                if (doc.exists) {
+                    currentUser = doc.data();
+                    updateUI();
+                    showPage('page-home');
+                } else { showPage('page-login'); }
+            }).catch(() => showPage('page-login'));
+        } else { showPage('page-login'); }
+    };
+
+    // --- STREAMING_CHUNK: Direct Page Rendering display logic ---
+    function showPage(id) {
+        document.querySelectorAll('.app-container > div').forEach(div => {
+            if(div.id !== 'nav-bar' && div.id !== 'side-menu' && div.id !== 'sidebar-overlay') div.classList.add('hidden');
+        });
+        
+        const targetPage = document.getElementById(id);
+        if (targetPage) {
+            targetPage.classList.remove('hidden');
+            targetPage.style.animation = 'none';
+            targetPage.offsetHeight; 
+            targetPage.style.animation = null;
+        }
+
+        const nav = document.getElementById('nav-bar');
+        if (id === 'page-login' || id === 'page-register' || id === 'page-forgot') {
+            nav.classList.add('hidden');
+        } else { nav.classList.remove('hidden'); }
+
+        document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+        const activeTab = document.getElementById('tab-' + id);
+        if (activeTab) activeTab.classList.add('active');
+    }
+
+    async function handleLogin() {
+        const phone = document.getElementById('log-phone').value.trim();
+        const pass = document.getElementById('log-pass').value.trim();
+        if(!phone || !pass) return await callCustomAlert("⚠️ ကျေးဇူးပြု၍ ဖုန်းနံပါတ်နှင့် စကားဝှက် ဖြည့်ပေးပါ။");
+        
+        db.collection("users").doc(phone).get().then(async doc => {
+            if(doc.exists && doc.data().pass === pass) {
+                currentUser = doc.data();
+                localStorage.setItem("sr_user_phone", phone);
+                updateUI();
+                showPage('page-home');
+            } else { await callCustomAlert("❌ ဖုန်းနံပါတ် သို့မဟုတ် စကားဝှက် မှားယွင်းနေပါသည်။"); }
+        });
+    }
+
+    // --- STREAMING_CHUNK: Configuring Register logic ... ---
+    async function handleRegister() {
+        const name = document.getElementById('reg-name').value.trim();
+        const phone = document.getElementById('reg-phone').value.trim();
+        const pass = document.getElementById('reg-pass').value.trim();
+        const conf = document.getElementById('reg-confirm').value.trim();
+        
+        if(!name || !phone || !pass) return await callCustomAlert("⚠️ အချက်အလက်များကို အပြည့်အစုံ ဖြည့်စွက်ပေးပါ။");
+        if(pass !== conf) return await callCustomAlert("❌ စကားဝှက်အတည်ပြုချက် မကိုက်ညီပါဗျာ။");
+        
+        db.collection("users").doc(phone).get().then(async doc => {
+            if (doc.exists) {
+                await callCustomAlert("❌ ဤဖုန်းနံပါတ်ဖြင့် အကောင့်ဖွင့်ထားပြီးသား ဖြစ်နေပါသည်။");
+            } else {
+                const userData = { name: name, phone: phone, pass: pass, balance: 0, id: Math.floor(100000 + Math.random() * 900000) };
+                db.collection("users").doc(phone).set(userData).then(async () => {
+                    await callCustomAlert("🎉 အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါပြီ။");
+                    showPage('page-login');
+                });
+            }
+        });
+    }
+
+    async function handleResetPassword() {
+        const phone = document.getElementById('for-phone').value.trim();
+        const userId = document.getElementById('for-userid').value.trim();
+        const newPass = document.getElementById('for-newpass').value.trim();
+
+        if(!phone || !userId || !newPass) return await callCustomAlert("⚠️ ကျေးဇူးပြု၍ အချက်အလက်အားလုံးကို ဖြည့်စွက်ပါ။");
+
+        db.collection("users").doc(phone).get().then(async (doc) => {
+            if(doc.exists && String(doc.data().id) === String(userId)) {
+                db.collection("users").doc(phone).update({ pass: newPass }).then(async () => {
+                    await callCustomAlert("✅ စကားဝှက်အသစ် ပြောင်းလဲခြင်း အောင်မြင်ပါပြီ။");
+                    showPage('page-login');
+                });
+            } else { await callCustomAlert("❌ ဖုန်းနံပါတ် သို့မဟုတ် User ID မှားယွင်းနေပါသည်။"); }
+        });
+    }
+
+    function handleLogout() { localStorage.removeItem("sr_user_phone"); location.reload(); }
+
+    function updateUI() {
+        db.collection("users").doc(currentUser.phone).onSnapshot(doc => {
+            if(doc.exists) {
+                currentUser = doc.data();
+                const balText = currentUser.balance.toLocaleString() + " Ks";
+                
+                document.getElementById('user-header-name').innerText = currentUser.name;
+                document.getElementById('display-balance').innerText = balText;
+                
+                document.getElementById('prof-name-top').innerText = currentUser.name;
+                document.getElementById('prof-display-name').innerText = currentUser.name;
+                document.getElementById('prof-display-phone').innerText = currentUser.phone;
+                document.getElementById('prof-display-id').innerText = "#" + currentUser.id;
+                document.getElementById('prof-display-balance').innerText = balText;
+                document.getElementById('prof-avatar').innerText = currentUser.name[0].toUpperCase();
+
+                // Dynamic Sidebar Widgets Update Engagements
+                const sidebarName = document.getElementById('sidebar-user-name');
+                const sidebarBal = document.getElementById('sidebar-user-balance');
+                const sidebarAvy = document.getElementById('sidebar-user-avatar');
+
+                if (sidebarName) sidebarName.innerText = currentUser.name;
+                if (sidebarBal) sidebarBal.innerText = balText;
+                if (sidebarAvy) sidebarAvy.innerText = currentUser.name[0].toUpperCase();
+            }
+        });
+    }
+
+    // --- STREAMING_CHUNK: Setup Store View and Selection logic ---
+    function openStore(game) {
+        const listView = document.getElementById('price-list-view');
+        document.getElementById('store-title').innerText = game.toUpperCase() + " TOP UP";
+        listView.innerHTML = '<p style="text-align:center; padding:20px; color:#FF8C00;">Loading prices...</p>';
+        
+        // Hide/Reset Location preview card at first
+        document.getElementById('order-target-preview').style.display = 'none';
+        
+        // Reset Inputs value
+        document.getElementById('ml-id').value = "";
+        document.getElementById('ml-server').value = "";
+        document.getElementById('pubg-id').value = "";
+        document.getElementById('ff-id').value = "";
+
+        document.querySelectorAll('#id-input-section > div').forEach(div => div.classList.add('hidden'));
+        const gameInput = document.getElementById(game + '-inputs');
+        if(gameInput) gameInput.classList.remove('hidden');
+        
+        showPage('page-store');
+
+        db.collection("prices").doc(game).onSnapshot(doc => {
+            if(doc.exists) {
+                const data = doc.data();
+                listView.innerHTML = "";
+                let hasData = false;
+
+                Object.keys(data).forEach((fieldName, idx) => {
+                    const itemArray = data[fieldName];
+                    if (Array.isArray(itemArray) && itemArray.length > 0) {
+                        renderCat(listView, fieldName.toUpperCase(), itemArray, game, idx);
+                        hasData = true;
+                    }
+                });
+                if(!hasData) listView.innerHTML = '<p style="text-align:center; padding:20px; color:#555;">ဈေးနှုန်းစာရင်း မရှိသေးပါ။</p>';
+            } else { listView.innerHTML = '<p style="text-align:center; padding:20px; color:#ff4444;">ဈေးနှုန်းရယူ၍ မရနိုင်ပါဗျာ။</p>'; }
+        });
+    }
+
+    function renderCat(el, title, items, game, catIdx) {
+        el.innerHTML += `<div class="category-label">${title}</div>`;
+        let gridHtml = `<div class="store-grid-container">`;
+        
+        let iconUrl = "https://i.ibb.co/YFn28w7W/1779033419820.png"; 
+        if (game === 'pubg') iconUrl = "https://i.ibb.co/YFsM7tzd/1779032245273.png";
+        else if (game === 'mlbb') iconUrl = "https://i.ibb.co/YFn28w7W/1779033419820.png";
+        else if (game === 'ff') iconUrl = "https://i.ibb.co/xS0JNhKs/file-000000008cc47208b35ea71a6d26189e.png";
+
+        items.forEach((item, itemIdx) => {
+            const itemAmount = item.amount || item.Amount || item.name || "Unknown";
+            const itemPrice = item.price || item.Price || 0;
+            const delay = (catIdx * 0.1) + (itemIdx * 0.05);
+
+            gridHtml += `
+                <div class="price-box-card" style="animation-delay: ${delay}s;">
+                    <img src="${iconUrl}" class="currency-icon" alt="icon">
+                    <div class="price-box-amount">${itemAmount}</div>
+                    <div class="price-box-cost">${itemPrice.toLocaleString()} Ks</div>
+                    <button class="buy-btn" onclick="processOrder('${game}', '${itemAmount}', ${itemPrice})">Buy Now</button>
+                </div>`;
+        });
+        gridHtml += `</div>`;
+        el.innerHTML += gridHtml;
+    }
+
+    // --- STREAMING_CHUNK: Setup order processing functions ... ---
+    async function processOrder(game, item, price) {
+        if(currentUser.balance < price) return await callCustomAlert("❌ လက်ကျန်ငွေ မလုံလောက်ပါ။ ကျေးဇူးပြု၍ အရင်ငွေဖြည့်သွင်းပေးပါ။");
+        
+        let gId = (game === 'mlbb') ? document.getElementById('ml-id').value.trim() + "(" + document.getElementById('ml-server').value.trim() + ")" : document.getElementById(game + '-id').value.trim();
+        if(!gId || gId === "()") return await callCustomAlert("⚠️ ဂိမ်း Player ID ကို မှန်ကန်စွာ ဖြည့်စွက်ပေးပါ။");
+        
+        const userConfirmed = await showCustomConfirm(`${item} အား ဝယ်ယူရန် သေချာပါသလား?\n\n🎯 မှာယူမည့်နေရာ: ${gId}\n💰 ကျသင့်ငွေ: ${price.toLocaleString()} Ks နှုတ်ယူသွားမည် ဖြစ်သည်။`);
+        
+        if(userConfirmed) {
+            const oId = "SR" + Math.floor(1000 + Math.random() * 9000);
+            db.collection("users").doc(currentUser.phone).update({ balance: currentUser.balance - price }).then(async () => {
+                db.collection("orders").add({
+                    orderId: oId, userId: currentUser.phone, game: game, gameId: gId, item: item, price: price, status: "pending", time: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(async () => await callCustomAlert(`✅ Order (#${oId}) တင်ခြင်း အောင်မြင်ပါပြီ။`));
+
+                const msg = `🔔 <b>SR SHOP - အော်ဒါအသစ်</b>\n` +
+                            `--------------------------\n` +
+                            `📝 Order ID: #${oId}\n` +
+                            `🎮 ဂိမ်း: ${game.toUpperCase()}\n` +
+                            `👤 ဝယ်သူ: ${currentUser.name}\n` +
+                            `📞 Phone Number: ${currentUser.phone}\n` +
+                            `🆔 Game ID: ${gId}\n` +
+                            `💰 ကျသင့်ငွေ: ${price} Ks`;
+                sendToTelegram(msg);
+            });
+        }
+    }
+
+    function openHistoryView() {
+        showPage('page-orders');
+        switchHistoryTab(currentHistoryTab);
+    }
+
+    function switchHistoryTab(tabName) {
+        currentHistoryTab = tabName;
+        document.querySelectorAll(".history-tab-btn").forEach(btn => btn.classList.remove("active"));
+        
+        if(tabName === 'topup') {
+            document.getElementById("tab-btn-topup").classList.add("active");
+            loadTopupOrdersHistory();
+        } else {
+            document.getElementById("tab-btn-deposit").classList.add("active");
+            loadDepositsHistory();
+        }
+    }
+
+    // --- STREAMING_CHUNK: Fetching game topup orders ... ---
+    function loadTopupOrdersHistory() {
+        const container = document.getElementById('history-content-container');
+        container.innerHTML = '<p style="text-align:center; padding:30px; color:#FF8C00;">ဂိမ်းအော်ဒါမှတ်တမ်းများ ရယူနေသည်...</p>';
+
+        db.collection("orders").where("userId", "==", currentUser.phone).onSnapshot((snap) => {
+            if (currentHistoryTab !== 'topup') return; 
+            if (snap.empty) { 
+                container.innerHTML = '<p style="text-align:center; padding:50px; color:#555; font-size:0.9rem;">ဂိမ်းအော်ဒါမှတ်တမ်း မရှိသေးပါဗျာ။</p>'; 
+                return; 
+            }
+            
+            let arr = []; snap.forEach(doc => arr.push(doc.data()));
+            arr.sort((a, b) => (b.time?.seconds || 0) - (a.time?.seconds || 0));
+
+            let html = "";
+            arr.forEach((d, idx) => {
+                let iconUrl = "https://cdn-icons-png.flaticon.com/512/681/681123.png"; 
+                if(d.game === 'mlbb') iconUrl = "https://i.ibb.co/YFn28w7W/1779033419820.png";
+                if(d.game === 'pubg') iconUrl = "https://i.ibb.co/YFsM7tzd/1779032245273.png";
+                if(d.game === 'ff') iconUrl = "https://i.ibb.co/xS0JNhKs/file-000000008cc47208b35ea71a6d26189e.png";
+                const delay = idx * 0.04;
+
+                html += `
+                <div style="background:#111; margin:10px 15px; padding:15px; border-radius:15px; border:1px solid #222; display:flex; align-items:center; gap:15px; border-left: 5px solid ${d.status === 'completed' ? '#00ff00' : (d.status === 'rejected' ? '#ff4444' : '#FF8C00')}; animation: animeGridPop 0.35s ease-out both; animation-delay: ${delay}s;">
+                    <img src="${iconUrl}" width="45" height="45" style="border-radius:10px; background:#000; padding:5px; object-fit:contain;">
+                    <div style="flex:1;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="color:#FF8C00; font-weight:bold; font-size:1rem;">${d.game.toUpperCase()}</span>
+                            <span style="color:${d.status === 'completed' ? '#00ff00' : (d.status === 'rejected' ? '#ff4444' : '#FF8C00')}; font-size:0.8rem; font-weight:bold;">${d.status.toUpperCase()}</span>
+                        </div>
+                        <p style="font-size:0.85rem; color:#ccc; margin:3px 0;">${d.item} - ${d.price.toLocaleString()} Ks</p>
+                        <p style="font-size:0.7rem; color:#555;">ID: ${d.gameId} | #${d.orderId}</p>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        });
+    }
+
+    function loadDepositsHistory() {
+        const container = document.getElementById('history-content-container');
+        container.innerHTML = '<p style="text-align:center; padding:30px; color:#FF8C00;">ငွေဖြည့်မှုမှတ်တမ်းများ ရယူနေသည်...</p>';
+
+        db.collection("deposits").where("phone", "==", currentUser.phone).onSnapshot((snap) => {
+            if (currentHistoryTab !== 'deposit') return; 
+            if (snap.empty) {
+                container.innerHTML = '<p style="text-align:center; padding:50px; color:#555; font-size:0.9rem;">ငွေဖြည့်သွင်းထားသော မှတ်တမ်း မရှိသေးပါဗျာ။</p>';
+                return;
+            }
+
+            let arr = []; 
+            snap.forEach(doc => {
+                let data = doc.data();
+                data.docId = doc.id; 
+                arr.push(data);
+            });
+            arr.sort((a, b) => (b.time?.seconds || 0) - (a.time?.seconds || 0));
+
+            let html = "";
+            arr.forEach((d, idx) => {
+                const currentStatus = d.status || 'pending';
+                const statusColor = currentStatus === 'completed' ? '#00ff00' : (currentStatus === 'rejected' ? '#ff4444' : '#FF8C00');
+                const delay = idx * 0.04;
+                const dateStr = d.time ? new Date(d.time.seconds * 1000).toLocaleDateString() : 'ခုနကတင်';
+                
+                const shortOrderId = d.docId ? d.docId.substring(0, 7).toUpperCase() : "SR" + Math.floor(1000 + Math.random() * 9000);
+
+                html += `
+                <div style="background:#111; margin:10px 15px; padding:15px; border-radius:15px; border:1px solid #222; display:flex; align-items:center; gap:15px; border-left: 5px solid ${statusColor}; animation: animeGridPop 0.35s ease-out both; animation-delay: ${delay}s;">
+                    <div style="width:45px; height:45px; border-radius:10px; background:#1c1c1c; display:flex; align-items:center; justify-content:center; font-size:1.3rem; color:#FF8C00;">💰</div>
+                    <div style="flex:1;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="color:#ffffff; font-weight:bold; font-size:1rem;">+ ${parseInt(d.amount).toLocaleString()} Ks</span>
+                            <span style="color:${statusColor}; font-size:0.8rem; font-weight:bold;">${currentStatus.toUpperCase()}</span>
+                        </div>
+                        <p style="font-size:0.75rem; color:#FF8C00; margin-top:3px; font-weight:500;">Deposit ID: #${shortOrderId}</p>
+                        <p style="font-size:0.75rem; color:#888; margin-top:2px;">ရက်စွဲ: ${dateStr}</p>
+                        <p style="font-size:0.7rem; color:#444; margin-top:2px;">Status: ${currentStatus === 'completed' ? 'ငွေဖြည့်သွင်းမှု အောင်မြင်သည်' : (currentStatus === 'rejected' ? 'ပယ်ဖျက်ထားပါသည်' : 'တာဝန်ရှိသူမှ စစ်ဆေးနေဆဲ')}</p>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        });
+    }
+
+    // --- STREAMING_CHUNK: Handling imageBB image hosting uploads ... ---
+    async function submitDepositOrder() {
+        const amount = document.getElementById('deposit-amount').value.trim();
+        const btn = document.getElementById('submit-deposit-btn');
+
+        if (!amount || amount <= 0) return await callCustomAlert("⚠️ ကျေးဇူးပြု၍ Ngwe Phyae ပမာဏကို မှန်ကန်စွာ ဖြည့်သွင်းပေးပါ။");
+        if (!selectedImageBase64) return await callCustomAlert("⚠️ ကျေးဇူးပြု၍ Ngwe Hlweပြေစာ Screenshot ပုံတင်ပေးပါ။");
+
+        btn.innerText = "Processing... ခဏစောင့်ပါ";
+        btn.disabled = true;
+
+        try {
+            const formData = new FormData();
+            formData.append("image", selectedImageBase64);
+            
+            const imgbbRes = await fetch("https://api.imgbb.com/1/upload?key=06fed9e1368ff406bc578eb29ddb4c80", {
+                method: "POST", body: formData
+            });
+            const imgbbData = await imgbbRes.json();
+            
+            if (!imgbbData.success) { return await callCustomAlert("❌ Image တင်ခြင်း မအောင်မြင်ပါ။"); }
+
+            const imageUrl = imgbbData.data.url;
+            const telegramToken = "8526730170:AAHX7Y0p0TMb_XgsmgG594XTDVWv4dtC5_E";
+            const chatId = "8189963333";
+            const userId = currentUser ? (currentUser.id || 'မသိပါ') : 'Unknown';
+
+            const depositDocRef = await db.collection("deposits").add({
+                userId: userId, 
+                name: currentUser.name, 
+                phone: currentUser.phone, 
+                amount: amount, 
+                slipUrl: imageUrl, 
+                status: "pending", 
+                time: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            const docId = depositDocRef.id;
+            const shortOrderId = docId.substring(0, 7).toUpperCase();
+
+              const captionMsg = `💰 <b>SR SHOP - ငွေဖြည့်မှုအသစ်</b>\n` +  
+                   `--------------------------\n` + 
+                               `🆔 <b>Deposit ID: #${shortOrderId}</b>\n` +
+                               `👤 Customer: ${currentUser.name}\n` +
+                               `📱 Phone: <code>${currentUser.phone}</code>\n` +
+                               `🧑‍💻 User ID: <code>${currentUser.id}</code>\n` +  
+                               `💵 Amount: <b>${parseInt(amount).toLocaleString()} Ks</b>\n\n` +
+                               `📌 <i>Admin Decision buttons:</i>`;
+
+            const inlineKeyboard = {
+                inline_keyboard: [
+                    [
+                        { text: "✅ Confirm (လက်ခံမည်)", url: `https://diamondshop-b56ab.web.app/admin.html?action=confirm&id=${docId}&phone=${currentUser.phone}&amount=${amount}` },
+                        { text: "❌ Reject (ပယ်ဖျက်မည်)", url: `https://diamondshop-b56ab.web.app/admin.html?action=reject&id=${docId}&phone=${currentUser.phone}` }
+                    ]
+                ]
+            };
+
+            const teleRes = await fetch(`https://api.telegram.org/bot${telegramToken}/sendPhoto`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    photo: imageUrl,
+                    caption: captionMsg,
+                    parse_mode: "HTML",
+                    reply_markup: inlineKeyboard
+                })
+            });
+            
+            const teleData = await teleRes.json();
+            
+            if (!teleData.ok) {
+                console.error("Telegram Error Details:", teleData);
+                return alert("Telegram သို့ ပို့မရဖြစ်နေပါသည်။ Chat ID သို့မဟုတ် Token မှားယွင်းနေနိုင်ပါသည်။");
+            }
+            
+            const alertOverlay = document.createElement("div");
+            alertOverlay.style = "position:fixed; top:0; left:0; width:100%; height:100vh; background:rgba(0,0,0,0.85); display:flex; justify-content:center; align-items:center; z-index:9999999;";
+            alertOverlay.innerHTML = `
+                <div style="background:#1a1a1a; border:2px solid #ff8c00; border-radius:16px; width:85%; max-width:340px; padding:25px; text-align:center; box-shadow:0 0 20px rgba(255,140,0,0.3); color:#fff;">
+                    <div style="font-size: 3.5rem; margin-bottom: 15px;">⏳</div>
+                    <h3 style="color:#ff8c00; margin-bottom:12px;">စစ်ဆေးနေပါသည်ဗျာ</h3>
+                    <p style="font-size:0.85rem; color:#FF8C00; font-weight:bold; margin-bottom:12px; letter-spacing:0.5px;">
+                        Deposit ID: #${shortOrderId}
+                    </p>
+                    <p style="font-size:0.9rem; line-height:1.6; color:#ccc; text-align:left; margin:0 0 20px 0; white-space:pre-line;">
+                        လူကြီးမင်း တင်ပြထားသော ငွေဖြည့်မှုတောင်းဆိုချက်ကို တာဝန်ရှိသူများမှ သေသေချာချာ စစ်ဆေးပေးနေပါပြီဗျာ။
+
+                        လုပ်ငန်းစဉ်သည် အများဆုံး ၁၅ မိနစ်ခန့်သာ ကြာမြင့်မည်ဖြစ်ပြီး၊ လွှဲပြောင်းမှု မှန်ကန်ပါက ၁၅ မိနစ်အတွင်း လူကြီးမင်း၏ Account ထဲသို့ ပိုက်ဆံ ထည့်သွင်းပေးသွားမည် ဖြစ်ပါသည်။
+
+                        📊 သင့်ငွေဖြည့်သွင်းမှု အခြေအနေကို 'ငွေဖြည့်မှုမှတ်တမ်း ကြည့်ရန်' ခလုတ်တွင် အချိန်မရွေး ဝင်ရောက်စစ်ဆေးနိုင်ပါသည်။
+
+                        SR SHOP ကို ယုံကြည်စွာ အသုံးပြုပေးသည့်အတွက် ကျေးဇူးအထူးတင်ရှိပါသည်ဗျာ။ 🙏
+                    </p>
+                    <button id="close-alert-btn" style="background:linear-gradient(135deg, #ff8c00, #e06c00); color:#fff; border:none; width:100%; padding:12px; border-radius:8px; font-weight:bold; font-size:1rem; cursor:pointer;">အိုကေ</button>
+                </div>
+            `;
+            document.body.appendChild(alertOverlay);
+            
+            alertOverlay.querySelector("#close-alert-btn").onclick = function() {
+                alertOverlay.remove();
+                document.getElementById('deposit-amount').value = "";
+                document.getElementById('preview-img').style.display = 'none';
+                document.getElementById('upload-text').style.display = 'block';
+                selectedImageBase64 = null;
+                showPage('page-home');
+            };
+
+        } catch (error) { 
+            console.error(error);
+            await callCustomAlert("❌ စနစ်ချို့ယွင်းမှု ဖြစ်ပေါ်သွားပါသည်။"); 
+        } finally { 
+            btn.innerText = "ငွေဖြည့်မှု တင်ပြမည်"; 
+            btn.disabled = false; 
+        }
+    }
+
+    // Simple markdown to HTML parser for beautiful replies in Burmese
+    function formatAIPostMessage(text) {
+        let cleanText = text;
+        // Escape HTML
+        cleanText = cleanText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        // Re-allow basic tags we construct
+        // Convert markdown bold (**bold**) to HTML bold
+        cleanText = cleanText.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        // Convert bullet lines
+        cleanText = cleanText.replace(/^\s*[\-\*•]\s*(.*?)$/gm, '• $1');
+        // Convert line breaks
+        cleanText = cleanText.replace(/\n/g, '<br>');
+        return cleanText;
+    }
+
+    
+        const apiKey = ""; // Kept empty as per core principles; the environment injects it.
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+// --- STREAMING_CHUNK: Setup Beautiful Gemini SilentX AI Integration ---
+async function askGemini() {
+        const input = document.getElementById('ai-input');
+        const chatBox = document.getElementById('chat-box');
+        const userText = input.value.trim();
+        const q = userText.toLowerCase();
+
+        if (!userText) return;
+
+        chatBox.innerHTML += `<div class="msg msg-user">${userText}</div>`;
+        input.value = "";
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        setTimeout(async () => {
+            let reply = "";
+            let shouldNotifyOwner = false;
+
+            if (q.includes("hi") || q.includes("hello") || q.includes("မင်္ဂလာပါ") || q.includes("ဟလို")) {
+                reply = "မင်္ဂလာပါခင်ဗျာ! **SR Game Shop** ရဲ့ AI Assistant ဖြစ်ပါတယ်။ လူကြီးမင်းအတွက် Game Currency တွေနဲ့ ပတ်သက်ပြီး ဘာများ ကူညီပေးရမလဲခင်ဗျာ။";
+            } 
+            else if (q.includes("ပိုင်ရှင်") || q.includes("thu rain tun") || q.includes("owner") || q.includes("developer") || q.includes("ဘယ်သူလုပ်တာလဲ")) {
+                reply = "ဒီ Application ကို လူငယ် Developer တစ်ဦးဖြစ်တဲ့ **Thu Rain Tun** က ကိုယ်တိုင် ရေးသားဖန်တီးထားတာ ဖြစ်ပါတယ်။ SR Game Shop ကို အကောင်းဆုံး ဝန်ဆောင်မှုပေးနိုင်ဖို့ သူက အမြဲ ကြိုးစားနေပါတယ်။";
+            } 
+            else if (q.includes("ငွေဖြည့်") || q.includes("deposit") || q.includes("ပိုက်ဆံဖြည့်နည်") || q.includes("kpay") || q.includes("wave") || q.includes("payment")) {
+                reply = "<b>ငွေဖြည့်သွင်းရန် အဆင့်ဆင့်:</b><br>၁။ Home Page ရှိ <b>'+ Add Money'</b> ကို နှိပ်ပါ။<br>၂။ Kpay (သို့မဟုတ်) Wave နံပါတ်ကို Copy ယူပြီး Ngwe Hlwe ပါ။<br>၃။ Screenshot ကို Form တွင် တွဲတင်ပေးပါ။<br>၄။ Admin မှ စစ်ဆေးပြီး ၅ မိနစ်အတွင်း Balance ထည့်ပေးပါလိမ့်မယ်။";
+            } 
+            else if (q.includes("order") || q.includes("အော်ဒါ") || q.includes("ဝယ်နည်း") || q.includes("တင်နည်း") || q.includes("ဘယ်လိုဝယ်ရမလဲ")) {
+                reply = "<b>အော်ဒါတင်နည်းလမ်းညွှန်:</b><br>၁။ မိမိဝယ်လိုသော Game (MLBB, Free Fire, PUBG) ကို ရွေးပါ။<br>၂။ Game ID နှင့် Server ID ကို သေချာစွာ ဖြည့်သွင်းပါ။<br>၃။ မိမိဝယ်ယူလိုသော ပမာဏကို ရွေးချယ်ပြီး <b>'Buy Now'</b> ကို နှိပ်ပါ။<br>၄။ ဝယ်ယူမှု အောင်မြင်/မအောင်မြင်ကို <b>'My Orders'</b> ကဏ္ဍမှာ စစ်ဆေးနိုင်ပါတယ်။";
+            }
+            else if (q.includes("game") || q.includes("ဂိမ်း") || q.includes("ml") || q.includes("pubg") || q.includes("free fire")) {
+                reply = "လောလောဆယ်မှာတော့ Mobile Legends, PUBG Mobile နဲ့ Free Fire ဂိမ်းတွေအတွက် Diamond နဲ့ UC တွေကို အသက်သာဆုံး ဈေးနှုန်းတွေနဲ့ ဝယ်ယူနိုင်ပါတယ်။";
+            }
+            else if (q.includes("ယုံရလား") || q.includes("ယုံကြည်") || q.includes("safe") || q.includes("scam")) {
+                reply = "<b>SR Game Shop</b> ဟာ ရာနှုန်းပြည့် ယုံကြည်စိတ်ချရပါတယ်။ Developer <b>Thu Rain Tun</b> ကိုယ်တိုင် တာဝန်ယူထားတာဖြစ်လို့ စိတ်အေးချမ်းသာစွာ ဝယ်ယူနိုင်ပါတယ်ခင်ဗျာ။";
+            }
+            else if (q.includes("password") || q.includes("စကားဝှက်") || q.includes("မေ့သွား") || q.includes("forgot")) {
+                reply = "Password မေ့သွားပါက <b>Contact Admin</b> မှတဆင့် ပိုင်ရှင် Thu Rain Tun ထံသို့ တိုက်ရိုက် ဆက်သွယ်ပေးပါ။ လူကြီးမင်း၏ ဖုန်းနံပါတ်ကို စစ်ဆေးပြီး Password အသစ် ပြန်လည် ထုတ်ပေးပါလိမ့်မယ်။";
+            }
+            else if (q.includes("ကြာမလား") || q.includes("ဘယ်လောက်ကြာ") || q.includes("waiting time")) {
+                reply = "ပုံမှန်အားဖြင့် အော်ဒါတင်ပြီး <b>၅ မိနစ်မှ ၁၅ မိနစ်</b> အတွင်း ရောက်ပါတယ်ခင်ဗျာ။ Admin မအားလပ်တဲ့ အချိန်မျိုးမှာတော့ အနည်းငယ် ကြာနိုင်ပါတယ်။";
+            }
+            else if (q.includes("မရောက်သေးဘူး") || q.includes("order မတက်ဘူး")) {
+                reply = "အော်ဒါတင်ပြီး မိနစ် ၂၀ ကျော်တဲ့အထိ မရောက်သေးရင် <b>Contact Admin</b> ခလုတ်ကနေတဆင့် Admin ကို တိုက်ရိုက်ဆက်သွယ် မေးမြန်းနိုင်ပါတယ်ခင်ဗျာ။";
+            }
+            else if (q.includes("ချစ်တယ်") || q.includes("i love you")) {
+                reply = "ကျွန်တော်တို့ <b>SR Game Shop</b> ကို အားပေးတဲ့အတွက် အများကြီး ချစ်ပါတယ်ခင်ဗျာ! ❤️ အမြဲတမ်း အကောင်းဆုံး ဝန်ဆောင်မှုပေးသွားမှာပါ။";
+            }
+            else if (q.includes("ကျေးဇူး") || q.includes("thanks") || q.includes("thank you")) {
+                reply = "ရပါတယ်ခင်ဗျာ။ လူကြီးမင်းရဲ့ အားပေးမှုက ကျွန်တော်တို့အတွက် အင်အားပါပဲ။";
+            }
+            else if (q.includes("back") || q.includes("ပြန်ထွက်")) {
+                reply = "စာမျက်နှာတစ်ခုမှ ပြန်ထွက်ရန် Header ရှိ <b>'← Back'</b> ခလုတ်ကို သုံးပါ။";
+            }
+            else {
+                reply = "တောင်းပန်ပါတယ်ခင်ဗျာ၊ အဲဒါကိုတော့ ကျွန်တော် မသိသေးပါဘူး။ လူကြီးမင်းရဲ့ မေးခွန်းကို ပိုင်ရှင် Thu Rain Tun ဆီကို တိုက်ရိုက် မေးမြန်းပေးပို့ထားပါတယ်။ မကြာခင် ပြန်လည်ဖြေကြားပေးပါ့မယ်။";
+                shouldNotifyOwner = true;
+            }
+
+            chatBox.innerHTML += `<div class="msg msg-ai">${reply}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            let telegramMsg = `🔔 AI Chat Alert!\nUser: ${userText}\nAI Reply: ${reply.replace(/<br>/g, '\n')}`;
+            if (shouldNotifyOwner) {
+                telegramMsg = `⚠️ Unknown Question Alert!\nUser မေးတာ: ${userText}\nဒီမေးခွန်းကို AI မဖြေနိုင်လို့ စစ်ဆေးပေးပါ ပိုင်ရှင် Thu Rain Tun ခင်ဗျာ။`;
+            }
+            sendToTelegram(telegramMsg);
+
+        }, 800);
+    }
+
+    async function sendToTelegram(msg) {
+        const token = "8526730170:AAHX7Y0p0TMb_XgsmgG594XTDVWv4dtC5_E";
+        const chatId = "8189963333";
+        try { await fetch(`https://api.telegram.org/bot${token}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: chatId, text: msg, parse_mode: "HTML" }) }); } catch (e) {}
+    }
+
+    // --- STREAMING_CHUNK: Setup Inbox Database fetching logic ---
+    // --- Message Box (Inbox) Engine with Custom Time and Welcome Letter Display ---
+    function loadInbox() {
+        showPage('page-msg');
+        const contentDiv = document.getElementById('msg-list-content');
+
+        db.collection("messages")
+          .where("to", "==", currentUser.phone)
+          .onSnapshot(snap => {
+            let html = "";
+
+            if (snap.empty) {
+                html = `<p style="text-align:center; color:#444; font-size: 0.8rem; margin-top: 20px;">Inbox သည် ဗလာဖြစ်နေပါသည်။</p>`;
+            } else {
+                let messages = [];
+                snap.forEach(doc => messages.push(doc.data()));
+                messages.sort((a, b) => (b.time?.seconds || 0) - (a.time?.seconds || 0));
+
+                messages.forEach((data, idx) => {
+                    const date = data.time ? new Date(data.time.seconds * 1000) : new Date();
+                    const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const dateStr = date.toLocaleDateString();
+                    const delay = idx * 0.05;
+
+                    html += `
+                        <div style="background: linear-gradient(145deg, #111, #080808); padding: 18px; border-radius: 15px; border: 1px solid #222; border-left: 5px solid #FF8C00; margin-bottom: 15px; position: relative; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.5); animation: animeGridPop 0.4s ease both; animation-delay: ${delay}s;">
+                            <div style="position: absolute; top: -20px; right: -20px; width: 60px; height: 60px; background: rgba(255,140,0,0.05); border-radius: 50%;"></div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #1a1a1a; padding-bottom: 8px;">
+                                <span style="color: #FF8C00; font-weight: bold; font-size: 0.75rem; letter-spacing: 1px;">OFFICIAL MESSAGE</span>
+                                <span style="color: #555; font-size: 0.65rem;">${timeStr} | ${dateStr}</span>
+                            </div>
+                            <p style="color: #eee; font-size: 0.95rem; line-height: 1.5; margin-bottom: 10px; word-wrap: break-word;">
+                                ${data.text}
+                            </p>
+                            <div style="text-align: right;">
+                                <span style="background: #FF8C00; color: #000; padding: 2px 10px; border-radius: 10px; font-size: 0.65rem; font-weight: bold; text-transform: uppercase;">Sent by Admin</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            contentDiv.innerHTML = html;
+        });
+    }
+
+    // --- STREAMING_CHUNK: Setup game icons loading trigger event ... ---
+    document.addEventListener("DOMContentLoaded", () => {
+        db.collection("game_icons").onSnapshot((snapshot) => {
+            snapshot.forEach((doc) => {
+                const targetImg = document.getElementById(`icon-${doc.id}`);
+                if (targetImg && doc.data().url) targetImg.src = doc.data().url;
+            });
+        });
+    });
+</script>
+</body>
+</html>
