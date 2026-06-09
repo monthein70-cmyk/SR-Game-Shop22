@@ -24,7 +24,6 @@
             --border: #222225; 
         }
         
-        /* STRICT CSS FALLBACK FOR OFFLINE PREVIEW (ACODE FIX) */
         .hidden { 
             display: none !important; 
         }
@@ -111,7 +110,7 @@
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 20px; /* Fallback padding */
+            padding: 20px;
             transition: border-color 0.3s ease, transform 0.2s ease;
             box-sizing: border-box;
             display: flex;
@@ -188,7 +187,6 @@
             filter: brightness(0.9);
         }
 
-        /* Game & Service grid borders inspired by Telegram screenshot */
         .premium-border-glow {
             border: 2px solid #222;
             box-shadow: 0 0 15px rgba(255, 140, 0, 0.1);
@@ -302,7 +300,6 @@
                     <div>
                         <div class="font-black text-xl flex items-center gap-2">
                             <span>🛠 Admin Control Suite</span>
-                            <!-- Live Red Pulse Alert Badge -->
                             <span id="home-pending-badge" class="hidden bg-red-600 text-white border border-white text-[11px] font-black px-2 py-0.5 rounded-full animate-bounce">0</span>
                         </div>
                         <p class="text-xs text-black/85 font-semibold">Manage Dashboard, Orders, Items & Ad Banners</p>
@@ -416,12 +413,15 @@
         </div>
 
         <!-- Tabbed Menu Router inside Admin Suite -->
-        <div class="grid grid-cols-4 bg-[#0D0D10] text-center border-b border-neutral-800 text-[11px] font-bold sticky top-[57px] z-[49]">
+        <div class="grid grid-cols-5 bg-[#0D0D10] text-center border-b border-neutral-800 text-[10px] font-bold sticky top-[57px] z-[49] overflow-x-auto custom-scrollbar">
             <button onclick="switchAdminTab('dashboard')" id="tab-dashboard" class="tab-btn py-3 border-b-2 border-transparent text-neutral-400 tab-btn active">📊 Metrics</button>
             <button onclick="switchAdminTab('orders')" id="tab-orders" class="tab-btn py-3 border-b-2 border-transparent text-neutral-400 relative">
                 📦 Orders
-                <!-- Red Alert Badge directly on the Orders Tab -->
                 <span id="orders-pending-badge" class="hidden absolute top-1 right-1 bg-red-600 text-white text-[9px] px-1.5 py-0.5 rounded-full font-black animate-pulse">0</span>
+            </button>
+            <button onclick="switchAdminTab('referrals')" id="tab-referrals" class="tab-btn py-3 border-b-2 border-transparent text-neutral-400 relative">
+                🤝 Referrals
+                <span id="referrals-pending-badge" class="hidden absolute top-1 right-1 bg-amber-500 text-black text-[9px] px-1 py-0.5 rounded-full font-black">0</span>
             </button>
             <button onclick="switchAdminTab('customers')" id="tab-customers" class="tab-btn py-3 border-b-2 border-transparent text-neutral-400">👥 Users</button>
             <button onclick="switchAdminTab('settings')" id="tab-settings" class="tab-btn py-3 border-b-2 border-transparent text-neutral-400">⚙️ Configs</button>
@@ -446,13 +446,22 @@
                     <div class="bg-gradient-to-b from-[#111113] to-black p-4 rounded-xl border border-neutral-800 flex flex-col justify-between shadow relative overflow-hidden">
                         <div class="absolute top-1 right-2 text-xl opacity-10 text-red-500 font-black">📦</div>
                         <span class="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider block mb-1">Pending Orders</span>
-                        <!-- Highlighted Red alert on metrics -->
                         <span id="dash-pending-orders" class="text-2xl font-black text-red-500">0</span>
                     </div>
                     <div class="bg-gradient-to-b from-[#111113] to-black p-4 rounded-xl border border-neutral-800 flex flex-col justify-between shadow relative overflow-hidden">
                         <div class="absolute top-1 right-2 text-xl opacity-10 text-emerald-500 font-black">✅</div>
                         <span class="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider block mb-1">Completed Orders</span>
                         <span id="dash-completed-orders" class="text-2xl font-black text-emerald-500">0</span>
+                    </div>
+                </div>
+
+                <!-- AUDIT LOGS INTERACTIVE PANEL -->
+                <div class="bg-[#111113] p-4 rounded-xl border border-neutral-800 space-y-3">
+                    <h3 class="text-[#FF8C00] font-bold text-xs flex items-center gap-1.5 border-b border-neutral-800/60 pb-2">
+                        <i class="fa-solid fa-clock-rotate-left"></i> Realtime User Sessions Audit Log (Login / Logout)
+                    </h3>
+                    <div id="admin-audit-logs" class="space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar text-[11px]">
+                        <p class="text-neutral-500 text-center py-4">လတ်တလော Audit log မရှိသေးပါခင်ဗျာ။</p>
                     </div>
                 </div>
 
@@ -463,13 +472,11 @@
                         <span class="bg-[#FF8C00]/10 text-[#FF8C00] text-[9px] font-bold px-2 py-0.5 rounded-full border border-[#FF8C00]/20" id="deposit-count-badge">0 Requests</span>
                     </div>
 
-                    <!-- Deposit Search Bar -->
                     <div class="relative">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 text-xs"></i>
                         <input type="text" id="depositSearchInput" placeholder="အမည်၊ ဖုန်း သို့မဟုတ် ပမာဏဖြင့် ရှာရန်..." class="w-full pl-8 pr-4 py-2 bg-black border border-neutral-800 rounded-lg text-white outline-none focus:border-[#FF8C00] text-xs" onkeyup="filterDepositList()">
                     </div>
 
-                    <!-- Filter Tabs for Deposits -->
                     <div class="grid grid-cols-3 gap-1 bg-black/60 p-1 rounded-lg text-[10px] font-bold text-center border border-neutral-850">
                         <button onclick="switchDepositFilter('pending')" id="dep-tab-pending" class="py-1.5 rounded bg-[#FF8C00] text-black">Pending</button>
                         <button onclick="switchDepositFilter('completed')" id="dep-tab-completed" class="py-1.5 rounded text-neutral-400">Completed</button>
@@ -487,7 +494,6 @@
                         <h3 class="text-white font-bold text-xs flex items-center gap-1.5"><i class="fa-solid fa-rectangle-ad text-orange-500"></i> Promotional Ads Banner</h3>
                     </div>
 
-                    <!-- Upload Guideline Advisory Message -->
                     <div class="bg-orange-500/10 border border-orange-500/30 p-3 rounded-xl space-y-1 text-[11px] text-orange-400 leading-relaxed font-semibold">
                         <p class="font-bold flex items-center gap-1"><i class="fa-solid fa-circle-info"></i> Ads တင်ခြင်းဆိုင်ရာ လမ်းညွှန်ချက် အသိပေးချက်</p>
                         <ul class="list-disc list-inside space-y-0.5 text-neutral-300">
@@ -517,12 +523,9 @@
 
             <!-- TAB 2: REAL-TIME ORDER SYSTEM -->
             <div id="admin-tab-orders" class="admin-tab-content space-y-4 hidden">
-                
-                <!-- Dedicated Sub-Navigation for Confirm/Reject vs All History -->
                 <div class="grid grid-cols-2 gap-2 bg-black/60 p-1.5 rounded-xl text-center text-xs font-bold border border-neutral-850">
                     <button onclick="switchOrderSubTab('pending')" id="order-sub-pending" class="py-2.5 rounded-lg bg-red-600 text-white flex items-center justify-center gap-1.5 transition-all">
                         🚨 Action Required
-                        <!-- Action Needed Counter -->
                         <span id="orders-pending-sub-badge" class="bg-white text-red-600 px-2 py-0.5 rounded-full text-[10px] font-black">0</span>
                     </button>
                     <button onclick="switchOrderSubTab('all')" id="order-sub-all" class="py-2.5 rounded-lg text-neutral-400 hover:text-white transition-all">
@@ -543,13 +546,99 @@
                     <span class="text-[10px] text-[#FF8C00] font-bold" id="orders-total-count">0 items</span>
                 </div>
 
-                <!-- Orders List container -->
                 <div id="adm-order-list" class="space-y-3.5">
                     <p class="text-center text-neutral-500 text-xs py-10">No pending orders found.</p>
                 </div>
             </div>
 
-            <!-- TAB 3: CUSTOMERS & USERS LISTS -->
+            <!-- TAB 3: REFERRAL & REWARD SYSTEM -->
+            <div id="admin-tab-referrals" class="admin-tab-content space-y-6 hidden">
+                
+                <!-- REFERRAL DASHBOARD -->
+                <div class="bg-[#111113] p-4 rounded-xl border border-neutral-800 space-y-3">
+                    <h3 class="text-[#FF8C00] font-black text-xs border-b border-neutral-800 pb-2 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-chart-line"></i> Referral Dashboard
+                    </h3>
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="bg-black/60 p-2.5 rounded-lg border border-neutral-850">
+                            <span class="text-[9px] text-neutral-400 block uppercase font-bold">Total Referrals</span>
+                            <span id="ref-total-invites" class="text-lg font-black text-white">0</span>
+                        </div>
+                        <div class="bg-black/60 p-2.5 rounded-lg border border-neutral-850">
+                            <span class="text-[9px] text-neutral-400 block uppercase font-bold">Active Invites</span>
+                            <span id="ref-active-invites" class="text-lg font-black text-emerald-500">0</span>
+                        </div>
+                        <div class="bg-black/60 p-2.5 rounded-lg border border-neutral-850">
+                            <span class="text-[9px] text-neutral-400 block uppercase font-bold">Rewards Paid</span>
+                            <span id="ref-reward-cost" class="text-lg font-black text-[#FF8C00]">0 Ks</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- REWARD CONTROL PANEL & RULE CONFIGURATION -->
+                <div class="bg-[#111113] p-4 rounded-xl border border-neutral-800 space-y-4">
+                    <h3 class="text-white font-black text-xs border-b border-neutral-800 pb-2 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-sliders-h text-orange-500"></i> Reward Control Panel
+                    </h3>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[9px] text-neutral-400 font-black block mb-1">REWARD COINS / CASH (Ks)</label>
+                            <input type="number" id="ref-config-reward" placeholder="e.g. 100" class="input-field py-2 text-xs font-bold text-amber-500">
+                        </div>
+                        <div>
+                            <label class="text-[9px] text-neutral-400 font-black block mb-1">AUTO APPROVAL REWARD</label>
+                            <select id="ref-config-auto" class="input-field py-2 text-xs font-bold">
+                                <option value="true">Enable Auto (ချက်ချင်းပေး)</option>
+                                <option value="false">Disable Auto (စစ်ဆေးပြီးမှပေး)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="bg-black/40 p-3 rounded-lg border border-neutral-800/80 space-y-3">
+                        <span class="text-[9px] font-black text-neutral-400 block uppercase"><i class="fa-solid fa-bullhorn text-[#FF8C00]"></i> Promo Campaign & Double Event Rules</span>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-[8px] text-neutral-500 font-bold block mb-0.5">Campaign Event Banner Link</label>
+                                <input type="text" id="ref-promo-banner" placeholder="Campaign details banner image url" class="w-full bg-black border border-neutral-800 rounded p-1.5 text-[10px] text-white outline-none">
+                            </div>
+                            <div>
+                                <label class="text-[8px] text-neutral-500 font-bold block mb-0.5">Double Reward Status</label>
+                                <select id="ref-double-event" class="w-full bg-black border border-neutral-800 rounded p-1.5 text-[10px] text-white outline-none font-bold">
+                                    <option value="1x">Normal Reward (1x)</option>
+                                    <option value="2x">Double Reward (2x Event)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="saveReferralConfigs()" class="w-full py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 text-black font-black text-xs rounded-xl hover:brightness-110 transition">
+                        Update Referral Rules & Save Configs
+                    </button>
+                </div>
+
+                <!-- USER TRACKING & ANTI-FRAUD LISTING -->
+                <div class="bg-[#111113] p-4 rounded-xl border border-neutral-800 space-y-3">
+                    <div class="flex justify-between items-center border-b border-neutral-800 pb-2">
+                        <h3 class="text-[#FF8C00] font-black text-xs uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-shield-halved"></i> Anti-Fraud & User Tracking
+                        </h3>
+                        <span id="ref-unapproved-badge" class="bg-red-500/15 text-red-500 border border-red-500/20 text-[9px] font-black px-2 py-0.5 rounded-full">0 Suspicious</span>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-1 bg-black/60 p-1 rounded-lg text-[9px] font-bold text-center border border-neutral-850">
+                        <button onclick="switchReferralFilter('pending')" id="ref-filter-pending" class="py-1.5 rounded bg-[#FF8C00] text-black">Action Required</button>
+                        <button onclick="switchReferralFilter('approved')" id="ref-filter-approved" class="py-1.5 rounded text-neutral-400">Approved</button>
+                        <button onclick="switchReferralFilter('rejected')" id="ref-filter-rejected" class="py-1.5 rounded text-neutral-400">Banned/Fake</button>
+                    </div>
+
+                    <div id="admin-referrals-list" class="space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar">
+                        <p class="text-center text-neutral-500 text-xs py-6">Referral မှတ်တမ်းများ ဆွဲယူနေပါသည်...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: CUSTOMERS & USERS LISTS -->
             <div id="admin-tab-customers" class="admin-tab-content space-y-4 hidden">
                 <div class="flex flex-col gap-1.5">
                     <label class="text-[10px] text-neutral-400 font-bold uppercase tracking-wider block">Find Customers</label>
@@ -564,25 +653,72 @@
                 </div>
             </div>
 
-            <!-- TAB 4: SETTINGS, OTHER SERVICES & NEW GUIDES CONFIGS -->
+            <!-- TAB 5: SETTINGS & CONFIGS -->
             <div id="admin-tab-settings" class="admin-tab-content space-y-6 hidden">
                 
+                <!-- TELEGRAM BOT CONFIGURATIONS -->
+                <div class="bg-[#111113] p-4 rounded-xl border border-neutral-800 space-y-4">
+                    <h3 class="text-[#FF8C00] font-bold text-xs flex items-center gap-1.5 pb-2 border-b border-neutral-800/60">
+                        <i class="fa-brands fa-telegram text-sky-400"></i> Telegram Bot Notification Integration
+                    </h3>
+                    <p class="text-[10px] text-neutral-500">ထည့်သွင်းပေးသော Telegram Bot အား Notification များကို အချိန်နှင့်တပြေးညီ ပေးပို့သွားမည်ဖြစ်ပါသည်။</p>
+                    <div class="space-y-3 bg-black/40 p-3 rounded-lg border border-neutral-800/60">
+                        <div>
+                            <label class="text-[9px] text-neutral-400 font-bold uppercase block mb-1">Telegram Bot Token</label>
+                            <input type="text" id="tg-bot-token" placeholder="ဥပမာ- 123456789:ABCDefGhIJK..." class="w-full p-2.5 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none font-mono">
+                        </div>
+                        <div>
+                            <label class="text-[9px] text-neutral-400 font-bold uppercase block mb-1">Telegram Chat ID / Channel ID</label>
+                            <input type="text" id="tg-chat-id" placeholder="ဥပမာ- -100123456789 သို့မဟုတ် @mychannel" class="w-full p-2.5 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none font-mono">
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="saveTelegramConfigs()" class="flex-1 py-2 bg-sky-600 hover:bg-sky-700 text-white font-black text-xs rounded-lg transition">
+                                Save Bot Configurations
+                            </button>
+                            <button onclick="testTelegramNotification()" class="py-2 px-4 bg-neutral-800 hover:bg-neutral-700 text-gray-300 font-bold text-xs rounded-lg transition">
+                                Test Send
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- OTHER SERVICES MANAGER -->
                 <div class="bg-[#111113] p-4 rounded-xl border border-neutral-800">
                     <h3 class="text-[#FF8C00] font-bold text-xs mb-1"><i class="fa-solid fa-shapes"></i> Other Services Manager</h3>
                     <p class="text-[10px] text-neutral-500 mb-3">CapCut, Canva သို့မဟုတ် အခြားသော Account / Server plan များ တင်ရန်</p>
                     
                     <div class="space-y-3 bg-black/40 p-2.5 rounded-lg border border-neutral-800/60">
-                        <input type="text" id="serv-id" placeholder="Service Name (e.g. CapCut, Canva)" class="w-full p-2 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none">
+                        <input type="text" id="serv-id" placeholder="Service Name (e.g. CapCut, Canva, TikTok)" class="w-full p-2 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none">
                         
+                        <!-- Custom User Required Fields Config -->
+                        <div>
+                            <label class="text-[9px] text-neutral-400 font-bold block mb-1">User Required Fields (ကော်မာ ခံရေးပါ)</label>
+                            <input type="text" id="serv-user-fields" placeholder="e.g. Email / Password, TikTok Link" class="w-full p-2 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none">
+                            <span class="text-[8px] text-neutral-500 block mt-0.5">Capcut ဆိုလျှင် Email / Password, TikTok ဆိုလျှင် Video Link ဟုရေးပေးပါ။</span>
+                        </div>
+
                         <div class="grid grid-cols-2 gap-2">
                             <input type="text" id="serv-pack" placeholder="Plan/Pack (e.g. 1 Month)" class="w-full p-2 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none">
                             <input type="number" id="serv-price" placeholder="Price (Ks)" class="w-full p-2 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none">
                         </div>
 
                         <div class="space-y-1">
-                            <label class="text-[9px] text-neutral-400 font-bold block">Service Branding Icon (PNG/JPG)</label>
+                            <label class="text-[9px] text-neutral-400 font-bold block">Service Brand Icon (PNG/JPG)</label>
                             <input type="file" id="serv-icon-file" accept="image/png, image/jpeg" class="w-full text-xs text-neutral-400">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 border-t border-neutral-850 pt-2.5">
+                            <div>
+                                <label class="text-[9px] text-neutral-400 font-bold block mb-1">Upload Plan PNG Icon</label>
+                                <input type="file" id="serv-plan-icon-file" accept="image/png" class="w-full text-xs text-neutral-400">
+                            </div>
+                            <div>
+                                <label class="text-[9px] text-neutral-400 font-bold block flex justify-between">
+                                    <span>Plan Icon Size</span>
+                                    <span id="serv-plan-icon-size-val">32px</span>
+                                </label>
+                                <input type="range" id="serv-plan-icon-size" min="16" max="100" value="32" class="w-full accent-orange-500" oninput="document.getElementById('serv-plan-icon-size-val').innerText = this.value + 'px'">
+                            </div>
                         </div>
 
                         <button onclick="addOtherService()" id="btn-save-service" class="w-full py-2 bg-[#FF8C00] text-black font-black text-xs rounded-lg hover:brightness-110 transition">
@@ -696,7 +832,7 @@
                 <!-- ADD & REMOVE ITEMS IN PRICE CATALOG -->
                 <div class="bg-[#111113] p-4 rounded-xl border border-neutral-800">
                     <h3 class="text-white font-bold text-xs mb-1"><i class="fa-solid fa-gem text-orange-500"></i> Game Item Pack Manager</h3>
-                    <p class="text-[10px] text-neutral-500 mb-3">Add or configure products within target games</p>
+                    <p class="text-[10px] text-neutral-500 mb-3">Configure products within target games and upload specific PNG item icons</p>
 
                     <div class="space-y-3">
                         <div class="bg-black/40 p-2.5 rounded-lg border border-neutral-800/60 space-y-2">
@@ -708,16 +844,16 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="text-[9px] text-neutral-400 font-bold block mb-1">Category</label>
-                                    <select id="item-target-category" class="w-full p-2 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none font-bold">
-                                        <!-- Loaded dynamically based on selected game -->
+                                    <label class="text-[9px] text-neutral-400 font-bold block mb-1">Select Existing Category</label>
+                                    <select id="item-target-category" class="w-full p-2 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-[#FF8C00] outline-none font-bold">
+                                        <!-- Loaded dynamically based on selected game's existing category array -->
                                     </select>
                                 </div>
                             </div>
                             
                             <div>
-                                <label class="text-[9px] text-neutral-400 font-bold block mb-1">Custom Category Override</label>
-                                <input type="text" id="item-custom-category" placeholder="Optional category code override" class="w-full p-2 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none">
+                                <label class="text-[9px] text-neutral-400 font-bold block mb-1">Or Create New Category (စာအုပ်အသစ်ဆောက်ရန်)</label>
+                                <input type="text" id="item-custom-category" placeholder="Optional category code (e.g. skin, promo, premium)" class="w-full p-2 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none">
                             </div>
 
                             <div class="grid grid-cols-2 gap-2">
@@ -728,6 +864,20 @@
                                 <div>
                                     <label class="text-[9px] text-neutral-400 font-bold block mb-1">Price (Ks)</label>
                                     <input type="number" id="new-item-price" placeholder="e.g. 1500" class="w-full p-2 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 border-t border-neutral-850 pt-2 flex items-center">
+                                <div>
+                                    <label class="text-[9px] text-neutral-400 font-bold block mb-1">Upload PNG Item Icon</label>
+                                    <input type="file" id="new-item-icon-file" accept="image/png" class="w-full text-xs text-neutral-400">
+                                </div>
+                                <div>
+                                    <label class="text-[9px] text-neutral-400 font-bold block flex justify-between mb-1">
+                                        <span>Icon Size</span>
+                                        <span id="new-item-icon-size-val">32px</span>
+                                    </label>
+                                    <input type="range" id="new-item-icon-size" min="16" max="100" value="32" class="w-full accent-orange-500" oninput="document.getElementById('new-item-icon-size-val').innerText = this.value + 'px'">
                                 </div>
                             </div>
 
@@ -747,7 +897,7 @@
         </div>
     </div>
 
-    <!-- Nav Bar Menu Footer (Acode Standard fixed) -->
+    <!-- Nav Bar Menu Footer -->
     <div id="footer-nav" class="nav-bar hidden">
         <div class="nav-item active" onclick="showPage('page-home'); setActiveNavItem(this)">
             <i class="fa-solid fa-house text-lg mb-0.5 block"></i>
@@ -766,7 +916,7 @@
 </div>
 
 <script>
-    // --- Firebase Init ---
+    // --- Firebase Config ---
     const firebaseConfig = {
       apiKey: "AIzaSyALqp9IxejZ2b4d3vJMGuwV0RWPxpQRsaU",
       authDomain: "diamondshop-b56ab.firebaseapp.com",
@@ -780,10 +930,16 @@
     let db = null;
     let currentUser = null;
     let currentDepositFilter = 'pending';
-    let currentOrderSubTab = 'pending'; // Filter for Orders Tab: 'pending' (Confirm/Reject Zone) or 'all'
+    let currentOrderSubTab = 'pending'; 
+    let currentReferralFilter = 'pending'; 
     let allDepositsCache = [];
-    let allOrdersCache = []; // Local cache to prevent redundant Firestore queries
+    let allOrdersCache = []; 
+    let allReferralsCache = []; 
     let otherServicesCache = {};
+
+    // TG Settings Cache
+    let tgBotToken = "";
+    let tgChatId = "";
 
     try {
         if (typeof firebase !== 'undefined') {
@@ -796,7 +952,78 @@
         console.error("Firebase startup crashed: ", e);
     }
 
-    // --- HYBRID APP STARTUP ---
+    // Utility: Send TG Notification
+    async function sendTelegramMessage(text) {
+        if (!tgBotToken || !tgChatId) return;
+        const url = `https://api.telegram.org/bot${tgBotToken}/sendMessage`;
+        try {
+            await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    chat_id: tgChatId,
+                    text: text,
+                    parse_mode: "HTML"
+                })
+            });
+        } catch (e) {
+            console.error("Telegram notification failed:", e);
+        }
+    }
+
+    // Generic Image Upload to ImgBB Utility API
+    async function uploadToImgBB(file) {
+        if (!file) return "";
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = async function() {
+                try {
+                    const base64Data = reader.result.split(",")[1];
+                    const formData = new FormData();
+                    formData.append("image", base64Data);
+                    const res = await fetch("https://api.imgbb.com/1/upload?key=06fed9e1368ff406bc578eb29ddb4c80", {
+                        method: "POST",
+                        body: formData
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        resolve(data.data.url);
+                    } else {
+                        reject("ImgBB system upload failed");
+                    }
+                } catch(e) { reject(e); }
+            };
+            reader.onerror = e => reject(e);
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // Custom Logger that saves in Firebase & Telegram
+    async function logSessionEvent(userName, userId, userPhone, eventType) {
+        const datetimeString = new Date().toLocaleString("en-US", { timeZone: "Asia/Yangon" });
+        const textLog = `👤 <b>User Session Alert</b>\n` +
+                        `• Name: ${userName}\n` +
+                        `• User ID: #${userId}\n` +
+                        `• Phone: ${userPhone}\n` +
+                        `• Event: <b>${eventType.toUpperCase()}</b>\n` +
+                        `• Time (MM): ${datetimeString}`;
+
+        // Save Log inside Firebase for Admin Panel
+        if (db) {
+            db.collection("audit_logs").add({
+                name: userName,
+                userId: userId,
+                phone: userPhone,
+                event: eventType,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                formattedTime: datetimeString
+            }).catch(e => console.error("Could not write audit logs", e));
+        }
+
+        // Send Telegram notification
+        await sendTelegramMessage(textLog);
+    }
+
     function initApp() {
         if (window.appInitialized) return;
         window.appInitialized = true;
@@ -818,6 +1045,10 @@
                     if (doc.exists && doc.data().pass === auth.pass) {
                         if (doc.data().status === 'banned') { logout(); return; }
                         currentUser = doc.data();
+                        
+                        // Log Login Action
+                        logSessionEvent(currentUser.name, currentUser.id || 'N/A', currentUser.phone, "Login");
+
                         launchApp();
                     } else { showPage('page-login'); hideLoader(); }
                 }).catch(err => {
@@ -891,6 +1122,9 @@
         listenToGuidesNews(); 
         loadGameIconSizeConfigLocal(); 
         listenToDepositRequests(); 
+        listenToReferralsData(); 
+        loadTelegramSettings();
+        listenToAuditLogs();
         
         showPage('page-home');
         hideLoader();
@@ -909,6 +1143,10 @@
                 if(doc.data().status === 'banned') return customAlert("အကောင့်ပိတ်ခံထားရပါသည်။");
                 currentUser = doc.data();
                 localStorage.setItem('sr_auth', JSON.stringify({phone:ph, pass:ps}));
+                
+                // Log Action
+                logSessionEvent(currentUser.name, currentUser.id || 'N/A', currentUser.phone, "Login");
+
                 launchApp();
             } else {
                 customAlert("ဖုန်းနံပါတ် သို့မဟုတ် စကားဝှက် မှားယွင်းနေပါသည်။");
@@ -933,10 +1171,22 @@
         db.collection("users").doc(ph).get().then(doc => {
             if(doc.exists) return customAlert("ဤဖုန်းနံပါတ်မှာ အသုံးပြုပြီးသားဖြစ်နေပါသည်။");
             const uid = Math.floor(100000 + Math.random() * 900000);
+            
+            // Check Referrer
+            let refCode = localStorage.getItem("sr_referrer_id") || "";
+
             db.collection("users").doc(ph).set({
-                name: n, phone: ph, pass: ps, id: uid, status: 'active', balance: 0
+                name: n, phone: ph, pass: ps, id: uid, status: 'active', balance: 0,
+                referredBy: refCode,
+                createdAt: new Date().toISOString()
             }).then(() => {
                 customAlert("အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါသည်။");
+                
+                // Trigger Referral Logic
+                if (refCode) {
+                    processReferralAction(refCode, n, ph, uid);
+                }
+
                 showPage('page-login');
             });
         }).catch(err => {
@@ -945,9 +1195,88 @@
         });
     }
 
+    // Manage referrals link trigger
+    async function processReferralAction(inviterId, refName, refPhone, refUid) {
+        try {
+            const query = await db.collection("users").where("id", "==", parseInt(inviterId)).get();
+            if (query.empty) return;
+            const inviterData = query.docs[0].data();
+
+            // Load Config
+            const configDoc = await db.collection("appSettings").doc("referralConfig").get();
+            let rewardBase = 100;
+            let autoApprove = false;
+            let doubleMultiplier = 1;
+
+            if (configDoc.exists) {
+                rewardBase = parseFloat(configDoc.data().rewardAmount || 100);
+                autoApprove = configDoc.data().autoApproval || false;
+                if (configDoc.data().doubleEvent === '2x') doubleMultiplier = 2;
+            }
+
+            const finalReward = rewardBase * doubleMultiplier;
+
+            // Simple Device Info Check
+            const userAgent = navigator.userAgent;
+
+            const referralRef = db.collection("referrals").doc();
+            const referralObj = {
+                inviterName: inviterData.name,
+                inviterPhone: inviterData.phone,
+                refereeName: refName,
+                refereePhone: refPhone,
+                refereeUid: refUid,
+                rewardAmount: rewardBase,
+                doubleMultiplier: doubleMultiplier,
+                rewardPaid: finalReward,
+                status: autoApprove ? 'approved' : 'pending',
+                timestamp: new Date().toISOString(),
+                refereeDevice: userAgent,
+                inviterDevice: 'N/A' // To be compared in server/admin
+            };
+
+            await referralRef.set(referralObj);
+
+            // If auto approval enabled
+            if (autoApprove) {
+                const userRef = db.collection("users").doc(inviterData.phone);
+                await db.runTransaction(async (transaction) => {
+                    const sfDoc = await transaction.get(userRef);
+                    const currentBal = sfDoc.data().balance || 0;
+                    transaction.update(userRef, { balance: currentBal + finalReward });
+                });
+            }
+
+            // Create TG Notification string as requested
+            const tgMsg = `🤝 <b>NEW REFERRAL REWARD</b>\n` +
+                          `━━━━━━━━━━━━━━━━━━\n` +
+                          `👤 <b>မိတ်ဆက်သူ (Inviter) Details:</b>\n` +
+                          `• Name: ${inviterData.name}\n` +
+                          `• User ID: #${inviterId}\n` +
+                          `• Phone: ${inviterData.phone}\n\n` +
+                          `👶 <b>အကောင့်သစ် (Referee) Details:</b>\n` +
+                          `• Name: ${refName}\n` +
+                          `• User ID: #${refUid}\n` +
+                          `• Phone: ${refPhone}\n\n` +
+                          `💰 <b>ဆုကြေးငွေပမာဏ (Reward):</b>\n` +
+                          `• Amount: ${finalReward.toLocaleString()} Ks\n` +
+                          `• Auto Approved: ${autoApprove ? 'YES' : 'NO'}`;
+
+            await sendTelegramMessage(tgMsg);
+
+        } catch (e) {
+            console.error("Referral process trigger crashed:", e);
+        }
+    }
+
     function logout() { 
-        localStorage.clear(); 
-        location.reload(); 
+        if (currentUser) {
+            logSessionEvent(currentUser.name, currentUser.id || 'N/A', currentUser.phone, "Logout");
+        }
+        localStorage.removeItem('sr_auth'); 
+        setTimeout(() => {
+            location.reload(); 
+        }, 800);
     }
 
     function loadInbox() {
@@ -972,6 +1301,34 @@
         if (content) content.classList.remove('hidden');
     }
 
+    // Listen to Session Audit Logs Live
+    function listenToAuditLogs() {
+        if (!db) return;
+        db.collection("audit_logs").orderBy("timestamp", "desc").limit(10).onSnapshot(snap => {
+            const container = document.getElementById("admin-audit-logs");
+            if (!container) return;
+            container.innerHTML = "";
+            if (snap.empty) {
+                container.innerHTML = `<p class="text-neutral-500 text-center py-4">လတ်တလော Audit log မရှိသေးပါခင်ဗျာ။</p>`;
+                return;
+            }
+            snap.forEach(doc => {
+                const log = doc.data();
+                const eventTheme = log.event === 'Login' ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' : 'text-red-400 bg-red-500/10 border-red-500/20';
+                container.innerHTML += `
+                <div class="p-2.5 bg-black/40 border border-neutral-850 rounded-lg flex justify-between items-center text-[10px]">
+                    <div>
+                        <span class="font-bold text-neutral-300">${log.name || 'Unknown'}</span> 
+                        <span class="text-neutral-500 font-mono text-[9px]">(#${log.userId || '000000'})</span>
+                        <p class="text-neutral-500 text-[9px] mt-0.5"><i class="fa-solid fa-clock"></i> MM Time: ${log.formattedTime || 'N/A'}</p>
+                    </div>
+                    <span class="px-2 py-0.5 rounded border text-[9px] font-black uppercase ${eventTheme}">${log.event}</span>
+                </div>`;
+            });
+        }, err => console.warn(err));
+    }
+
+    // --- Setup Dashboard real-time statistics ---
     function setupDashboardMetrics() {
         if (!db) return;
         
@@ -988,7 +1345,7 @@
             const today = new Date();
             today.setHours(0,0,0,0);
 
-            allOrdersCache = []; // Update local order cache
+            allOrdersCache = []; 
 
             snap.forEach(doc => {
                 const orderId = doc.id;
@@ -1007,23 +1364,19 @@
                 }
             });
 
-            // Updating Red alert badges across different elements in the app
             const homePendingBadge = document.getElementById('home-pending-badge');
             const ordersTabBadge = document.getElementById('orders-pending-badge');
             const subPendingBadge = document.getElementById('orders-pending-sub-badge');
 
             if (pending > 0) {
-                // Home Button badge
                 if (homePendingBadge) {
                     homePendingBadge.innerText = pending;
                     homePendingBadge.classList.remove('hidden');
                 }
-                // Order Tab badge
                 if (ordersTabBadge) {
                     ordersTabBadge.innerText = pending;
                     ordersTabBadge.classList.remove('hidden');
                 }
-                // Confirm/Reject inner tab badge
                 if (subPendingBadge) {
                     subPendingBadge.innerText = pending;
                 }
@@ -1041,7 +1394,6 @@
             if (completedEl) completedEl.innerText = completed;
             if (incomeEl) incomeEl.innerText = income.toLocaleString() + " Ks";
 
-            // If Admin Panel orders tab is loaded, live refresh the rendered list
             renderOrdersByActiveSubTab();
 
         }, err => console.error("Metrics snapshot orders failed: ", err));
@@ -1066,6 +1418,7 @@
         renderOrdersByActiveSubTab();
     }
 
+    // --- Processing real-time orders ---
     function renderOrdersByActiveSubTab() {
         const oList = document.getElementById('adm-order-list');
         const totalCountEl = document.getElementById('orders-total-count');
@@ -1075,7 +1428,6 @@
         
         const query = document.getElementById("orderSearchInput").value.trim().toUpperCase();
 
-        // Filter by Subtab ('pending' order status vs 'all')
         const filtered = allOrdersCache.filter(item => {
             const status = item.data.status || 'pending';
             const matchesSubTab = currentOrderSubTab === 'pending' ? status === 'pending' : true;
@@ -1109,6 +1461,9 @@
             const itemName = d.item || 'N/A';
             const gameId = d.gameId || 'N/A';
             const orderId = d.orderId || 'N/A';
+            
+            const itemIcon = d.itemIconUrl || "";
+            const itemIconSize = d.itemIconSize || 32;
 
             oList.innerHTML += `
             <div class="list-card bg-[#111113] p-4 rounded-xl border border-neutral-800 space-y-3 relative overflow-hidden transition hover:border-neutral-700">
@@ -1122,9 +1477,14 @@
                 </div>
 
                 <div class="bg-black/60 p-3 rounded-lg border border-neutral-900 space-y-1.5 text-xs">
-                    <p class="text-neutral-400">Game: <span class="text-white font-semibold">${gameName.toUpperCase()}</span></p>
-                    <p class="text-neutral-400">Package: <span class="text-white font-bold">${itemName}</span></p>
-                    <p class="text-neutral-400 font-mono">Game ID: <span class="text-[#FF8C00] font-black">${gameId}</span></p>
+                    <div class="flex items-center gap-3">
+                        ${itemIcon ? `<img src="${itemIcon}" style="width: ${itemIconSize}px; height: ${itemIconSize}px;" class="object-cover rounded-lg border border-neutral-800" onerror="this.style.display='none'">` : '<div class="w-8 h-8 rounded bg-neutral-900 border border-neutral-800 flex items-center justify-center text-orange-500"><i class="fa-solid fa-gamepad text-xs"></i></div>'}
+                        <div>
+                            <p class="text-neutral-400">Game/Service: <span class="text-white font-semibold">${gameName.toUpperCase()}</span></p>
+                            <p class="text-neutral-400">Package: <span class="text-white font-bold">${itemName}</span></p>
+                        </div>
+                    </div>
+                    <p class="text-neutral-400 font-mono mt-1">Player Target details: <span class="text-[#FF8C00] font-black">${gameId}</span></p>
                     <p class="text-[9px] text-neutral-600 mt-1">${orderDate} | Order ID: #${orderId}</p>
                 </div>
 
@@ -1141,6 +1501,7 @@
         });
     }
 
+    // --- Loading current price list ---
     async function loadAdminPriceList() {
         const pList = document.getElementById('adm-price-list');
         if (!pList) return;
@@ -1188,10 +1549,15 @@
                         docData[arrayName].forEach((item, index) => {
                             const nameVal = item.name || 'Unnamed Pack';
                             const priceVal = item.price || 0;
+                            const iconUrl = item.iconUrl || '';
+                            const iconSize = item.iconSize || 24;
                             
                             html += `
                             <div class="flex justify-between items-center bg-[#0d0d10] p-2 rounded-lg border border-neutral-850 text-xs">
-                                <span class="text-gray-300 font-medium">${nameVal}</span>
+                                <div class="flex items-center gap-2">
+                                    ${iconUrl ? `<img src="${iconUrl}" style="width: ${iconSize}px; height: ${iconSize}px;" class="object-cover rounded border border-neutral-800" onerror="this.style.display='none'">` : '<div class="w-6 h-6 rounded bg-neutral-900 border border-neutral-800 flex items-center justify-center text-orange-500"><i class="fa-solid fa-gem text-[10px]"></i></div>'}
+                                    <span class="text-gray-300 font-medium">${nameVal}</span>
+                                </div>
                                 <div class="flex items-center gap-2">
                                     <span class="text-[#FF8C00] font-black mr-2">${Number(priceVal).toLocaleString()} Ks</span>
                                     <button class="bg-[#FF8C00]/10 text-[#FF8C00] border border-[#FF8C00]/20 hover:bg-[#FF8C00] hover:text-black py-1 px-2.5 rounded font-bold text-[10px]" onclick="editPrice('${docId}', '${arrayName}', ${index}, '${nameVal}', ${priceVal})">EDIT</button>
@@ -1215,41 +1581,44 @@
         }
     }
 
-    function handleGameSelectChange() {
+    async function handleGameSelectChange() {
         const gameId = document.getElementById("item-target-game").value;
         const catSelect = document.getElementById("item-target-category");
-        if (!catSelect) return;
+        if (!catSelect || !gameId) return;
 
-        let options = [];
+        catSelect.innerHTML = "<option>Loading Categories...</option>";
 
-        if (gameId === 'mlbb') {
-            options = [
-                { value: 'diamonds', text: 'Diamonds' },
-                { value: 'passes', text: 'Passes' },
-                { value: 'promo', text: 'Promo' }
-            ];
-        } 
-        else if (gameId === 'ff' || gameId === 'freefire') {
-            options = [
-                { value: 'diamonds', text: 'Diamonds' },
-                { value: 'passes', text: 'Passes' },
-                { value: 'level_up_pass', text: 'Level Up Pass' }
-            ];
-        } 
-        else if (gameId === 'pubg') {
-            options = [
-                { value: 'uc', text: 'UC' }
-            ];
-        } 
-        else {
-            options = [
-                { value: 'diamonds', text: 'Diamonds' },
-                { value: 'passes', text: 'Passes' },
-                { value: 'promo', text: 'Promo' }
-            ];
+        try {
+            const doc = await db.collection("prices").doc(gameId).get();
+            if (doc.exists) {
+                const docData = doc.data();
+                let categories = [];
+                
+                Object.keys(docData).forEach(key => {
+                    if (key !== 'inputFields' && key !== 'gameTitle' && Array.isArray(docData[key])) {
+                        categories.push(key);
+                    }
+                });
+
+                if (categories.length === 0) {
+                    categories = ["diamonds", "passes", "promo"];
+                }
+
+                catSelect.innerHTML = categories.map(cat => {
+                    const formatted = cat.toUpperCase();
+                    return `<option value="${cat}">${formatted} (Existing Cat)</option>`;
+                }).join('');
+            } else {
+                catSelect.innerHTML = `
+                    <option value="diamonds">DIAMONDS (Default)</option>
+                    <option value="passes">PASSES</option>
+                    <option value="promo">PROMO</option>
+                `;
+            }
+        } catch (e) {
+            console.error("Failed to load existing categories for dropdown", e);
+            catSelect.innerHTML = `<option value="diamonds">DIAMONDS (Default Fallback)</option>`;
         }
-
-        catSelect.innerHTML = options.map(opt => `<option value="${opt.value}">${opt.text}</option>`).join('');
     }
 
     async function updateGameListSelectors() {
@@ -1282,7 +1651,7 @@
             deleteSelect.innerHTML = `<option value="">-- Choose game to delete --</option>` + optionsHtml;
             if (brandIconSelect) brandIconSelect.innerHTML = brandOptionsHtml;
 
-            handleGameSelectChange();
+            await handleGameSelectChange();
         } catch (e) {
             console.error(e);
         }
@@ -1311,7 +1680,7 @@
             document.getElementById('new-game-title').value = "";
             document.getElementById('new-game-userfields').value = "";
             
-            updateGameListSelectors();
+            await updateGameListSelectors();
             loadAdminPriceList();
         } catch(e) {
             console.error(e);
@@ -1331,7 +1700,7 @@
             try {
                 await db.collection("prices").doc(gameId).delete();
                 customAlert(`Deleted ${gameId.toUpperCase()} from catalog.`);
-                updateGameListSelectors();
+                await updateGameListSelectors();
                 loadAdminPriceList();
             } catch(e) {
                 console.error(e);
@@ -1340,22 +1709,35 @@
         });
     }
 
+    // --- Adding new items ---
     async function addNewItem() {
         const targetGame = document.getElementById('item-target-game').value;
         let targetCategory = document.getElementById('item-target-category').value;
         const customCategory = document.getElementById('item-custom-category').value.trim().toLowerCase();
         const itemName = document.getElementById('new-item-name').value.trim();
         const itemPrice = parseFloat(document.getElementById('new-item-price').value);
+        
+        const iconFile = document.getElementById('new-item-icon-file').files[0];
+        const iconSize = parseInt(document.getElementById('new-item-icon-size').value) || 32;
 
         if(customCategory) {
-            targetCategory = customCategory;
+            targetCategory = customCategory; 
         }
 
         if(!targetGame || !itemName || isNaN(itemPrice)) {
             return customAlert("Please specify target game, package name, and a valid price!");
         }
 
+        const addBtn = document.querySelector('button[onclick="addNewItem()"]');
+        addBtn.innerText = "Saving & Uploading PNG...";
+        addBtn.disabled = true;
+
         try {
+            let uploadedUrl = "";
+            if (iconFile) {
+                uploadedUrl = await uploadToImgBB(iconFile);
+            }
+
             const docRef = db.collection("prices").doc(targetGame);
             const doc = await docRef.get();
             if(!doc.exists) return customAlert("Target game does not exist!");
@@ -1367,20 +1749,27 @@
 
             data[targetCategory].push({
                 name: itemName,
-                price: itemPrice
+                price: itemPrice,
+                iconUrl: uploadedUrl,
+                iconSize: iconSize
             });
 
             await docRef.update({ [targetCategory]: data[targetCategory] });
-            customAlert(`Package '${itemName}' saved inside ${targetGame.toUpperCase()}!`);
+            customAlert(`Package '${itemName}' saved inside ${targetGame.toUpperCase()} under array [${targetCategory.toUpperCase()}]!`);
             
             document.getElementById('new-item-name').value = "";
             document.getElementById('new-item-price').value = "";
             document.getElementById('item-custom-category').value = "";
+            document.getElementById('new-item-icon-file').value = "";
 
+            await handleGameSelectChange(); 
             loadAdminPriceList();
         } catch(e) {
             console.error(e);
             customAlert("Could not add package!");
+        } finally {
+            addBtn.innerText = "Save New Package Product";
+            addBtn.disabled = false;
         }
     }
 
@@ -1403,14 +1792,42 @@
         });
     }
 
+    // --- Editing existing items ---
     async function editPrice(docId, arrayName, index, currentName, currentPrice) {
+        const docRef = db.collection("prices").doc(docId);
+        const doc = await docRef.get();
+        let data = doc.data();
+        let itemObj = data[arrayName][index];
+        let curIconUrl = itemObj.iconUrl || "";
+        let curIconSize = itemObj.iconSize || 32;
+
         const customPrompt = document.createElement("div");
         customPrompt.className = "fixed inset-0 bg-black/85 z-[10002] flex items-center justify-center p-6";
         customPrompt.innerHTML = `
         <div class="bg-[#111113] border border-neutral-800 p-6 rounded-2xl max-w-xs w-full text-center space-y-4 shadow-2xl">
             <h4 class="text-white font-black text-sm">ဈေးနှုန်း အသစ်ပြင်ဆင်မည်</h4>
-            <p class="text-xs text-neutral-400">${currentName}</p>
-            <input type="number" id="custom-prompt-val" class="input-field text-center font-bold text-[#FF8C00]" value="${currentPrice}">
+            <p class="text-xs text-neutral-400 font-bold">${currentName}</p>
+            
+            <div class="text-left space-y-3">
+                <div>
+                    <label class="text-[9px] text-neutral-400 font-bold block mb-1">Price (Ks)</label>
+                    <input type="number" id="custom-prompt-val" class="input-field text-center font-bold text-[#FF8C00]" value="${currentPrice}">
+                </div>
+                
+                <div>
+                    <label class="text-[9px] text-neutral-400 font-bold block mb-1">Change/Upload PNG Icon</label>
+                    <input type="file" id="edit-item-icon-file" accept="image/png" class="w-full text-xs text-neutral-400">
+                </div>
+
+                <div>
+                    <label class="text-[9px] text-neutral-400 font-bold block flex justify-between">
+                        <span>Item Icon Size</span>
+                        <span id="edit-item-icon-size-val">${curIconSize}px</span>
+                    </label>
+                    <input type="range" id="edit-item-icon-size" min="16" max="100" value="${curIconSize}" class="w-full accent-orange-500" oninput="document.getElementById('edit-item-icon-size-val').innerText = this.value + 'px'">
+                </div>
+            </div>
+
             <div class="flex gap-2">
                 <button id="prompt-save" class="flex-1 py-2.5 bg-[#FF8C00] text-black font-black rounded-xl text-xs uppercase transition">Save</button>
                 <button id="prompt-cancel" class="flex-1 py-2.5 bg-neutral-850 text-white font-bold rounded-xl text-xs uppercase transition">Cancel</button>
@@ -1418,25 +1835,37 @@
         </div>`;
         document.body.appendChild(customPrompt);
 
-        customPrompt.querySelector("#prompt-save").onclick = async () => {
-            const newPrice = parseFloat(document.getElementById("custom-prompt-val").value);
-            customPrompt.remove();
+        const saveBtn = customPrompt.querySelector("#prompt-save");
 
-            if (isNaN(newPrice) || newPrice === currentPrice) return;
+        saveBtn.onclick = async () => {
+            const newPrice = parseFloat(document.getElementById("custom-prompt-val").value);
+            const iconFile = document.getElementById("edit-item-icon-file").files[0];
+            const iconSize = parseInt(document.getElementById("edit-item-icon-size").value);
+
+            if (isNaN(newPrice)) return customAlert("ဈေးနှုန်းအမှန်ထည့်သွင်းပါ");
+
+            saveBtn.innerText = "Saving Cloud...";
+            saveBtn.disabled = true;
 
             try {
-                const docRef = db.collection("prices").doc(docId);
-                const doc = await docRef.get();
-                let data = doc.data();
-                
+                let uploadedUrl = curIconUrl;
+                if (iconFile) {
+                    uploadedUrl = await uploadToImgBB(iconFile);
+                }
+
                 data[arrayName][index].price = newPrice; 
+                data[arrayName][index].iconUrl = uploadedUrl; 
+                data[arrayName][index].iconSize = iconSize; 
 
                 await docRef.update({ [arrayName]: data[arrayName] });
+                customPrompt.remove();
                 customAlert("Updated Successfully!");
                 loadAdminPriceList(); 
             } catch (e) { 
                 console.error(e);
                 customAlert("Update failed!"); 
+                saveBtn.innerText = "Save";
+                saveBtn.disabled = false;
             }
         };
 
@@ -1445,6 +1874,7 @@
         };
     }
 
+    // --- Displaying user catalogs ---
     async function loadPriceList() {
         showPage('page-prices'); 
         const container = document.getElementById('price-container');
@@ -1485,13 +1915,18 @@
                 keys.forEach(key => {
                     if (key === 'inputFields' || key === 'gameTitle') return;
                     if(Array.isArray(docData[key])) {
-                        docData[key].forEach(item => {
+                        docData[key].forEach((item, index) => {
                             const nameVal = item.name || 'Unnamed Item';
                             const priceVal = item.price || 0;
+                            const iconUrl = item.iconUrl || '';
+                            const iconSize = item.iconSize || 24;
                             
                             html += `
-                            <tr class="hover:bg-neutral-900/60 transition-colors">
-                                <td class="text-gray-300 font-semibold text-xs py-2.5">${nameVal}</td>
+                            <tr class="hover:bg-neutral-900/60 transition-colors cursor-pointer" onclick="orderGameItem('${doc.id}', '${key}', ${index}, '${nameVal}', ${priceVal}, '${iconUrl}', ${iconSize})">
+                                <td class="text-gray-300 font-semibold text-xs py-2.5 flex items-center gap-2.5">
+                                    ${iconUrl ? `<img src="${iconUrl}" style="width: ${iconSize}px; height: ${iconSize}px;" class="object-cover rounded border border-neutral-900" onerror="this.style.display='none'">` : '<div class="w-6 h-6 rounded bg-neutral-900 border border-neutral-800 flex items-center justify-center text-orange-500"><i class="fa-solid fa-gem text-[10px]"></i></div>'}
+                                    <span>${nameVal}</span>
+                                </td>
                                 <td class="text-right text-[#FF8C00] font-black text-xs py-2.5">${Number(priceVal).toLocaleString()} Ks</td>
                             </tr>`;
                         });
@@ -1506,6 +1941,122 @@
         }
     }
 
+    // --- Formulating order checkout modal ---
+    async function orderGameItem(gameId, category, index, itemName, itemPrice, itemIconUrl, itemIconSize) {
+        if (!currentUser) {
+            return customAlert("အော်ဒါတင်ရန် ဝါသနာပါက Login အရင်လုပ်ပါဗျာ။");
+        }
+        
+        let fields = ["Player ID"];
+        try {
+            const doc = await db.collection("prices").doc(gameId).get();
+            if (doc.exists && doc.data().inputFields) {
+                fields = doc.data().inputFields;
+            }
+        } catch(e) { console.error(e); }
+
+        const modal = document.createElement("div");
+        modal.className = "fixed inset-0 bg-black/95 z-[10001] flex items-center justify-center p-6";
+        
+        let inputsHtml = fields.map((f, i) => `
+            <div class="space-y-1 text-left">
+                <label class="text-[10px] text-neutral-400 font-bold uppercase tracking-wider block">${f}</label>
+                <input type="text" id="order-field-${i}" class="input-field" placeholder="${f} ရိုက်ထည့်ပါ">
+            </div>
+        `).join("");
+
+        modal.innerHTML = `
+        <div class="bg-[#111113] border border-neutral-800 p-6 rounded-2xl max-w-sm w-full text-center space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
+            <div class="flex items-center justify-center gap-3">
+                ${itemIconUrl ? `<img src="${itemIconUrl}" style="width: ${itemIconSize || 32}px; height: ${itemIconSize || 32}px" class="object-cover rounded-lg border border-neutral-800">` : `<div class="text-[#FF8C00] text-3xl"><i class="fa-solid fa-gamepad"></i></div>`}
+                <div class="text-left">
+                    <h4 class="text-white font-black text-sm uppercase">${gameId.toUpperCase()}</h4>
+                    <p class="text-xs text-neutral-400 font-semibold">${itemName}</p>
+                </div>
+            </div>
+            
+            <p class="text-xs text-[#FF8C00] font-black">ဈေးနှုန်း: ${Number(itemPrice).toLocaleString()} Ks</p>
+            
+            <div class="space-y-3">
+                ${inputsHtml}
+            </div>
+
+            <div class="bg-black/60 p-3 rounded-xl text-[11px] text-left text-neutral-400 border border-neutral-850">
+                <p>သင့်အကောင့်လက်ကျန်: <span class="text-[#FF8C00] font-black">${Number(currentUser.balance || 0).toLocaleString()} Ks</span></p>
+                ${(currentUser.balance || 0) < itemPrice ? `<p class="text-red-500 font-bold mt-1">⚠️ လက်ကျန်ငွေ မလုံလောက်ပါ။ ကျေးဇူးပြု၍ ငွေအရင်ဖြည့်ပါ။</p>` : ''}
+            </div>
+
+            <div class="flex gap-2">
+                <button id="btn-submit-order" class="flex-1 py-2.5 bg-[#FF8C00] hover:bg-orange-600 text-black font-black rounded-xl text-xs uppercase tracking-wider transition" ${(currentUser.balance || 0) < itemPrice ? 'disabled style="opacity: 0.5"' : ''}>Order Now</button>
+                <button id="btn-cancel-order" class="flex-1 py-2.5 bg-neutral-850 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition">Cancel</button>
+            </div>
+        </div>`;
+        document.body.appendChild(modal);
+
+        modal.querySelector("#btn-cancel-order").onclick = () => modal.remove();
+        modal.querySelector("#btn-submit-order").onclick = async () => {
+            let fieldVals = [];
+            let missing = false;
+            fields.forEach((f, i) => {
+                const val = document.getElementById(`order-field-${i}`).value.trim();
+                if (!val) missing = true;
+                fieldVals.push(`${f}: ${val}`);
+            });
+
+            if (missing) {
+                return customAlert("ကျေးဇူးပြု၍ လိုအပ်သောအချက်အလက်များ အားလုံးဖြည့်ပေးပါဗျာ။");
+            }
+
+            modal.remove();
+
+            try {
+                const userRef = db.collection("users").doc(currentUser.phone);
+                const userSnap = await userRef.get();
+                if (!userSnap.exists) return customAlert("အသုံးပြုသူ ရှာမတွေ့ပါ။");
+                
+                const currentBal = parseFloat(userSnap.data().balance || 0);
+                if (currentBal < itemPrice) return customAlert("လက်ကျန်ငွေ မလုံလောက်တော့ပါဗျာ။");
+
+                const newBal = currentBal - itemPrice;
+                await userRef.update({ balance: newBal });
+                currentUser.balance = newBal; 
+                
+                const orderRandomId = Math.floor(100000 + Math.random() * 900000);
+
+                await db.collection("orders").add({
+                    userName: currentUser.name,
+                    userId: currentUser.phone,
+                    game: gameId,
+                    item: itemName,
+                    price: itemPrice,
+                    gameId: fieldVals.join(" | "),
+                    orderId: orderRandomId,
+                    status: 'pending',
+                    itemIconUrl: itemIconUrl || "",
+                    itemIconSize: itemIconSize || 32,
+                    time: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // TG Notification for New Order
+                const orderLog = `📦 <b>NEW ORDER PLACED</b>\n` +
+                                 `• User: ${currentUser.name}\n` +
+                                 `• Phone: ${currentUser.phone}\n` +
+                                 `• Game: ${gameId.toUpperCase()}\n` +
+                                 `• Pack: ${itemName}\n` +
+                                 `• Price: ${itemPrice.toLocaleString()} Ks\n` +
+                                 `• Target: ${fieldVals.join(" | ")}\n` +
+                                 `• Order ID: #${orderRandomId}`;
+
+                await sendTelegramMessage(orderLog);
+
+                customAlert(`🎉 Order #${orderRandomId} အား အောင်မြင်စွာ တင်သွင်းပြီးပါပြီဗျာ။ စီမံခန့်ခွဲသူမှ မကြာမီ ဆောင်ရွက်ပေးပါလိမ့်မည်။`);
+            } catch(e) {
+                console.error(e);
+                customAlert("အော်ဒါတင်ခြင်း မအောင်မြင်ပါ။");
+            }
+        };
+    }
+
     function loadAdminPanel() {
         showPage('page-admin');
         const uList = document.getElementById('adm-user-list');
@@ -1514,10 +2065,9 @@
 
         if (!db) return;
 
-        // Force reset the subtab to Action Required (Confirm/Reject Zone)
         switchOrderSubTab('pending');
+        switchReferralFilter('pending');
 
-        // Users portfolio snapshot
         db.collection("users").onSnapshot(snap => {
             if (!uList) return;
             uList.innerHTML = "";
@@ -1573,6 +2123,7 @@
         }, err => console.error(err));
 
         loadAdminPriceList(); 
+        loadReferralConfigurations();
     }
 
     // --- Search filter features ---
@@ -1686,7 +2237,6 @@
     }
 
     function searchOrders() {
-        // Triggers live subtab render to filter searched query instantly
         renderOrdersByActiveSubTab();
     }
 
@@ -1940,13 +2490,15 @@
             } else if (q.includes("reject") || q.includes("ပယ်ဖျက်")) {
                 reply = "အော်ဒါပယ်ဖျက်ရန်: <b>'Reject'</b> ခလုတ်ကိုနှိပ်ပါ။ User ဆီသို့ message feedback ပို့ပါမည်။";
             } else if (q.includes("price") || q.includes("ဈေးနှုန်း")) {
-                reply = "ဈေးနှုန်းပြင်ရန်: <b>Settings</b> Tab > <b>EDIT</b> ကိုနှိပ်ပြီး အသစ်ပြင်ပါ။";
+                reply = "ဈေးနှုန်းပြင်ရန်: <b>Configs</b> Tab > <b>EDIT</b> ကိုနှိပ်ပြီး အသစ်ပြင်ပါ။";
             } else if (q.includes("game") || q.includes("ဂိမ်း")) {
-                reply = "ဂိမ်းအသစ်ထည့်ရန်: <b>Settings</b> Tab ၏ <b>'Game Catalogue Editor'</b> ထဲတွင် Game Node အသစ်ဆောက်ပါ။";
+                reply = "ဂိမ်းအသစ်ထည့်ရန်: <b>Configs</b> Tab ၏ <b>'Game Catalogue Editor'</b> ထဲတွင် Game Node အသစ်ဆောက်ပါ။";
+            } else if (q.includes("referral") || q.includes("မိတ်ဆက်")) {
+                reply = "မိတ်ဆက်ဆုကြေးများ စီမံရန်: <b>Referrals</b> Tab တွင် Fake device ကာကွယ်ခြင်းနှင့် auto reward ပမာဏများကို ပြင်ဆင်နိုင်သည်။";
             } else if (q.includes("msg") || q.includes("စာပို့")) {
                 reply = "User ဆီ စာပို့ရန်: Users Tab ၏ ဝယ်သူအကောင့်ပေါ်က <b>'Send MSG'</b> ခလုတ်ကိုနှိပ်ပြီး Notification ပို့ပါ။";
-            } else if (q.includes("developer") || q.includes("ဘယ်သူလုပ်တာလဲ")) {
-                reply = "ဒီ App ကို Developer <b>Thu Rain Tun</b> က ဖန်တီးထားတာဖြစ်ပါတယ်။";
+            } else if (q.includes("telegram") || q.includes("tele") || q.includes("တဲလီဂရမ်")) {
+                reply = "Telegram ချိတ်ဆက်ရန်: <b>Configs</b> Tab > <b>Telegram Bot Notification Integration</b> တွင် Bot Token နှင့် Chat ID ထည့်ပေးပါခင်ဗျာ။";
             } else {
                 reply = "တောင်းပန်ပါတယ် Admin။ ထပ်မံသိရှိလိုသည်များကို Admin Suite Panel တက်ပ်များအလိုက် ဝင်ရောက်စမ်းသပ်ကြည့်နိုင်ပါတယ်ခင်ဗျာ။";
             }
@@ -1967,48 +2519,20 @@
         btn.disabled = true;
 
         try {
-            const reader = new FileReader();
+            const imageUrl = await uploadToImgBB(fileInput);
+
+            await db.collection("game_icons").doc(gameSelect).set({
+                url: imageUrl,
+                updatedAt: new Date().toISOString()
+            });
+
+            customAlert(`✅ ${gameSelect.toUpperCase()} Icon အား အောင်မြင်စွာ လဲလှယ်တင်ပြပြီးပါပြီခင်ဗျာ။`);
+            document.getElementById("admin-icon-file").value = ""; 
             
-            reader.onload = async function () {
-                try {
-                    const base64Data = reader.result.split(",")[1];
-                    const formData = new FormData();
-                    formData.append("image", base64Data);
-
-                    const imgbbRes = await fetch("https://api.imgbb.com/1/upload?key=06fed9e1368ff406bc578eb29ddb4c80", {
-                        method: "POST",
-                        body: formData 
-                    });
-                    const imgbbData = await imgbbRes.json();
-
-                    if (!imgbbData.success) {
-                        throw new Error("ImgBB Upload Failed");
-                    }
-
-                    const imageUrl = imgbbData.data.url; 
-
-                    await db.collection("game_icons").doc(gameSelect).set({
-                        url: imageUrl,
-                        updatedAt: new Date().toISOString()
-                    });
-
-                    customAlert(`✅ ${gameSelect.toUpperCase()} Icon အား အောင်မြင်စွာ လဲလှယ်တင်ပြပြီးပါပြီခင်ဗျာ။`);
-                    document.getElementById("admin-icon-file").value = ""; 
-                    
-                } catch (innerError) {
-                    console.error(innerError);
-                    customAlert("❌ ပုံတင်ခြင်း မအောင်မြင်ပါ။ API Key ကို ပြန်စစ်ပါ။");
-                } finally {
-                    btn.innerText = "Upload New PNG Icon (ImgBB)";
-                    btn.disabled = false;
-                }
-            };
-
-            reader.readAsDataURL(fileInput);
-
-        } catch (error) {
-            console.error(error);
-            customAlert("❌ စနစ်ချို့ယွင်းမှုကြောင့် ပုံတင်မရဖြစ်သွားပါသည်။");
+        } catch (innerError) {
+            console.error(innerError);
+            customAlert("❌ ပုံတင်ခြင်း မအောင်မြင်ပါ။ API Key ကို ပြန်စစ်ပါ။");
+        } finally {
             btn.innerText = "Upload New PNG Icon (ImgBB)";
             btn.disabled = false;
         }
@@ -2055,6 +2579,61 @@
                     localStorage.setItem("sr_icon_size", widthVal);
                 }
             }).catch(e => console.warn(e));
+        }
+    }
+
+    // --- Loading Telegram Settings ---
+    async function loadTelegramSettings() {
+        if (!db) return;
+        try {
+            const doc = await db.collection("appSettings").doc("telegramConfig").get();
+            if (doc.exists) {
+                const data = doc.data();
+                tgBotToken = data.botToken || "";
+                tgChatId = data.chatId || "";
+                
+                const tokenInput = document.getElementById("tg-bot-token");
+                const chatInput = document.getElementById("tg-chat-id");
+                
+                if (tokenInput) tokenInput.value = tgBotToken;
+                if (chatInput) chatInput.value = tgChatId;
+            }
+        } catch (e) {
+            console.error("Could not load Telegram settings:", e);
+        }
+    }
+
+    async function saveTelegramConfigs() {
+        const token = document.getElementById("tg-bot-token").value.trim();
+        const chat = document.getElementById("tg-chat-id").value.trim();
+
+        if (!token || !chat) {
+            return customAlert("Telegram Token နှင့် Chat ID အားလုံး ဖြည့်စွက်ပေးပါရန်။");
+        }
+
+        try {
+            await db.collection("appSettings").doc("telegramConfig").set({
+                botToken: token,
+                chatId: chat,
+                updatedAt: new Date().toISOString()
+            });
+
+            tgBotToken = token;
+            tgChatId = chat;
+            customAlert("✅ Telegram Bot configuration parameters saved successfully!");
+        } catch (e) {
+            console.error(e);
+            customAlert("Failed to save Bot configurations.");
+        }
+    }
+
+    async function testTelegramNotification() {
+        const testText = `🔌 <b>SR Game Shop - Test Notification</b>\n━━━━━━━━━━━━━━━━━━\nမင်္ဂလာပါခင်ဗျာ၊ Telegram API ချိတ်ဆက်မှု အောင်မြင်ပါသည်။`;
+        try {
+            await sendTelegramMessage(testText);
+            customAlert("Test message dispatched. Please check your Telegram!");
+        } catch (e) {
+            customAlert("Telegram sending failed!");
         }
     }
 
@@ -2109,7 +2688,11 @@
                         time: firebase.firestore.FieldValue.serverTimestamp()
                     });
 
-                    customAlert("🎉 အောင်မြင်ပါသည်! Customer ထံသို့ ပိုက်ဆံ Auto ဖြည့်သွင်းပေးလိုက်ပါပြီ။");
+                    // Send TG Deposit notification
+                    const tgLog = `💵 <b>DEPOSIT APPROVED</b>\n━━━━━━━━━━━━━━━━━━\n👤 User: ${userDoc.data().name}\n📞 Phone: ${phone}\n💰 Amount: ${amount.toLocaleString()} Ks\n🟢 New Balance: ${newBalance.toLocaleString()} Ks`;
+                    await sendTelegramMessage(tgLog);
+
+                    customAlert("🎉 အောင်မြင်ပါသည်! Customer ထံသို့ ပိုက်ဆံ Auto ဖြည့်သွင်းပေးလိုက်ပါပြီ।");
                 } else if (action === "reject") {
                     await db.collection("deposits").doc(docId).update({ status: "rejected" });
 
@@ -2118,6 +2701,10 @@
                         text: `⚠️ လူကြီးမင်း တင်ပြထားသော ငွေဖြည့်သွင်းမှု တောင်းဆိုချက်မှာ လွဲပြေစာ မမှန်ကန်ခြင်းကြောင့် စီမံခန့်ခွဲသူမှ ငြင်းပယ် (Reject) ထားပါတယ်ဗျာ။ ကျေးဇူးပြု၍ ပြန်လည်စစ်ဆေးပေးပါ။`,
                         time: firebase.firestore.FieldValue.serverTimestamp()
                     });
+
+                    // Send TG Deposit rejection
+                    const tgLog = `🔴 <b>DEPOSIT REJECTED</b>\n━━━━━━━━━━━━━━━━━━\n📞 Phone: ${phone}\n💰 Amount: ${amount.toLocaleString()} Ks\n⚠️ Reason: Receipt Fraud or Error`;
+                    await sendTelegramMessage(tgLog);
 
                     customAlert("❌ Ngwe Pyae Mu Taung So Chat Ko Reject Loke Lite Par Pyi.");
                 }
@@ -2128,74 +2715,68 @@
         });
     }
 
+    // --- Adding other services ---
     async function addOtherService() {
         const sId = document.getElementById("serv-id").value.trim();
+        const sFields = document.getElementById("serv-user-fields").value.trim();
         const sPack = document.getElementById("serv-pack").value.trim();
         const sPrice = parseFloat(document.getElementById("serv-price").value);
-        const iconFile = document.getElementById("serv-icon-file").files[0];
+        const brandingIconFile = document.getElementById("serv-icon-file").files[0];
+        
+        const planIconFile = document.getElementById("serv-plan-icon-file").files[0];
+        const planIconSize = parseInt(document.getElementById("serv-plan-icon-size").value) || 32;
+
         const saveBtn = document.getElementById("btn-save-service");
 
         if (!sId || !sPack || isNaN(sPrice)) {
             return customAlert("ကျေးဇူးပြု၍ အချက်အလက်များ ပြည့်စုံစွာ ဖြည့်စွက်ပေးပါရန်။");
         }
 
+        const fieldsArr = sFields ? sFields.split(",").map(f => f.trim()) : ["Email / Password"];
+
         saveBtn.innerText = "Processing Cloud Upload...";
         saveBtn.disabled = true;
 
         try {
-            let uploadedIconUrl = "";
+            let uploadedBrandingIconUrl = "";
+            if (brandingIconFile) {
+                uploadedBrandingIconUrl = await uploadToImgBB(brandingIconFile);
+            }
 
-            if (iconFile) {
-                uploadedIconUrl = await new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = async function() {
-                        try {
-                            const base64Data = reader.result.split(",")[1];
-                            const formData = new FormData();
-                            formData.append("image", base64Data);
-
-                            const imgbbRes = await fetch("https://api.imgbb.com/1/upload?key=06fed9e1368ff406bc578eb29ddb4c80", {
-                                method: "POST",
-                                body: formData
-                            });
-                            const imgbbData = await imgbbRes.json();
-                            if (imgbbData.success) {
-                                resolve(imgbbData.data.url);
-                            } else {
-                                reject("ImgBB Upload Error");
-                            }
-                        } catch(e) { reject(e); }
-                    };
-                    reader.onerror = error => reject(error);
-                    reader.readAsDataURL(iconFile);
-                });
+            let uploadedPlanIconUrl = "";
+            if (planIconFile) {
+                uploadedPlanIconUrl = await uploadToImgBB(planIconFile);
             }
 
             const docRef = db.collection("other_services").doc(sId.toLowerCase());
             const doc = await docRef.get();
             let plans = [];
-            let existingIcon = "";
+            let existingBrandingIcon = "";
 
             if (doc.exists) {
                 plans = doc.data().plans || [];
-                existingIcon = doc.data().iconUrl || "";
+                existingBrandingIcon = doc.data().iconUrl || "";
             }
 
             plans.push({
                 packName: sPack,
-                price: sPrice
+                price: sPrice,
+                iconUrl: uploadedPlanIconUrl,
+                iconSize: planIconSize
             });
 
             await docRef.set({
                 serviceName: sId,
                 plans: plans,
-                iconUrl: uploadedIconUrl || existingIcon || "https://placehold.co/150x150/111/fff?text=Icon"
+                inputFields: fieldsArr,
+                iconUrl: uploadedBrandingIconUrl || existingBrandingIcon || "https://placehold.co/150x150/111/fff?text=Icon"
             }, { merge: true });
 
             customAlert(`✅ Service ${sId} ထဲသို့ Plan အသစ် ထည့်သွင်းပြီးပါပြီ။`);
             document.getElementById("serv-pack").value = "";
             document.getElementById("serv-price").value = "";
             document.getElementById("serv-icon-file").value = "";
+            document.getElementById("serv-plan-icon-file").value = "";
         } catch (e) {
             console.error(e);
             customAlert("အချက်အလက် သိမ်းဆည်းရန် မအောင်မြင်ပါ။");
@@ -2205,6 +2786,93 @@
         }
     }
 
+    // --- Editing existing other services plan ---
+    async function editOtherServicePlan(serviceId, index, currentName, currentPrice) {
+        const docRef = db.collection("other_services").doc(serviceId);
+        const doc = await docRef.get();
+        if (!doc.exists) return;
+
+        let data = doc.data();
+        let planObj = data.plans[index];
+        let curIconUrl = planObj.iconUrl || "";
+        let curIconSize = planObj.iconSize || 32;
+
+        const customPrompt = document.createElement("div");
+        customPrompt.className = "fixed inset-0 bg-black/85 z-[10002] flex items-center justify-center p-6";
+        customPrompt.innerHTML = `
+        <div class="bg-[#111113] border border-neutral-800 p-6 rounded-2xl max-w-sm w-full text-center space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
+            <h4 class="text-white font-black text-sm">Other Service Plan ပြင်ဆင်မည်</h4>
+            <p class="text-xs text-neutral-400 font-bold">${currentName}</p>
+            
+            <div class="space-y-3 text-left">
+                <div>
+                    <label class="text-[9px] text-neutral-400 font-bold block mb-1">Plan Name</label>
+                    <input type="text" id="edit-plan-name" class="input-field" value="${currentName}">
+                </div>
+                <div>
+                    <label class="text-[9px] text-neutral-400 font-bold block mb-1">Price (Ks)</label>
+                    <input type="number" id="edit-plan-price" class="input-field text-center font-bold text-[#FF8C00]" value="${currentPrice}">
+                </div>
+                <div>
+                    <label class="text-[9px] text-neutral-400 font-bold block mb-1">Upload Plan PNG Icon</label>
+                    <input type="file" id="edit-plan-icon" accept="image/png" class="w-full text-xs text-neutral-400">
+                </div>
+                <div>
+                    <label class="text-[9px] text-neutral-400 font-bold block flex justify-between">
+                        <span>Plan Icon Size</span>
+                        <span id="edit-plan-icon-size-val">${curIconSize}px</span>
+                    </label>
+                    <input type="range" id="edit-plan-icon-size" min="16" max="100" value="${curIconSize}" class="w-full accent-orange-500" oninput="document.getElementById('edit-plan-icon-size-val').innerText = this.value + 'px'">
+                </div>
+            </div>
+
+            <div class="flex gap-2">
+                <button id="prompt-save-service" class="flex-1 py-2.5 bg-[#FF8C00] text-black font-black rounded-xl text-xs uppercase transition">Save</button>
+                <button id="prompt-cancel-service" class="flex-1 py-2.5 bg-neutral-850 text-white font-bold rounded-xl text-xs uppercase transition">Cancel</button>
+            </div>
+        </div>`;
+        document.body.appendChild(customPrompt);
+
+        const saveBtn = customPrompt.querySelector("#prompt-save-service");
+        saveBtn.onclick = async () => {
+            const newName = document.getElementById("edit-plan-name").value.trim();
+            const newPrice = parseFloat(document.getElementById("edit-plan-price").value);
+            const iconFile = document.getElementById("edit-plan-icon").files[0];
+            const iconSize = parseInt(document.getElementById("edit-plan-icon-size").value);
+
+            if (!newName || isNaN(newPrice)) return customAlert("အချက်အလက် မှန်ကန်စွာ ဖြည့်သွင်းပါ");
+
+            saveBtn.innerText = "Processing Cloud Save...";
+            saveBtn.disabled = true;
+
+            try {
+                let uploadedUrl = curIconUrl;
+                if (iconFile) {
+                    uploadedUrl = await uploadToImgBB(iconFile);
+                }
+
+                data.plans[index].packName = newName;
+                data.plans[index].price = newPrice;
+                data.plans[index].iconUrl = uploadedUrl;
+                data.plans[index].iconSize = iconSize;
+
+                await docRef.set(data, { merge: true });
+                customPrompt.remove();
+                customAlert("Updated Successfully!");
+            } catch(e) {
+                console.error(e);
+                customAlert("Update failed!");
+                saveBtn.innerText = "Save";
+                saveBtn.disabled = false;
+            }
+        };
+
+        customPrompt.querySelector("#prompt-cancel-service").onclick = () => {
+            customPrompt.remove();
+        };
+    }
+
+    // --- Subscribing to other services updates ---
     function listenToOtherServices() {
         if (!db) return;
         db.collection("other_services").onSnapshot(snap => {
@@ -2219,21 +2887,29 @@
                     const sId = doc.id;
                     const plans = data.plans || [];
 
-                    let plansHtml = plans.map((p, idx) => `
-                        <div class="flex justify-between items-center text-[11px] bg-black/40 p-1.5 rounded border border-neutral-900 mt-1">
-                            <span class="text-neutral-300 font-semibold">${p.packName}</span>
-                            <div class="flex items-center gap-2">
-                                <span class="text-[#FF8C00] font-bold">${p.price.toLocaleString()} Ks</span>
-                                <button onclick="deleteServicePlan('${sId}', ${idx})" class="text-red-500 hover:text-red-400 font-bold"><i class="fa-solid fa-xmark"></i></button>
+                    let plansHtml = plans.map((p, idx) => {
+                        const planIcon = p.iconUrl || '';
+                        const planIconSize = p.iconSize || 24;
+                        return `
+                            <div class="flex justify-between items-center text-[11px] bg-black/40 p-1.5 rounded border border-neutral-900 mt-1">
+                                <div class="flex items-center gap-2">
+                                    ${planIcon ? `<img src="${planIcon}" style="width: ${planIconSize}px; height: ${planIconSize}px;" class="object-cover rounded border border-neutral-800" onerror="this.style.display='none'">` : '<div class="w-5 h-5 rounded bg-neutral-900 border border-neutral-800 flex items-center justify-center text-orange-500"><i class="fa-solid fa-shapes text-[9px]"></i></div>'}
+                                    <span class="text-neutral-300 font-semibold">${p.packName}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[#FF8C00] font-bold">${p.price.toLocaleString()} Ks</span>
+                                    <button onclick="editOtherServicePlan('${sId}', ${idx}, '${p.packName}', ${p.price})" class="bg-[#FF8C00]/10 text-[#FF8C00] border border-[#FF8C00]/20 hover:bg-[#FF8C00] hover:text-black py-0.5 px-2 rounded font-bold text-[9px]">EDIT</button>
+                                    <button onclick="deleteServicePlan('${sId}', ${idx})" class="text-red-500 hover:text-red-400 font-bold"><i class="fa-solid fa-xmark"></i></button>
+                                </div>
                             </div>
-                        </div>
-                    `).join("");
+                        `;
+                    }).join("");
 
                     adminList.innerHTML += `
                         <div class="bg-neutral-900/60 p-3 rounded-lg border border-neutral-800">
                             <div class="flex justify-between items-center pb-1 border-b border-neutral-800">
                                 <div class="flex items-center gap-2">
-                                    <img src="${data.iconUrl || 'https://placehold.co/50/222/fff'}" class="w-5 h-5 rounded-md object-cover">
+                                    <img src="${data.iconUrl || 'https://placehold.co/50/222/fff'}" class="w-5 h-5 rounded-md object-cover border border-neutral-800">
                                     <span class="text-[#FF8C00] text-xs font-black uppercase">${data.serviceName}</span>
                                 </div>
                                 <button onclick="deleteEntireService('${sId}')" class="text-red-500 hover:text-red-400 text-[10px] font-bold"><i class="fa-solid fa-trash"></i> Service</button>
@@ -2275,7 +2951,7 @@
         });
     }
 
-    // --- Customer UI Loader for Other Services Grid Layout ---
+    // --- Customer interactive grid layout ---
     async function loadOtherServicesGrid() {
         const grid = document.getElementById('services-grid-container');
         if (!grid) return;
@@ -2301,9 +2977,9 @@
                 if (plans.length > 0) {
                     html += `
                     <div class="premium-border-glow bg-[#111113] p-5 rounded-2xl flex flex-col items-center justify-center text-center cursor-pointer gap-3" onclick="viewServicePlansDetail('${serviceId}')">
-                        <div class="flex items-center justify-center" style="width: ${localSizeConfig}px; height: ${localSizeConfig}px;">
+                        <div class="flex items-center justify-center border border-neutral-800 rounded-xl overflow-hidden p-1 bg-black" style="width: ${localSizeConfig}px; height: ${localSizeConfig}px;">
                             <img src="${data.iconUrl || 'https://placehold.co/100x100/222/fff?text=' + data.serviceName}" 
-                                 class="w-full h-full object-cover rounded-xl"
+                                 class="w-full h-full object-cover rounded-lg"
                                  style="max-width: 100%; max-height: 100%;"
                                  onerror="this.src='https://placehold.co/150/111/fff?text=${data.serviceName}'">
                         </div>
@@ -2346,7 +3022,7 @@
 
         let html = `
         <div class="bg-[#111113] p-5 rounded-2xl border border-neutral-800 flex items-center gap-3">
-            <img src="${data.iconUrl || 'https://placehold.co/50'}" class="w-12 h-12 object-cover rounded-xl">
+            <img src="${data.iconUrl || 'https://placehold.co/50'}" class="w-12 h-12 object-cover rounded-xl border border-neutral-800">
             <div>
                 <h4 class="text-white font-black text-sm uppercase tracking-wider">${data.serviceName} Premium</h4>
                 <p class="text-[10px] text-neutral-500">Choose plan below to order</p>
@@ -2364,9 +3040,14 @@
                 <tbody>`;
         
         data.plans.forEach(p => {
+            const planIconUrl = p.iconUrl || data.iconUrl || "";
+            const planIconSize = p.iconSize || 24;
             html += `
-                <tr class="hover:bg-neutral-900/60 transition cursor-pointer" onclick="handleServicePurchaseOrder('${data.serviceName}', '${p.packName}', ${p.price})">
-                    <td class="text-gray-300 font-semibold text-xs py-2.5">${p.packName}</td>
+                <tr class="hover:bg-neutral-900/60 transition cursor-pointer" onclick="handleServicePurchaseOrder('${data.serviceName}', '${p.packName}', ${p.price}, '${planIconUrl}', ${planIconSize})">
+                    <td class="text-gray-300 font-semibold text-xs py-2.5 flex items-center gap-2.5">
+                        ${planIconUrl ? `<img src="${planIconUrl}" style="width: ${planIconSize}px; height: ${planIconSize}px;" class="object-cover rounded border border-neutral-900" onerror="this.style.display='none'">` : '<div class="w-6 h-6 rounded bg-neutral-900 border border-neutral-850 flex items-center justify-center text-orange-500"><i class="fa-solid fa-shapes text-[10px]"></i></div>'}
+                        <span>${p.packName}</span>
+                    </td>
                     <td class="text-right text-[#FF8C00] font-black text-xs py-2.5">${p.price.toLocaleString()} Ks</td>
                 </tr>`;
         });
@@ -2382,10 +3063,113 @@
         document.getElementById('other-services-back').onclick = function() { showPage('page-home'); };
     }
 
-    function handleServicePurchaseOrder(serviceName, packName, price) {
-        customConfirm(`ဝန်ဆောင်မှု - ${serviceName} (${packName}) ဈေးနှုန်း ${price.toLocaleString()} Ks ကို ဝယ်ယူရန် သေချာပါသလားခင်ဗျာ?`, () => {
-            customAlert("🎉 ဝယ်ယူမှုတောင်းဆိုချက်ကို လက်ခံရရှိပြီးပါပြီ။ Admin မှ သင့်အကောင့်ထဲမှ ငွေနုတ်ယူပြီး အကောင့်အချက်အလက်များကို ပေးပို့ပေးပါလိမ့်မည်။");
-        });
+    // --- Processing other service purchase with order integration ---
+    async function handleServicePurchaseOrder(serviceName, packName, price, itemIconUrl, itemIconSize) {
+        if (!currentUser) {
+            return customAlert("အော်ဒါတင်ရန် ဦးစွာ Login ဝင်ပါဗျာ।");
+        }
+
+        // Get Input Fields for specific service (e.g. TikTok -> video link, Capcut -> email/TikTok id)
+        const lowerServiceId = serviceName.toLowerCase();
+        let fields = ["Account Details / Email & Password"];
+        
+        const serviceData = otherServicesCache[lowerServiceId];
+        if (serviceData && serviceData.inputFields) {
+            fields = serviceData.inputFields;
+        }
+
+        const modal = document.createElement("div");
+        modal.className = "fixed inset-0 bg-black/95 z-[10001] flex items-center justify-center p-6";
+        
+        let inputsHtml = fields.map((f, i) => `
+            <div class="space-y-1 text-left">
+                <label class="text-[10px] text-neutral-400 font-bold uppercase tracking-wider block">${f}</label>
+                <input type="text" id="service-order-field-${i}" class="input-field" placeholder="${f} ရိုက်ထည့်ပါ">
+            </div>
+        `).join("");
+
+        modal.innerHTML = `
+        <div class="bg-[#111113] border border-neutral-800 p-6 rounded-2xl max-w-sm w-full text-center space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
+            <div class="flex items-center justify-center gap-3">
+                ${itemIconUrl ? `<img src="${itemIconUrl}" style="width: ${itemIconSize || 32}px; height: ${itemIconSize || 32}px" class="object-cover rounded-lg border border-neutral-800">` : `<div class="text-[#FF8C00] text-3xl"><i class="fa-solid fa-shapes"></i></div>`}
+                <div class="text-left">
+                    <h4 class="text-white font-black text-sm uppercase">${serviceName}</h4>
+                    <p class="text-xs text-neutral-400 font-semibold">${packName}</p>
+                </div>
+            </div>
+            
+            <p class="text-xs text-[#FF8C00] font-black">ဈေးနှုန်း: ${Number(price).toLocaleString()} Ks</p>
+            
+            <div class="space-y-3">
+                ${inputsHtml}
+            </div>
+
+            <div class="bg-black/60 p-3 rounded-xl text-[11px] text-left text-neutral-400 border border-neutral-850">
+                <p>သင့်အကောင့်လက်ကျန်: <span class="text-[#FF8C00] font-black">${Number(currentUser.balance || 0).toLocaleString()} Ks</span></p>
+                ${(currentUser.balance || 0) < price ? `<p class="text-red-500 font-bold mt-1">⚠️ လက်ကျန်ငွေ မလုံလောက်ပါ။ ကျေးဇူးပြု၍ ငွေအရင်ဖြည့်ပါ။</p>` : ''}
+            </div>
+
+            <div class="flex gap-2">
+                <button id="btn-submit-service-order" class="flex-1 py-2.5 bg-[#FF8C00] hover:bg-orange-600 text-black font-black rounded-xl text-xs uppercase tracking-wider transition" ${(currentUser.balance || 0) < price ? 'disabled style="opacity: 0.5"' : ''}>Order Now</button>
+                <button id="btn-cancel-service-order" class="flex-1 py-2.5 bg-neutral-850 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition">Cancel</button>
+            </div>
+        </div>`;
+        document.body.appendChild(modal);
+
+        modal.querySelector("#btn-cancel-service-order").onclick = () => modal.remove();
+        modal.querySelector("#btn-submit-service-order").onclick = async () => {
+            let fieldVals = [];
+            let missing = false;
+            fields.forEach((f, i) => {
+                const val = document.getElementById(`service-order-field-${i}`).value.trim();
+                if (!val) missing = true;
+                fieldVals.push(`${f}: ${val}`);
+            });
+
+            if (missing) {
+                return customAlert("ကျေးဇူးပြု၍ လိုအပ်သောအချက်အလက်များ အားလုံးဖြည့်ပေးပါဗျာ။");
+            }
+
+            modal.remove();
+
+            try {
+                const userRef = db.collection("users").doc(currentUser.phone);
+                const userSnap = await userRef.get();
+                if (!userSnap.exists) return customAlert("အသုံးပြုသူ ရှာမတွေ့ပါ။");
+
+                const currentBal = parseFloat(userSnap.data().balance || 0);
+                if (currentBal < price) return customAlert("⚠️ သင့်အကောင့်ထဲတွင် ငွေမလုံလောက်ပါ။ ကျေးဇူးပြု၍ ငွေအရင်ဖြည့်သွင်းပေးပါရန်။");
+
+                const newBal = currentBal - price;
+                await userRef.update({ balance: newBal });
+                currentUser.balance = newBal;
+
+                const orderRandomId = Math.floor(100000 + Math.random() * 900000);
+
+                await db.collection("orders").add({
+                    userName: currentUser.name,
+                    userId: currentUser.phone,
+                    game: serviceName,
+                    item: packName,
+                    price: price,
+                    gameId: fieldVals.join(" | "),
+                    orderId: orderRandomId,
+                    status: 'pending',
+                    itemIconUrl: itemIconUrl || "",
+                    itemIconSize: itemIconSize || 32,
+                    time: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // TG Notification for Premium Service Purchase
+                const tgMsg = `🚀 <b>PREMIUM SERVICE ORDER</b>\n━━━━━━━━━━━━━━━━━━\n👤 User: ${currentUser.name}\n📞 Phone: ${currentUser.phone}\n🛠 Service: ${serviceName}\n📦 Plan: ${packName}\n💰 Price: ${price.toLocaleString()} Ks\n🔑 Target Details: ${fieldVals.join(" | ")}\nOrder ID: #${orderRandomId}`;
+                await sendTelegramMessage(tgMsg);
+
+                customAlert(`🎉 ဝယ်ယူမှုတောင်းဆိုချက် #${orderRandomId} ကို လက်ခံရရှိပြီးပါပြီ။ Admin မှ သင့်အကောင့်ထဲမှ ငွေနုတ်ယူပြီး အကောင့်အချက်အလက်များကို ပေးပို့ပေးပါလိမ့်မည်။`);
+            } catch(e) {
+                console.error(e);
+                customAlert("ဝယ်ယူမှု မအောင်မြင်ပါ။");
+            }
+        };
     }
 
     async function uploadGuideNews() {
@@ -2402,47 +3186,23 @@
         uploadBtn.disabled = true;
 
         try {
-            const reader = new FileReader();
-            reader.onload = async function() {
-                try {
-                    const base64Data = reader.result.split(",")[1];
-                    const formData = new FormData();
-                    formData.append("image", base64Data);
+            const imageUrl = await uploadToImgBB(fileInput);
 
-                    const imgbbRes = await fetch("https://api.imgbb.com/1/upload?key=06fed9e1368ff406bc578eb29ddb4c80", {
-                        method: "POST",
-                        body: formData
-                    });
-                    const imgbbData = await imgbbRes.json();
+            await db.collection("guides").add({
+                title: title,
+                description: desc,
+                imageUrl: imageUrl,
+                createdAt: new Date().toISOString()
+            });
 
-                    if (!imgbbData.success) {
-                        throw new Error("ImgBB Upload Failed");
-                    }
-
-                    const imageUrl = imgbbData.data.url;
-
-                    await db.collection("guides").add({
-                        title: title,
-                        description: desc,
-                        imageUrl: imageUrl,
-                        createdAt: new Date().toISOString()
-                    });
-
-                    customAlert("✅ လမ်းညွှန်ချက်သတင်းအား အောင်မြင်စွာ တင်ပြီးပါပြီ။");
-                    document.getElementById("guide-title").value = "";
-                    document.getElementById("guide-desc").value = "";
-                    document.getElementById("guide-file").value = "";
-                } catch(err) {
-                    console.error(err);
-                    customAlert("ပုံတင်ရန် မအောင်မြင်ပါ။");
-                } finally {
-                    uploadBtn.innerText = "Publish Guide / News";
-                    uploadBtn.disabled = false;
-                }
-            };
-            reader.readAsDataURL(fileInput);
-        } catch(e) {
-            console.error(e);
+            customAlert("✅ လမ်းညွှန်ချက်သတင်းအား အောင်မြင်စွာ တင်ပြီးပါပြီ။");
+            document.getElementById("guide-title").value = "";
+            document.getElementById("guide-desc").value = "";
+            document.getElementById("guide-file").value = "";
+        } catch(err) {
+            console.error(err);
+            customAlert("ပုံတင်ရန် မအောင်မြင်ပါ။");
+        } finally {
             uploadBtn.innerText = "Publish Guide / News";
             uploadBtn.disabled = false;
         }
@@ -2520,7 +3280,257 @@
         }
     }
 
-    // --- STREAMING_CHUNK: Modern custom overlays and dialog prompts... ---
+    // --- Integrating real-time referral events tracking ---
+    function listenToReferralsData() {
+        if (!db) return;
+
+        db.collection("referrals").onSnapshot(snapshot => {
+            allReferralsCache = [];
+            let totalRewards = 0;
+            let activeInvites = 0;
+            let unapprovedCount = 0;
+
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                allReferralsCache.push({ id: doc.id, data: data });
+
+                if (data.status === 'approved') {
+                    totalRewards += parseFloat(data.rewardPaid || 0);
+                    activeInvites++;
+                } else if (data.status === 'pending') {
+                    unapprovedCount++;
+                }
+            });
+
+            const totalRefEl = document.getElementById("ref-total-invites");
+            const activeRefEl = document.getElementById("ref-active-invites");
+            const costRefEl = document.getElementById("ref-reward-cost");
+            const suspiciousBadge = document.getElementById("ref-unapproved-badge");
+            const tabRefBadge = document.getElementById("referrals-pending-badge");
+
+            if (totalRefEl) totalRefEl.innerText = allReferralsCache.length;
+            if (activeRefEl) activeRefEl.innerText = activeInvites;
+            if (costRefEl) costRefEl.innerText = totalRewards.toLocaleString() + " Ks";
+            
+            if (suspiciousBadge) {
+                suspiciousBadge.innerText = `${unapprovedCount} Action Needed`;
+                suspiciousBadge.classList.toggle("hidden", unapprovedCount === 0);
+            }
+            if (tabRefBadge) {
+                tabRefBadge.innerText = unapprovedCount;
+                tabRefBadge.classList.toggle("hidden", unapprovedCount === 0);
+            }
+
+            renderReferralsByFilter();
+        }, err => {
+            console.error("Referral Database error: ", err);
+        });
+    }
+
+    function switchReferralFilter(filter) {
+        currentReferralFilter = filter;
+        const pendingBtn = document.getElementById("ref-filter-pending");
+        const approvedBtn = document.getElementById("ref-filter-approved");
+        const rejectedBtn = document.getElementById("ref-filter-rejected");
+
+        if (pendingBtn) pendingBtn.className = filter === 'pending' ? 'py-1.5 rounded bg-[#FF8C00] text-black' : 'py-1.5 rounded text-neutral-400';
+        if (approvedBtn) approvedBtn.className = filter === 'approved' ? 'py-1.5 rounded bg-[#FF8C00] text-black' : 'py-1.5 rounded text-neutral-400';
+        if (rejectedBtn) rejectedBtn.className = filter === 'rejected' ? 'py-1.5 rounded bg-[#FF8C00] text-black' : 'py-1.5 rounded text-neutral-400';
+
+        renderReferralsByFilter();
+    }
+
+    function renderReferralsByFilter() {
+        const container = document.getElementById("admin-referrals-list");
+        if (!container) return;
+
+        container.innerHTML = "";
+
+        const filtered = allReferralsCache.filter(item => {
+            return (item.data.status || 'pending') === currentReferralFilter;
+        });
+
+        if (filtered.length === 0) {
+            container.innerHTML = `<p class="text-center text-neutral-500 text-xs py-8">ဤအုပ်စုတွင် မိတ်ဆက်မှတ်တမ်း စာရင်းမရှိပါဗျာ။</p>`;
+            return;
+        }
+
+        filtered.forEach(item => {
+            const d = item.data;
+            const docId = item.id;
+            const inviteTime = d.timestamp ? new Date(d.timestamp).toLocaleString() : 'N/A';
+
+            let ipWarning = false;
+            let deviceWarning = false;
+
+            if (d.inviterIp && d.refereeIp && d.inviterIp === d.refereeIp) {
+                ipWarning = true;
+            }
+            if (d.inviterDevice && d.refereeDevice && d.inviterDevice === d.refereeDevice) {
+                deviceWarning = true;
+            }
+
+            const fraudRisk = (ipWarning || deviceWarning) ? 'HIGH RISK ⚠️' : 'LOW RISK';
+            const riskColor = (ipWarning || deviceWarning) ? 'text-red-500 font-black' : 'text-emerald-400';
+
+            let actionGroup = "";
+            if (currentReferralFilter === 'pending') {
+                actionGroup = `
+                <div class="flex gap-2 text-[10px] pt-1">
+                    <button onclick="approveReferralReward('${docId}')" class="flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-black font-black rounded-lg transition">Approve & Pay</button>
+                    <button onclick="rejectReferralFraud('${docId}', 'rejected')" class="flex-1 py-1.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition">Reject Fraud</button>
+                </div>`;
+            } else if (currentReferralFilter === 'approved') {
+                actionGroup = `<div class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-center font-bold py-1.5 rounded text-[10px]">REWARD GRANTED (+${d.rewardPaid || 0} Ks)</div>`;
+            } else {
+                actionGroup = `<div class="bg-red-500/10 border border-red-500/30 text-red-500 text-center font-bold py-1.5 rounded text-[10px]">BLOCKED / REJECTED AS FRAUD</div>`;
+            }
+
+            container.innerHTML += `
+            <div class="bg-[#18181b] border border-neutral-800 p-4 rounded-xl space-y-3">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="text-[9px] text-neutral-500 font-bold block uppercase">Referee (အကောင့်သစ်ဖွင့်သူ)</span>
+                        <h4 class="text-white font-black text-sm">${d.refereeName || 'New User'}</h4>
+                        <p class="text-[10px] text-[#FF8C00]">📞 ${d.refereePhone || 'N/A'}</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[9px] text-neutral-500 font-bold block uppercase">Inviter (မိတ်ဆက်ပေးသူ)</span>
+                        <h4 class="text-white font-bold text-xs">${d.inviterName || 'Inviter'}</h4>
+                        <p class="text-[10px] text-neutral-400">📞 ${d.inviterPhone || 'N/A'}</p>
+                    </div>
+                </div>
+
+                <div class="bg-black/50 p-2.5 rounded-lg border border-neutral-900 text-[10px] space-y-1 font-semibold leading-relaxed">
+                    <div class="flex justify-between">
+                        <span class="text-neutral-500">Fraud Risk Audit:</span>
+                        <span class="${riskColor}">${fraudRisk}</span>
+                    </div>
+                    <div class="flex justify-between text-neutral-400">
+                        <span>Referee IP / Inviter IP:</span>
+                        <span class="${ipWarning ? 'text-red-500 font-bold' : 'text-neutral-300'}">${d.refereeIp || 'N/A'} / ${d.inviterIp || 'N/A'}</span>
+                    </div>
+                    <div class="flex justify-between text-neutral-400">
+                        <span>Devices:</span>
+                        <span class="truncate max-w-[180px] ${deviceWarning ? 'text-red-400 font-bold' : 'text-neutral-400'}" title="${d.refereeDevice || ''}">${deviceWarning ? 'Duplicate Detected' : 'Unique Devices'}</span>
+                    </div>
+                    <div class="text-[9px] text-neutral-600 pt-1 border-t border-neutral-800/60 flex justify-between">
+                        <span>Time: ${inviteTime}</span>
+                        <span>ID: #${docId.substring(0,6).toUpperCase()}</span>
+                    </div>
+                </div>
+
+                ${actionGroup}
+            </div>`;
+        });
+    }
+
+    async function loadReferralConfigurations() {
+        if (!db) return;
+        try {
+            const doc = await db.collection("appSettings").doc("referralConfig").get();
+            if (doc.exists) {
+                const d = doc.data();
+                document.getElementById("ref-config-reward").value = d.rewardAmount || 100;
+                document.getElementById("ref-config-auto").value = String(d.autoApproval || false);
+                document.getElementById("ref-promo-banner").value = d.promoBanner || "";
+                document.getElementById("ref-double-event").value = d.doubleEvent || "1x";
+            }
+        } catch(e) {
+            console.error("Could not load referral configurations", e);
+        }
+    }
+
+    async function saveReferralConfigs() {
+        const reward = parseFloat(document.getElementById("ref-config-reward").value) || 0;
+        const auto = document.getElementById("ref-config-auto").value === 'true';
+        const banner = document.getElementById("ref-promo-banner").value.trim();
+        const double = document.getElementById("ref-double-event").value;
+
+        try {
+            await db.collection("appSettings").doc("referralConfig").set({
+                rewardAmount: reward,
+                autoApproval: auto,
+                promoBanner: banner,
+                doubleEvent: double,
+                updatedAt: new Date().toISOString()
+            }, { merge: true });
+
+            customAlert("✅ Referral Rules & Configuration parameters updated successfully!");
+        } catch(e) {
+            console.error(e);
+            customAlert("Failed to update referral configuration parameters.");
+        }
+    }
+
+    async function approveReferralReward(docId) {
+        customConfirm("ဤမိတ်ဆက်မှုအား မှန်ကန်သည်ဟု အတည်ပြုပြီး မိတ်ဆက်သူ၏ အကောင့်ထဲသို့ ဆုကြေးပိုက်ဆံပေါင်းထည့်ပေးရန် သေချာပါသလားဗျာ?", async () => {
+            try {
+                const refDoc = await db.collection("referrals").doc(docId).get();
+                if (!refDoc.exists) return customAlert("မိတ်ဆက်မှတ်တမ်း ရှာမတွေ့ပါ။");
+
+                const r = refDoc.data();
+                const inviterPhone = r.inviterPhone;
+                const doubleMultiplier = r.doubleMultiplier || 1;
+                const rewardBase = parseFloat(r.rewardAmount || 100);
+                const finalReward = rewardBase * doubleMultiplier;
+
+                const inviterQuery = await db.collection("users").where("phone", "==", inviterPhone).get();
+                if (inviterQuery.empty) {
+                    return customAlert("မိတ်ဆက်ပေးသူ အကောင့်အား ရှာမတွေ့ပါဗျာ।");
+                }
+
+                const userDoc = inviterQuery.docs[0];
+                const currentBalance = parseFloat(userDoc.data().balance || 0);
+                const newBalance = currentBalance + finalReward;
+
+                await db.collection("users").doc(userDoc.id).update({ balance: newBalance });
+
+                await db.collection("referrals").doc(docId).update({
+                    status: 'approved',
+                    rewardPaid: finalReward,
+                    approvedAt: new Date().toISOString()
+                });
+
+                await db.collection("messages").add({
+                    to: inviterPhone,
+                    text: `🎉 Congratulation! လူကြီးမင်း မိတ်ဆက်ပေးခဲ့သော (ဖုန်း: ${r.refereePhone}) အား စီမံခန့်ခွဲသူမှ စစ်ဆေးအတည်ပြုပြီးပါသဖြင့် မိတ်ဆက်ဆုကြေးပိုက်ဆံ ${finalReward.toLocaleString()} Ks အား သင့်အကောင့်ထဲသို့ ပေါင်းထည့်ပေးပြီးပါပြီဗျာ।`,
+                    time: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // TG Notification for Approved Referral
+                const tgMsg = `🟢 <b>REFERRAL STATUS: APPROVED</b>\n━━━━━━━━━━━━━━━━━━\n👤 Inviter: ${r.inviterName}\n👶 Referee: ${r.refereeName}\n💰 Reward Paid: ${finalReward.toLocaleString()} Ks`;
+                await sendTelegramMessage(tgMsg);
+
+                customAlert(`🎉 Reward Approved! Paid ${finalReward.toLocaleString()} Ks to ${r.inviterName}.`);
+            } catch(e) {
+                console.error(e);
+                customAlert("စနစ်ချို့ယွင်းမှုကြောင့် Approve လုပ်မရဖြစ်သွားပါသည်။");
+            }
+        });
+    }
+
+    async function rejectReferralFraud(docId, status) {
+        customConfirm("ဤမိတ်ဆက်မှုသည် စည်းကမ်းချက်နှင့်မညီညွတ်ဘဲ Fake အကောင့်ဖွင့်ခြင်းဖြစ်သောကြောင့် ငြင်းပယ် (Reject) ရန် သေချာပါသလားဗျာ?", async () => {
+            try {
+                await db.collection("referrals").doc(docId).update({
+                    status: status,
+                    rejectedAt: new Date().toISOString()
+                });
+
+                // TG Notification for Fraud Referral
+                const tgMsg = `🔴 <b>REFERRAL STATUS: REJECTED (FRAUD)</b>\n━━━━━━━━━━━━━━━━━━\nID: #${docId.substring(0,7).toUpperCase()}`;
+                await sendTelegramMessage(tgMsg);
+
+                customAlert("❌ Referral request rejected as fraudulent activity.");
+            } catch(e) {
+                console.error(e);
+                customAlert("Failed to reject referral record.");
+            }
+        });
+    }
+
+    // --- Dialog prompts ---
     function customAlert(message) {
         console.log("System Alert: " + message);
         
