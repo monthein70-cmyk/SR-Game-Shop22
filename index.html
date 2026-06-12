@@ -269,11 +269,12 @@
                 <div class="font-bold text-base">Gemini AI</div>
                 <p class="text-[11px] text-neutral-500">Interactive admin assistant</p>
             </div>
-            <!-- Inbox Message card -->
-            <div class="glass-card p-5 cursor-pointer" onclick="showPage('page-msg')">
+            <!-- Inbox Message card with dynamic badge notification indicator -->
+            <div class="glass-card p-5 cursor-pointer relative" onclick="openInboxPage()">
+                <span id="home-msg-badge" class="hidden absolute top-3 right-3 bg-red-600 text-white border border-black text-[10px] font-black px-2 py-0.5 rounded-full animate-pulse">0</span>
                 <div class="text-3xl mb-2">✉️</div>
                 <div class="font-bold text-base">Inbox Message</div>
-                <p class="text-[11px] text-neutral-500">Direct notifications inbox</p>
+                <p class="text-[11px] text-neutral-500">Direct notifications inbox Center</p>
             </div>
             <!-- Price List Card -->
             <div class="glass-card p-5 cursor-pointer" onclick="loadPriceList()">
@@ -374,7 +375,7 @@
                 <p class="text-[#FF8C00] font-bold">Welcome to SR SHOP!</p>
                 <p class="text-[11px] text-neutral-400 mt-1">ကျွန်ုပ်တို့၏ ဝန်ဆောင်မှုကို အသုံးပြုပေးသည့်အတွက် ကျေးဇူးတင်ပါသည်။ အဆင်မပြေမှုရှိပါက Admin ကို ဆက်သွယ်ပါ။</p>
             </div>
-            <div id="dynamic-messages"></div>
+            <div id="dynamic-messages" class="space-y-4"></div>
         </div>
     </div>
 
@@ -431,8 +432,18 @@
 
             <!-- TAB 1: METRICS & DASHBOARD -->
             <div id="admin-tab-dashboard" class="admin-tab-content space-y-6">
-                <!-- 4 Metrics Display Grid -->
+                <!-- 5 Metrics Display Grid -->
                 <div class="grid grid-cols-2 gap-3.5">
+                    <!-- Total Customer Liability remaining (ALL USERS BALANCE SUMMED) -->
+                    <div class="col-span-2 bg-gradient-to-r from-neutral-900 to-[#111113] p-4 rounded-xl border border-neutral-800 flex justify-between items-center relative overflow-hidden">
+                        <div class="absolute top-1 right-2 text-xl opacity-10 font-black">💰</div>
+                        <div>
+                            <span class="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider block mb-1">Customers Balance Sheet (ဝယ်သူအားလုံး စုစုပေါင်းလက်ကျန်ငွေ)</span>
+                            <span id="dash-total-cust-balance" class="text-2xl font-black text-amber-400">0 Ks</span>
+                        </div>
+                        <span class="text-[9px] bg-amber-400/10 text-amber-400 border border-amber-400/20 px-2 py-1.5 rounded-full font-bold uppercase">All Users</span>
+                    </div>
+
                     <div class="bg-gradient-to-b from-[#111113] to-black p-4 rounded-xl border border-neutral-800 flex flex-col justify-between shadow relative overflow-hidden">
                         <div class="absolute top-1 right-2 text-xl opacity-10 font-black">👥</div>
                         <span class="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider block mb-1">Total Users</span>
@@ -648,6 +659,7 @@
                     </div>
                 </div>
 
+                <!-- Live Client Balance List -->
                 <div id="adm-user-list" class="space-y-3.5">
                     <p class="text-center text-neutral-500 text-xs py-10">Searching customers...</p>
                 </div>
@@ -656,6 +668,34 @@
             <!-- TAB 5: SETTINGS & CONFIGS -->
             <div id="admin-tab-settings" class="admin-tab-content space-y-6 hidden">
                 
+                <!-- GLOBAL DISCOUNT MANAGER -->
+                <div class="bg-[#111113] p-4 rounded-xl border border-neutral-800 space-y-4">
+                    <h3 class="text-[#FF8C00] font-bold text-xs flex items-center gap-1.5 pb-2 border-b border-neutral-800/60">
+                        <i class="fa-solid fa-percent text-amber-500"></i> Global Discount Percentage Manager
+                    </h3>
+                    <p class="text-[10px] text-neutral-500">ဂိမ်းအိုင်တမ်များနှင့် ဝန်ဆောင်မှုအားလုံးအတွက် Discount ရာခိုင်နှုန်း သတ်မှတ်ရန် သို့မဟုတ် ဖြုတ်ရန်</p>
+                    <div class="space-y-3 bg-black/40 p-3 rounded-lg border border-neutral-800/60">
+                        <div class="grid grid-cols-2 gap-3 items-center">
+                            <div>
+                                <label class="text-[9px] text-neutral-400 font-bold uppercase block mb-1">Active Discount (%)</label>
+                                <input type="number" id="discount-percent-input" min="0" max="100" placeholder="0 (No Discount)" class="w-full p-2.5 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none font-bold text-center text-[#FF8C00]">
+                            </div>
+                            <div class="space-y-1">
+                                <span class="text-[9px] text-neutral-400 font-bold block">Status Indicator:</span>
+                                <span id="discount-status-label" class="text-xs font-bold text-gray-400">Disabled (0%)</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="saveDiscountConfig()" class="flex-1 py-2 bg-gradient-to-r from-orange-500 to-amber-500 text-black font-black text-xs rounded-lg transition">
+                                Save & Apply Discount
+                            </button>
+                            <button onclick="removeDiscountConfig()" class="py-2 px-4 bg-red-600/20 hover:bg-red-600 text-red-500 hover:text-white font-bold text-xs rounded-lg border border-red-500/20 transition">
+                                Remove (ဖြုတ်မည်)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- TELEGRAM BOT CONFIGURATIONS -->
                 <div class="bg-[#111113] p-4 rounded-xl border border-neutral-800 space-y-4">
                     <h3 class="text-[#FF8C00] font-bold text-xs flex items-center gap-1.5 pb-2 border-b border-neutral-800/60">
@@ -832,38 +872,38 @@
                 <!-- ADD & REMOVE ITEMS IN PRICE CATALOG -->
                 <div class="bg-[#111113] p-4 rounded-xl border border-neutral-800">
                     <h3 class="text-white font-bold text-xs mb-1"><i class="fa-solid fa-gem text-orange-500"></i> Game Item Pack Manager</h3>
-                    <p class="text-[10px] text-neutral-500 mb-3">Configure products within target games and upload specific PNG item icons</p>
+                    <p class="text-[10px] text-neutral-500 mb-3">Target Game ထဲရှိ Package Products များကို စီမံခန့်ခွဲရန်နှင့် Icon များ သတ်မှတ်ရန်</p>
 
                     <div class="space-y-3">
-                        <div class="bg-black/40 p-2.5 rounded-lg border border-neutral-800/60 space-y-2">
+                        <div class="bg-black/45 p-3 rounded-xl border border-neutral-800/80 space-y-3">
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
                                     <label class="text-[9px] text-neutral-400 font-bold block mb-1">Target Game</label>
-                                    <select id="item-target-game" class="w-full p-2 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none font-bold" onchange="handleGameSelectChange()">
+                                    <select id="item-target-game" class="w-full p-2.5 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none font-bold" onchange="handleGameSelectChange()">
                                         <!-- Loaded dynamically -->
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="text-[9px] text-neutral-400 font-bold block mb-1">Select Existing Category</label>
-                                    <select id="item-target-category" class="w-full p-2 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-[#FF8C00] outline-none font-bold">
+                                    <label class="text-[9px] text-[#FF8C00] font-bold block mb-1">Existing Category (စာအုပ်အဟောင်း)</label>
+                                    <select id="item-target-category" class="w-full p-2.5 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-[#FF8C00] outline-none font-bold">
                                         <!-- Loaded dynamically based on selected game's existing category array -->
                                     </select>
                                 </div>
                             </div>
                             
                             <div>
-                                <label class="text-[9px] text-neutral-400 font-bold block mb-1">Or Create New Category (စာအုပ်အသစ်ဆောက်ရန်)</label>
-                                <input type="text" id="item-custom-category" placeholder="Optional category code (e.g. skin, promo, premium)" class="w-full p-2 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none">
+                                <label class="text-[9px] text-neutral-400 font-bold block mb-1">Or Create New Category (စာအုပ်အသစ်ဆောက်ရန် - Category Code ကို ကော်မာမခံဘဲရေးပါ)</label>
+                                <input type="text" id="item-custom-category" placeholder="Optional category code (e.g. skin, promo, premium)" class="w-full p-2.5 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none">
                             </div>
 
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
                                     <label class="text-[9px] text-neutral-400 font-bold block mb-1">Item Pack Name</label>
-                                    <input type="text" id="new-item-name" placeholder="e.g. 50 Diamonds" class="w-full p-2 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none">
+                                    <input type="text" id="new-item-name" placeholder="e.g. 50 Diamonds" class="w-full p-2.5 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none">
                                 </div>
                                 <div>
                                     <label class="text-[9px] text-neutral-400 font-bold block mb-1">Price (Ks)</label>
-                                    <input type="number" id="new-item-price" placeholder="e.g. 1500" class="w-full p-2 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none">
+                                    <input type="number" id="new-item-price" placeholder="e.g. 1500" class="w-full p-2.5 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none">
                                 </div>
                             </div>
 
@@ -881,7 +921,7 @@
                                 </div>
                             </div>
 
-                            <button onclick="addNewItem()" class="w-full py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 text-black font-black text-xs rounded-lg transition mt-2">
+                            <button onclick="addNewItem()" class="w-full py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 text-black font-black text-xs rounded-lg hover:brightness-110 transition mt-2">
                                 Save New Package Product
                             </button>
                         </div>
@@ -929,6 +969,7 @@
     // Global handles
     let db = null;
     let currentUser = null;
+    let currentUserListenerUnsubscribe = null; 
     let currentDepositFilter = 'pending';
     let currentOrderSubTab = 'pending'; 
     let currentReferralFilter = 'pending'; 
@@ -936,6 +977,7 @@
     let allOrdersCache = []; 
     let allReferralsCache = []; 
     let otherServicesCache = {};
+    let globalDiscountPercent = 0; // Dynamic discount tracker
 
     // TG Settings Cache
     let tgBotToken = "";
@@ -1008,7 +1050,6 @@
                         `• Event: <b>${eventType.toUpperCase()}</b>\n` +
                         `• Time (MM): ${datetimeString}`;
 
-        // Save Log inside Firebase for Admin Panel
         if (db) {
             db.collection("audit_logs").add({
                 name: userName,
@@ -1020,7 +1061,6 @@
             }).catch(e => console.error("Could not write audit logs", e));
         }
 
-        // Send Telegram notification
         await sendTelegramMessage(textLog);
     }
 
@@ -1097,7 +1137,38 @@
         if (el) el.classList.add('active');
     }
 
+    // Realtime listener for active user status (Ban / Unban / Balance)
+    function listenToCurrentUserStatus() {
+        if (!db || !currentUser) return;
+        if (currentUserListenerUnsubscribe) {
+            currentUserListenerUnsubscribe();
+        }
+        currentUserListenerUnsubscribe = db.collection("users").doc(currentUser.phone).onSnapshot(doc => {
+            if (doc.exists) {
+                const uData = doc.data();
+                if (uData.balance !== undefined) {
+                    currentUser.balance = uData.balance;
+                }
+                const usernameEl = document.getElementById('h-username');
+                if (usernameEl) usernameEl.innerText = uData.name || 'Unknown';
+
+                if (uData.status === 'banned') {
+                    if (currentUserListenerUnsubscribe) {
+                        currentUserListenerUnsubscribe();
+                        currentUserListenerUnsubscribe = null;
+                    }
+                    localStorage.removeItem('sr_auth');
+                    currentUser = null;
+                    showPage('page-login');
+                    customAlert("🚨 သင့်အကောင့်အား စည်းကမ်းဖောက်ဖျက်မှုကြောင့် Admin ဘက်မှ ပိတ်ပင် (Banned) လိုက်ပါသည်ဗျာ။");
+                }
+            }
+        }, err => console.warn("User status listener error: ", err));
+    }
+
     function launchApp() {
+        listenToCurrentUserStatus(); 
+
         const usernameEl = document.getElementById('h-username');
         const profileNameEl = document.getElementById('p-name');
         const profilePhoneEl = document.getElementById('p-phone');
@@ -1116,6 +1187,7 @@
         }
         
         loadInbox();
+        listenToDiscountConfig();
         setupDashboardMetrics();
         loadAdBanners();
         listenToOtherServices(); 
@@ -1172,7 +1244,6 @@
             if(doc.exists) return customAlert("ဤဖုန်းနံပါတ်မှာ အသုံးပြုပြီးသားဖြစ်နေပါသည်။");
             const uid = Math.floor(100000 + Math.random() * 900000);
             
-            // Check Referrer
             let refCode = localStorage.getItem("sr_referrer_id") || "";
 
             db.collection("users").doc(ph).set({
@@ -1182,7 +1253,6 @@
             }).then(() => {
                 customAlert("အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါသည်။");
                 
-                // Trigger Referral Logic
                 if (refCode) {
                     processReferralAction(refCode, n, ph, uid);
                 }
@@ -1195,14 +1265,12 @@
         });
     }
 
-    // Manage referrals link trigger
     async function processReferralAction(inviterId, refName, refPhone, refUid) {
         try {
             const query = await db.collection("users").where("id", "==", parseInt(inviterId)).get();
             if (query.empty) return;
             const inviterData = query.docs[0].data();
 
-            // Load Config
             const configDoc = await db.collection("appSettings").doc("referralConfig").get();
             let rewardBase = 100;
             let autoApprove = false;
@@ -1215,8 +1283,6 @@
             }
 
             const finalReward = rewardBase * doubleMultiplier;
-
-            // Simple Device Info Check
             const userAgent = navigator.userAgent;
 
             const referralRef = db.collection("referrals").doc();
@@ -1232,12 +1298,11 @@
                 status: autoApprove ? 'approved' : 'pending',
                 timestamp: new Date().toISOString(),
                 refereeDevice: userAgent,
-                inviterDevice: 'N/A' // To be compared in server/admin
+                inviterDevice: 'N/A' 
             };
 
             await referralRef.set(referralObj);
 
-            // If auto approval enabled
             if (autoApprove) {
                 const userRef = db.collection("users").doc(inviterData.phone);
                 await db.runTransaction(async (transaction) => {
@@ -1247,7 +1312,6 @@
                 });
             }
 
-            // Create TG Notification string as requested
             const tgMsg = `🤝 <b>NEW REFERRAL REWARD</b>\n` +
                           `━━━━━━━━━━━━━━━━━━\n` +
                           `👤 <b>မိတ်ဆက်သူ (Inviter) Details:</b>\n` +
@@ -1273,10 +1337,27 @@
         if (currentUser) {
             logSessionEvent(currentUser.name, currentUser.id || 'N/A', currentUser.phone, "Logout");
         }
+        if (currentUserListenerUnsubscribe) {
+            currentUserListenerUnsubscribe();
+            currentUserListenerUnsubscribe = null;
+        }
         localStorage.removeItem('sr_auth'); 
         setTimeout(() => {
             location.reload(); 
         }, 800);
+    }
+
+    function openInboxPage() {
+        if (currentUser) {
+            const lastSeenKey = 'last_seen_msg_count_' + currentUser.phone;
+            const badge = document.getElementById('home-msg-badge');
+            
+            // Mark all loaded messages as read locally
+            const loadedCount = window.loadedMessageCount || 0;
+            localStorage.setItem(lastSeenKey, loadedCount);
+            if (badge) badge.classList.add('hidden');
+        }
+        showPage('page-msg');
     }
 
     function loadInbox() {
@@ -1285,10 +1366,92 @@
             const container = document.getElementById('dynamic-messages');
             if (!container) return;
             container.innerHTML = "";
-            snap.forEach(doc => {
-                container.innerHTML += `<div class="bg-[#111113] border-l-4 border-[#FF8C00] p-4 rounded-r-xl text-xs text-neutral-300">${doc.data().text || ''}</div>`;
-            });
+            
+            // Store total message count globally for verification
+            window.loadedMessageCount = snap.size;
+            const lastSeenKey = 'last_seen_msg_count_' + currentUser.phone;
+            const lastSeen = parseInt(localStorage.getItem(lastSeenKey)) || 0;
+            const unreadCount = Math.max(0, snap.size - lastSeen);
+
+            const badge = document.getElementById('home-msg-badge');
+            if (badge) {
+                if (unreadCount > 0) {
+                    badge.innerText = unreadCount;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
+
+            if (!snap.empty) {
+                snap.forEach(doc => {
+                    const m = doc.data();
+                    const timeStr = m.time ? new Date(m.time.seconds * 1000).toLocaleString() : 'Just now';
+                    container.innerHTML += `
+                    <div class="bg-neutral-900 border-l-4 border-[#FF8C00] p-4 rounded-r-xl text-xs text-neutral-300 relative space-y-2">
+                        <div class="flex justify-between items-center text-[10px] text-neutral-500">
+                            <span class="font-bold text-orange-500 flex items-center gap-1">✉️ Alert Message Box</span>
+                            <span>${timeStr}</span>
+                        </div>
+                        <p class="font-semibold text-gray-200 text-[11px] leading-relaxed">${m.text || ''}</p>
+                    </div>`;
+                });
+            } else {
+                container.innerHTML = `<p class="text-center text-neutral-500 py-6 text-xs font-bold">သင့်ဆီသို့ ပေးပို့ထားသော စာမရှိသေးပါဗျာ။</p>`;
+            }
         }, err => console.error("Inbox snapshot failed: ", err));
+    }
+
+    function listenToDiscountConfig() {
+        if (!db) return;
+        db.collection("appSettings").doc("discountConfig").onSnapshot(doc => {
+            if (doc.exists) {
+                globalDiscountPercent = parseFloat(doc.data().discountPercent || 0);
+                const input = document.getElementById("discount-percent-input");
+                const label = document.getElementById("discount-status-label");
+                if (input) input.value = globalDiscountPercent;
+                if (label) {
+                    if (globalDiscountPercent > 0) {
+                        label.innerHTML = `<span class="text-emerald-500 font-black">Active (${globalDiscountPercent}%) 🔥</span>`;
+                    } else {
+                        label.innerHTML = `<span class="text-neutral-500 font-bold">Disabled (0%)</span>`;
+                    }
+                }
+            } else {
+                globalDiscountPercent = 0;
+            }
+        }, err => console.warn(err));
+    }
+
+    async function saveDiscountConfig() {
+        const inputVal = parseFloat(document.getElementById("discount-percent-input").value) || 0;
+        if (inputVal < 0 || inputVal > 100) return customAlert("0% မှ 100% အတွင်းသာ သတ်မှတ်နိုင်ပါသည်ဗျာ။");
+        
+        try {
+            await db.collection("appSettings").doc("discountConfig").set({
+                discountPercent: inputVal,
+                updatedAt: new Date().toISOString()
+            });
+            customAlert(`✅ Discount ${inputVal}% အား ဂိမ်းအိုင်တမ်များနှင့် Premium Plans အားလုံးတွင် အောင်မြင်စွာ သတ်မှတ်ပေးလိုက်ပါပြီဗျာ။`);
+        } catch (e) {
+            console.error(e);
+            customAlert("သိမ်းဆည်းရန် ချိတ်ဆက်မှု အဆင်မပြေဖြစ်သွားပါသည်။");
+        }
+    }
+
+    async function removeDiscountConfig() {
+        try {
+            await db.collection("appSettings").doc("discountConfig").set({
+                discountPercent: 0,
+                updatedAt: new Date().toISOString()
+            });
+            const input = document.getElementById("discount-percent-input");
+            if (input) input.value = 0;
+            customAlert("✅ Discount နှုန်းထားများ အားလုံးကို ပြန်လည်ဖြုတ်သိမ်းလိုက်ပါပြီဗျာ။");
+        } catch (e) {
+            console.error(e);
+            customAlert("ဖြုတ်သိမ်းရန် ချိတ်ဆက်မှု အဆင်မပြေဖြစ်သွားပါသည်။");
+        }
     }
 
     function switchAdminTab(tabName) {
@@ -1301,7 +1464,6 @@
         if (content) content.classList.remove('hidden');
     }
 
-    // Listen to Session Audit Logs Live
     function listenToAuditLogs() {
         if (!db) return;
         db.collection("audit_logs").orderBy("timestamp", "desc").limit(10).onSnapshot(snap => {
@@ -1335,6 +1497,16 @@
         db.collection("users").onSnapshot(snap => {
             const el = document.getElementById('dash-total-users');
             if (el) el.innerText = snap.size;
+
+            let totalCustomerBalances = 0;
+            snap.forEach(doc => {
+                const u = doc.data();
+                totalCustomerBalances += parseFloat(u.balance || 0);
+            });
+
+            const sumEl = document.getElementById('dash-total-cust-balance');
+            if (sumEl) sumEl.innerText = totalCustomerBalances.toLocaleString() + " Ks";
+            
         }, err => console.error("Metrics snapshot users failed: ", err));
 
         db.collection("orders").onSnapshot(snap => {
@@ -1584,7 +1756,16 @@
     async function handleGameSelectChange() {
         const gameId = document.getElementById("item-target-game").value;
         const catSelect = document.getElementById("item-target-category");
-        if (!catSelect || !gameId) return;
+        if (!catSelect) return;
+
+        if (!gameId) {
+            catSelect.innerHTML = `
+                <option value="diamonds">DIAMONDS (Default)</option>
+                <option value="passes">PASSES</option>
+                <option value="promo">PROMO</option>
+            `;
+            return;
+        }
 
         catSelect.innerHTML = "<option>Loading Categories...</option>";
 
@@ -1664,7 +1845,10 @@
 
         if(!gameId || !gameTitle) return customAlert("Please fill game code ID and Game Title Name!");
 
-        const fieldsArr = customFields ? customFields.split(",").map(f => f.trim()) : ["Player ID"];
+        let fieldsArr = customFields ? customFields.split(",").map(f => f.trim()) : ["Player ID"];
+        if (gameId === 'mlbb' && !customFields) {
+            fieldsArr = ["Player ID", "Server ID (Zone ID)"];
+        }
 
         try {
             await db.collection("prices").doc(gameId).set({
@@ -1917,9 +2101,21 @@
                     if(Array.isArray(docData[key])) {
                         docData[key].forEach((item, index) => {
                             const nameVal = item.name || 'Unnamed Item';
-                            const priceVal = item.price || 0;
+                            const priceVal = parseFloat(item.price || 0);
                             const iconUrl = item.iconUrl || '';
                             const iconSize = item.iconSize || 24;
+
+                            let priceDisplayHtml = "";
+                            if (globalDiscountPercent > 0) {
+                                const discountedPrice = Math.round(priceVal * (1 - globalDiscountPercent / 100));
+                                priceDisplayHtml = `
+                                    <div class="flex flex-col items-end">
+                                        <span class="line-through text-neutral-500 text-[10px]">${Number(priceVal).toLocaleString()} Ks</span>
+                                        <span class="text-emerald-400 font-black text-xs">${Number(discountedPrice).toLocaleString()} Ks</span>
+                                    </div>`;
+                            } else {
+                                priceDisplayHtml = `<span class="text-[#FF8C00] font-black text-xs">${Number(priceVal).toLocaleString()} Ks</span>`;
+                            }
                             
                             html += `
                             <tr class="hover:bg-neutral-900/60 transition-colors cursor-pointer" onclick="orderGameItem('${doc.id}', '${key}', ${index}, '${nameVal}', ${priceVal}, '${iconUrl}', ${iconSize})">
@@ -1927,7 +2123,7 @@
                                     ${iconUrl ? `<img src="${iconUrl}" style="width: ${iconSize}px; height: ${iconSize}px;" class="object-cover rounded border border-neutral-900" onerror="this.style.display='none'">` : '<div class="w-6 h-6 rounded bg-neutral-900 border border-neutral-800 flex items-center justify-center text-orange-500"><i class="fa-solid fa-gem text-[10px]"></i></div>'}
                                     <span>${nameVal}</span>
                                 </td>
-                                <td class="text-right text-[#FF8C00] font-black text-xs py-2.5">${Number(priceVal).toLocaleString()} Ks</td>
+                                <td class="text-right py-2.5">${priceDisplayHtml}</td>
                             </tr>`;
                         });
                     }
@@ -1948,12 +2144,21 @@
         }
         
         let fields = ["Player ID"];
+        if (gameId.toLowerCase() === 'mlbb' || gameId.toLowerCase() === 'mobile legends') {
+            fields = ["Player ID", "Server ID (Zone ID)"];
+        }
+
         try {
             const doc = await db.collection("prices").doc(gameId).get();
-            if (doc.exists && doc.data().inputFields) {
+            if (doc.exists && doc.data().inputFields && doc.data().inputFields.length > 0) {
                 fields = doc.data().inputFields;
+                if ((gameId.toLowerCase() === 'mlbb' || gameId.toLowerCase() === 'mobile legends') && fields.length < 2) {
+                    fields = ["Player ID", "Server ID (Zone ID)"];
+                }
             }
         } catch(e) { console.error(e); }
+
+        const activeFinalPrice = globalDiscountPercent > 0 ? Math.round(itemPrice * (1 - globalDiscountPercent / 100)) : itemPrice;
 
         const modal = document.createElement("div");
         modal.className = "fixed inset-0 bg-black/95 z-[10001] flex items-center justify-center p-6";
@@ -1965,6 +2170,17 @@
             </div>
         `).join("");
 
+        let checkoutPriceHtml = "";
+        if (globalDiscountPercent > 0) {
+            checkoutPriceHtml = `
+                <div class="flex justify-center items-center gap-2">
+                    <span class="text-neutral-500 line-through text-xs font-semibold">${Number(itemPrice).toLocaleString()} Ks</span>
+                    <span class="text-emerald-400 font-black text-sm">${Number(activeFinalPrice).toLocaleString()} Ks (${globalDiscountPercent}% OFF!)</span>
+                </div>`;
+        } else {
+            checkoutPriceHtml = `<p class="text-xs text-[#FF8C00] font-black">ဈေးနှုန်း: ${Number(itemPrice).toLocaleString()} Ks</p>`;
+        }
+
         modal.innerHTML = `
         <div class="bg-[#111113] border border-neutral-800 p-6 rounded-2xl max-w-sm w-full text-center space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex items-center justify-center gap-3">
@@ -1975,7 +2191,7 @@
                 </div>
             </div>
             
-            <p class="text-xs text-[#FF8C00] font-black">ဈေးနှုန်း: ${Number(itemPrice).toLocaleString()} Ks</p>
+            ${checkoutPriceHtml}
             
             <div class="space-y-3">
                 ${inputsHtml}
@@ -1983,11 +2199,11 @@
 
             <div class="bg-black/60 p-3 rounded-xl text-[11px] text-left text-neutral-400 border border-neutral-850">
                 <p>သင့်အကောင့်လက်ကျန်: <span class="text-[#FF8C00] font-black">${Number(currentUser.balance || 0).toLocaleString()} Ks</span></p>
-                ${(currentUser.balance || 0) < itemPrice ? `<p class="text-red-500 font-bold mt-1">⚠️ လက်ကျန်ငွေ မလုံလောက်ပါ။ ကျေးဇူးပြု၍ ငွေအရင်ဖြည့်ပါ။</p>` : ''}
+                ${(currentUser.balance || 0) < activeFinalPrice ? `<p class="text-red-500 font-bold mt-1">⚠️ လက်ကျန်ငွေ မလုံလောက်ပါ။ ကျေးဇူးပြု၍ ငွေအရင်ဖြည့်ပါ။</p>` : ''}
             </div>
 
             <div class="flex gap-2">
-                <button id="btn-submit-order" class="flex-1 py-2.5 bg-[#FF8C00] hover:bg-orange-600 text-black font-black rounded-xl text-xs uppercase tracking-wider transition" ${(currentUser.balance || 0) < itemPrice ? 'disabled style="opacity: 0.5"' : ''}>Order Now</button>
+                <button id="btn-submit-order" class="flex-1 py-2.5 bg-[#FF8C00] hover:bg-orange-600 text-black font-black rounded-xl text-xs uppercase tracking-wider transition" ${(currentUser.balance || 0) < activeFinalPrice ? 'disabled style="opacity: 0.5"' : ''}>Order Now</button>
                 <button id="btn-cancel-order" class="flex-1 py-2.5 bg-neutral-850 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition">Cancel</button>
             </div>
         </div>`;
@@ -2015,9 +2231,9 @@
                 if (!userSnap.exists) return customAlert("အသုံးပြုသူ ရှာမတွေ့ပါ။");
                 
                 const currentBal = parseFloat(userSnap.data().balance || 0);
-                if (currentBal < itemPrice) return customAlert("လက်ကျန်ငွေ မလုံလောက်တော့ပါဗျာ။");
+                if (currentBal < activeFinalPrice) return customAlert("လက်ကျန်ငွေ မလုံလောက်တော့ပါဗျာ။");
 
-                const newBal = currentBal - itemPrice;
+                const newBal = currentBal - activeFinalPrice;
                 await userRef.update({ balance: newBal });
                 currentUser.balance = newBal; 
                 
@@ -2028,7 +2244,7 @@
                     userId: currentUser.phone,
                     game: gameId,
                     item: itemName,
-                    price: itemPrice,
+                    price: activeFinalPrice,
                     gameId: fieldVals.join(" | "),
                     orderId: orderRandomId,
                     status: 'pending',
@@ -2037,13 +2253,12 @@
                     time: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                // TG Notification for New Order
                 const orderLog = `📦 <b>NEW ORDER PLACED</b>\n` +
                                  `• User: ${currentUser.name}\n` +
                                  `• Phone: ${currentUser.phone}\n` +
                                  `• Game: ${gameId.toUpperCase()}\n` +
                                  `• Pack: ${itemName}\n` +
-                                 `• Price: ${itemPrice.toLocaleString()} Ks\n` +
+                                 `• Price: ${activeFinalPrice.toLocaleString()} Ks\n` +
                                  `• Target: ${fieldVals.join(" | ")}\n` +
                                  `• Order ID: #${orderRandomId}`;
 
@@ -2332,15 +2547,122 @@
             const doc = await ref.get();
             const newStat = doc.data().status === 'banned' ? 'active' : 'banned';
             await ref.update({ status: newStat });
-            customAlert(`User is now ${newStat}`);
+            
+            customAlert(`User with phone ${phone} status updated to: ${newStat.toUpperCase()}`);
         }
     }
 
-    function adminUpdateOrder(id, status) { 
+    async function adminUpdateOrder(id, status) { 
         if (!db) return;
-        db.collection("orders").doc(id).update({ status })
-          .then(() => customAlert(`Order has been marked as '${status}'`))
-          .catch(e => console.error(e));
+        
+        try {
+            const orderDoc = await db.collection("orders").doc(id).get();
+            if (!orderDoc.exists) {
+                customAlert("ဝယ်ယူမှု အချက်အလက်များ မတွေ့ရှိပါ။");
+                return;
+            }
+            const d = orderDoc.data();
+            const userPhone = d.userId;
+            const orderPrice = parseFloat(d.price || 0);
+            const gameName = d.game || 'Game';
+            const itemName = d.item || 'Pack';
+            const orderId = d.orderId || 'N/A';
+
+            if (status === 'completed') {
+                customConfirm(`အော်ဒါ #${orderId} အား အတည်ပြု (Confirm) ပြီးပါက Customer ဆီသို့ အကြောင်းကြားစာ ပို့ဆောင်ပေးမှာ သေချာပါသလားဗျာ?`, async () => {
+                    await db.collection("orders").doc(id).update({ status: 'completed' });
+                    
+                    const successMsg = `🎉 လူကြီးမင်း ဝယ်ယူထားသော ${gameName.toUpperCase()} (${itemName}) အော်ဒါ #${orderId} အား အောင်မြင်စွာ ဆောင်ရွက်ပြီးစီးသွားပါပြီခင်ဗျာ။\n\n🎁 အားပေးမှုကို ကျေးဇူးတင်ရှိပါသဖြင့် နောက်အကြိမ်ဝယ်ယူရာတွင် အထူး Discount 5% ရရှိရန် "SRDISC5" Promo Code အား အသုံးပြုနိုင်ပါသည်။`;
+                    
+                    await db.collection("messages").add({
+                        to: userPhone,
+                        text: successMsg,
+                        time: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    await sendTelegramMessage(`✅ <b>ORDER COMPLETED</b>\n━━━━━━━━━━━━━━━━━━\n📞 Phone: ${userPhone}\n🎮 Game: ${gameName.toUpperCase()}\n📦 Pack: ${itemName}\n💰 Cost: ${orderPrice.toLocaleString()} Ks\nStatus: Order successfully processed!`);
+
+                    customAlert(`အော်ဒါ #${orderId} ကို Confirm လုပ်ပြီးပါပြီ။ Customer ဆီ စာပို့လိုက်ပါပြီဗျာ။`);
+                });
+            } else if (status === 'rejected') {
+                const rejectPrompt = document.createElement("div");
+                rejectPrompt.className = "fixed inset-0 bg-black/95 z-[10002] flex items-center justify-center p-6";
+                rejectPrompt.innerHTML = `
+                <div class="bg-[#111113] border border-neutral-800 p-6 rounded-2xl max-w-xs w-full text-center space-y-4 shadow-2xl">
+                    <div class="text-red-500 text-3xl"><i class="fa-solid fa-circle-xmark"></i></div>
+                    <h4 class="text-white font-black text-sm">အော်ဒါ ပယ်ဖျက်ခြင်း</h4>
+                    <p class="text-xs text-neutral-400">Order #${orderId} အား ပယ်ဖျက်ရန် အကြောင်းပြချက်ကို ရွေးချယ်ပါ သို့မဟုတ် ရေးသားပါဗျာ။</p>
+                    
+                    <div class="space-y-2 text-left">
+                        <label class="text-[10px] font-bold text-neutral-500 uppercase tracking-wider block">အကြောင်းပြချက် ပုံစံများ</label>
+                        <select id="preset-reject-reason" class="w-full bg-[#18181b] border border-neutral-800 rounded-lg p-2 text-xs text-white outline-none" onchange="document.getElementById('custom-reject-reason').value = this.value">
+                            <option value="မှားယွင်းသော Player Target ID ဖြစ်နေခြင်းကြောင့်">မှားယွင်းသော Player Target ID ဖြစ်နေခြင်းကြောင့်</option>
+                            <option value="လွဲပြေစာ ငွေဝင်မရှိခြင်း / Receipt မမှန်ကန်ခြင်းကြောင့်">လွဲပြေစာ ငွေဝင်မရှိခြင်း / Receipt မမှန်ကန်ခြင်းကြောင့်</option>
+                            <option value="လတ်တလော စတော့ခ်ကုန်သွားခြင်းကြောင့်">လတ်တလော စတော့ခ်ကုန်သွားခြင်းကြောင့်</option>
+                            <option value="အခြားအကြောင်းပြချက် ရေးမည်">အခြားအကြောင်းပြချက် ရေးမည်...</option>
+                        </select>
+                        <textarea id="custom-reject-reason" class="input-field text-xs h-16 resize-none" placeholder="အကြောင်းပြချက်ကို ဤနေရာတွင် ရေးသားနိုင်ပါသည်"></textarea>
+                    </div>
+
+                    <div class="bg-black/60 p-2.5 rounded-lg border border-neutral-850 text-left space-y-1">
+                        <label class="text-[9px] text-[#FF8C00] font-bold block uppercase"><i class="fa-solid fa-tags"></i> Customer စိတ်ကျေနပ်စေရန် Discount ပေးမလား?</label>
+                        <select id="reject-discount-offer" class="w-full bg-black border border-neutral-850 rounded p-1 text-[10px] text-white font-semibold">
+                            <option value="YES">ပေးမည် (Promo Code: SRDISC5)</option>
+                            <option value="NO">မပေးပါ</option>
+                        </select>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <button id="btn-reject-confirm" class="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs uppercase transition">Reject Order</button>
+                        <button id="btn-reject-cancel" class="flex-1 py-2.5 bg-neutral-850 text-white font-bold rounded-xl text-xs uppercase transition">Cancel</button>
+                    </div>
+                </div>`;
+                document.body.appendChild(rejectPrompt);
+                
+                document.getElementById('custom-reject-reason').value = document.getElementById('preset-reject-reason').value;
+
+                rejectPrompt.querySelector("#btn-reject-cancel").onclick = () => rejectPrompt.remove();
+                rejectPrompt.querySelector("#btn-reject-confirm").onclick = async () => {
+                    const reason = document.getElementById('custom-reject-reason').value.trim();
+                    const addDiscount = document.getElementById('reject-discount-offer').value === 'YES';
+                    
+                    if(!reason) return customAlert("ပယ်ဖျက်ရသည့် အကြောင်းပြချက်ကို ရေးပေးပါဗျာ။");
+                    
+                    rejectPrompt.remove();
+
+                    await db.collection("orders").doc(id).update({ status: 'rejected' });
+
+                    const userRef = db.collection("users").doc(userPhone);
+                    const userSnap = await userRef.get();
+                    if (userSnap.exists) {
+                        const currentBal = parseFloat(userSnap.data().balance || 0);
+                        const refundedBal = currentBal + orderPrice;
+                        await userRef.update({ balance: refundedBal });
+                        
+                        let rejectMsg = `❌ လူကြီးမင်း၏ ${gameName.toUpperCase()} (${itemName}) အော်ဒါ #${orderId} အား ပယ်ဖျက် (Reject) လိုက်ရပါသည်ဗျာ။\nအကြောင်းပြချက်: ${reason}။\n\n💰 အော်ဒါတန်ဖိုးငွေ ${orderPrice.toLocaleString()} Ks အား သင့်အကောင့်ထဲသို့ အပြည့်အဝ ပြန်လည် ထည့်သွင်း (Refund) ပေးထားပြီးဖြစ်ပါသဖြင့် စစ်ဆေးပေးပါဗျာ။`;
+                        
+                        if (addDiscount) {
+                            rejectMsg += `\n\n🎁 အဆင်မပြေမှုအတွက် တောင်းပန်သောအားဖြင့် နောက်တစ်ကြိမ် ဝယ်ယူရာတွင် Discount 5% ရရှိရန် "SRDISC5" Promo Code အား အသုံးပြုနိုင်ပါသည်။`;
+                        }
+
+                        await db.collection("messages").add({
+                            to: userPhone,
+                            text: rejectMsg,
+                            time: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+
+                        await sendTelegramMessage(`🔴 <b>ORDER REJECTED & REFUNDED</b>\n━━━━━━━━━━━━━━━━━━\n📞 Phone: ${userPhone}\n🎮 Game: ${gameName.toUpperCase()}\n📦 Pack: ${itemName}\n💰 Price: ${orderPrice.toLocaleString()} Ks\nRefund Status: fully returned\nReason: ${reason}`);
+
+                        customAlert(`အော်ဒါ #${orderId} အား ပယ်ဖျက်လိုက်ပြီး ဝယ်သူ၏ငွေ ${orderPrice.toLocaleString()} Ks ကို အကောင့်ထဲသို့ ပြန်လည်လွှဲပြောင်း (Refund) ပေးလိုက်ပါပြီဗျာ။`);
+                    } else {
+                        customAlert("မအောင်မြင်ပါ! Customer profile မရှိသောကြောင့် Refund မရနိုင်ပါ။");
+                    }
+                };
+            }
+        } catch(e) {
+            console.error(e);
+            customAlert("လုပ်ဆောင်ချက် မအောင်မြင်ပါ။");
+        }
     }
 
     function pushUpdate() {
@@ -2582,7 +2904,6 @@
         }
     }
 
-    // --- Loading Telegram Settings ---
     async function loadTelegramSettings() {
         if (!db) return;
         try {
@@ -2688,7 +3009,6 @@
                         time: firebase.firestore.FieldValue.serverTimestamp()
                     });
 
-                    // Send TG Deposit notification
                     const tgLog = `💵 <b>DEPOSIT APPROVED</b>\n━━━━━━━━━━━━━━━━━━\n👤 User: ${userDoc.data().name}\n📞 Phone: ${phone}\n💰 Amount: ${amount.toLocaleString()} Ks\n🟢 New Balance: ${newBalance.toLocaleString()} Ks`;
                     await sendTelegramMessage(tgLog);
 
@@ -2702,7 +3022,6 @@
                         time: firebase.firestore.FieldValue.serverTimestamp()
                     });
 
-                    // Send TG Deposit rejection
                     const tgLog = `🔴 <b>DEPOSIT REJECTED</b>\n━━━━━━━━━━━━━━━━━━\n📞 Phone: ${phone}\n💰 Amount: ${amount.toLocaleString()} Ks\n⚠️ Reason: Receipt Fraud or Error`;
                     await sendTelegramMessage(tgLog);
 
@@ -2772,7 +3091,7 @@
                 iconUrl: uploadedBrandingIconUrl || existingBrandingIcon || "https://placehold.co/150x150/111/fff?text=Icon"
             }, { merge: true });
 
-            customAlert(`✅ Service ${sId} ထဲသို့ Plan အသစ် ထည့်သွင်းပြီးပါပြီ။`);
+            customAlert("Service အောင်မြင်စွာ တင်သွင်းပြီးပါပြီ။");
             document.getElementById("serv-pack").value = "";
             document.getElementById("serv-price").value = "";
             document.getElementById("serv-icon-file").value = "";
@@ -2786,7 +3105,6 @@
         }
     }
 
-    // --- Editing existing other services plan ---
     async function editOtherServicePlan(serviceId, index, currentName, currentPrice) {
         const docRef = db.collection("other_services").doc(serviceId);
         const doc = await docRef.get();
@@ -2872,7 +3190,6 @@
         };
     }
 
-    // --- Subscribing to other services updates ---
     function listenToOtherServices() {
         if (!db) return;
         db.collection("other_services").onSnapshot(snap => {
@@ -2931,10 +3248,9 @@
                     let plans = doc.data().plans || [];
                     plans.splice(index, 1);
                     await docRef.update({ plans: plans });
-                    customAlert("Plan အောင်မြင်စွာ ဖျက်ပြီးပါပြီ။");
+                    customAlert("Plan အောင်မြင်စွာ ဖျက်ပြီးပါပြီ।");
                 }
             } catch (e) {
-                console.error(e);
                 customAlert("ဖျက်ဆီးမှု မအောင်မြင်ပါ။");
             }
         });
@@ -3042,13 +3358,27 @@
         data.plans.forEach(p => {
             const planIconUrl = p.iconUrl || data.iconUrl || "";
             const planIconSize = p.iconSize || 24;
+            const originalPrice = parseFloat(p.price || 0);
+
+            let priceDisplayHtml = "";
+            if (globalDiscountPercent > 0) {
+                const discountedPrice = Math.round(originalPrice * (1 - globalDiscountPercent / 100));
+                priceDisplayHtml = `
+                    <div class="flex flex-col items-end">
+                        <span class="line-through text-neutral-500 text-[10px]">${Number(originalPrice).toLocaleString()} Ks</span>
+                        <span class="text-emerald-400 font-black text-xs">${Number(discountedPrice).toLocaleString()} Ks</span>
+                    </div>`;
+            } else {
+                priceDisplayHtml = `<span class="text-[#FF8C00] font-black text-xs">${Number(originalPrice).toLocaleString()} Ks</span>`;
+            }
+
             html += `
-                <tr class="hover:bg-neutral-900/60 transition cursor-pointer" onclick="handleServicePurchaseOrder('${data.serviceName}', '${p.packName}', ${p.price}, '${planIconUrl}', ${planIconSize})">
+                <tr class="hover:bg-neutral-900/60 transition cursor-pointer" onclick="handleServicePurchaseOrder('${data.serviceName}', '${p.packName}', ${originalPrice}, '${planIconUrl}', ${planIconSize})">
                     <td class="text-gray-300 font-semibold text-xs py-2.5 flex items-center gap-2.5">
                         ${planIconUrl ? `<img src="${planIconUrl}" style="width: ${planIconSize}px; height: ${planIconSize}px;" class="object-cover rounded border border-neutral-900" onerror="this.style.display='none'">` : '<div class="w-6 h-6 rounded bg-neutral-900 border border-neutral-850 flex items-center justify-center text-orange-500"><i class="fa-solid fa-shapes text-[10px]"></i></div>'}
                         <span>${p.packName}</span>
                     </td>
-                    <td class="text-right text-[#FF8C00] font-black text-xs py-2.5">${p.price.toLocaleString()} Ks</td>
+                    <td class="text-right py-2.5">${priceDisplayHtml}</td>
                 </tr>`;
         });
 
@@ -3069,7 +3399,6 @@
             return customAlert("အော်ဒါတင်ရန် ဦးစွာ Login ဝင်ပါဗျာ।");
         }
 
-        // Get Input Fields for specific service (e.g. TikTok -> video link, Capcut -> email/TikTok id)
         const lowerServiceId = serviceName.toLowerCase();
         let fields = ["Account Details / Email & Password"];
         
@@ -3077,6 +3406,8 @@
         if (serviceData && serviceData.inputFields) {
             fields = serviceData.inputFields;
         }
+
+        const activeFinalPrice = globalDiscountPercent > 0 ? Math.round(price * (1 - globalDiscountPercent / 100)) : price;
 
         const modal = document.createElement("div");
         modal.className = "fixed inset-0 bg-black/95 z-[10001] flex items-center justify-center p-6";
@@ -3088,6 +3419,17 @@
             </div>
         `).join("");
 
+        let checkoutPriceHtml = "";
+        if (globalDiscountPercent > 0) {
+            checkoutPriceHtml = `
+                <div class="flex justify-center items-center gap-2">
+                    <span class="text-neutral-500 line-through text-xs font-semibold">${Number(price).toLocaleString()} Ks</span>
+                    <span class="text-emerald-400 font-black text-sm">${Number(activeFinalPrice).toLocaleString()} Ks (${globalDiscountPercent}% OFF!)</span>
+                </div>`;
+        } else {
+            checkoutPriceHtml = `<p class="text-xs text-[#FF8C00] font-black">ဈေးနှုန်း: ${Number(price).toLocaleString()} Ks</p>`;
+        }
+
         modal.innerHTML = `
         <div class="bg-[#111113] border border-neutral-800 p-6 rounded-2xl max-w-sm w-full text-center space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex items-center justify-center gap-3">
@@ -3098,7 +3440,7 @@
                 </div>
             </div>
             
-            <p class="text-xs text-[#FF8C00] font-black">ဈေးနှုန်း: ${Number(price).toLocaleString()} Ks</p>
+            ${checkoutPriceHtml}
             
             <div class="space-y-3">
                 ${inputsHtml}
@@ -3106,11 +3448,11 @@
 
             <div class="bg-black/60 p-3 rounded-xl text-[11px] text-left text-neutral-400 border border-neutral-850">
                 <p>သင့်အကောင့်လက်ကျန်: <span class="text-[#FF8C00] font-black">${Number(currentUser.balance || 0).toLocaleString()} Ks</span></p>
-                ${(currentUser.balance || 0) < price ? `<p class="text-red-500 font-bold mt-1">⚠️ လက်ကျန်ငွေ မလုံလောက်ပါ။ ကျေးဇူးပြု၍ ငွေအရင်ဖြည့်ပါ။</p>` : ''}
+                ${(currentUser.balance || 0) < activeFinalPrice ? `<p class="text-red-500 font-bold mt-1">⚠️ လက်ကျန်ငွေ မလုံလောက်ပါ။ ကျေးဇူးပြု၍ ငွေအရင်ဖြည့်ပါ။</p>` : ''}
             </div>
 
             <div class="flex gap-2">
-                <button id="btn-submit-service-order" class="flex-1 py-2.5 bg-[#FF8C00] hover:bg-orange-600 text-black font-black rounded-xl text-xs uppercase tracking-wider transition" ${(currentUser.balance || 0) < price ? 'disabled style="opacity: 0.5"' : ''}>Order Now</button>
+                <button id="btn-submit-service-order" class="flex-1 py-2.5 bg-[#FF8C00] hover:bg-orange-600 text-black font-black rounded-xl text-xs uppercase tracking-wider transition" ${(currentUser.balance || 0) < activeFinalPrice ? 'disabled style="opacity: 0.5"' : ''}>Order Now</button>
                 <button id="btn-cancel-service-order" class="flex-1 py-2.5 bg-neutral-850 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition">Cancel</button>
             </div>
         </div>`;
@@ -3138,9 +3480,9 @@
                 if (!userSnap.exists) return customAlert("အသုံးပြုသူ ရှာမတွေ့ပါ။");
 
                 const currentBal = parseFloat(userSnap.data().balance || 0);
-                if (currentBal < price) return customAlert("⚠️ သင့်အကောင့်ထဲတွင် ငွေမလုံလောက်ပါ။ ကျေးဇူးပြု၍ ငွေအရင်ဖြည့်သွင်းပေးပါရန်။");
+                if (currentBal < activeFinalPrice) return customAlert("⚠️ သင့်အကောင့်ထဲတွင် ငွေမလုံလောက်ပါ။ ကျေးဇူးပြု၍ ငွေအရင်ဖြည့်သွင်းပေးပါရန်။");
 
-                const newBal = currentBal - price;
+                const newBal = currentBal - activeFinalPrice;
                 await userRef.update({ balance: newBal });
                 currentUser.balance = newBal;
 
@@ -3151,7 +3493,7 @@
                     userId: currentUser.phone,
                     game: serviceName,
                     item: packName,
-                    price: price,
+                    price: activeFinalPrice,
                     gameId: fieldVals.join(" | "),
                     orderId: orderRandomId,
                     status: 'pending',
@@ -3160,8 +3502,7 @@
                     time: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                // TG Notification for Premium Service Purchase
-                const tgMsg = `🚀 <b>PREMIUM SERVICE ORDER</b>\n━━━━━━━━━━━━━━━━━━\n👤 User: ${currentUser.name}\n📞 Phone: ${currentUser.phone}\n🛠 Service: ${serviceName}\n📦 Plan: ${packName}\n💰 Price: ${price.toLocaleString()} Ks\n🔑 Target Details: ${fieldVals.join(" | ")}\nOrder ID: #${orderRandomId}`;
+                const tgMsg = `🚀 <b>PREMIUM SERVICE ORDER</b>\n━━━━━━━━━━━━━━━━━━\n👤 User: ${currentUser.name}\n📞 Phone: ${currentUser.phone}\n🛠 Service: ${serviceName}\n📦 Plan: ${packName}\n💰 Price: ${activeFinalPrice.toLocaleString()} Ks\n🔑 Target Details: ${fieldVals.join(" | ")}\nOrder ID: #${orderRandomId}`;
                 await sendTelegramMessage(tgMsg);
 
                 customAlert(`🎉 ဝယ်ယူမှုတောင်းဆိုချက် #${orderRandomId} ကို လက်ခံရရှိပြီးပါပြီ။ Admin မှ သင့်အကောင့်ထဲမှ ငွေနုတ်ယူပြီး အကောင့်အချက်အလက်များကို ပေးပို့ပေးပါလိမ့်မည်။`);
@@ -3498,7 +3839,6 @@
                     time: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                // TG Notification for Approved Referral
                 const tgMsg = `🟢 <b>REFERRAL STATUS: APPROVED</b>\n━━━━━━━━━━━━━━━━━━\n👤 Inviter: ${r.inviterName}\n👶 Referee: ${r.refereeName}\n💰 Reward Paid: ${finalReward.toLocaleString()} Ks`;
                 await sendTelegramMessage(tgMsg);
 
@@ -3518,7 +3858,6 @@
                     rejectedAt: new Date().toISOString()
                 });
 
-                // TG Notification for Fraud Referral
                 const tgMsg = `🔴 <b>REFERRAL STATUS: REJECTED (FRAUD)</b>\n━━━━━━━━━━━━━━━━━━\nID: #${docId.substring(0,7).toUpperCase()}`;
                 await sendTelegramMessage(tgMsg);
 
