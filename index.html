@@ -200,7 +200,6 @@
 </head>
 <body class="custom-scrollbar">
 
-<!-- LOADING SCREEN -->
 <div id="loading-screen" class="fixed inset-0 bg-black z-[9999] flex flex-col items-center justify-center text-[#FF8C00]">
     <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FF8C00] mb-4"></div>
     <span class="font-bold text-lg tracking-wider">SR SHOP ADMIN PANEL</span>
@@ -434,7 +433,7 @@
             <div id="admin-tab-dashboard" class="admin-tab-content space-y-6">
                 <!-- 5 Metrics Display Grid -->
                 <div class="grid grid-cols-2 gap-3.5">
-                    <!-- Total Customer Liability remaining (ALL USERS BALANCE SUMMED) -->
+                    <!-- Total Customer Liability remaining -->
                     <div class="col-span-2 bg-gradient-to-r from-neutral-900 to-[#111113] p-4 rounded-xl border border-neutral-800 flex justify-between items-center relative overflow-hidden">
                         <div class="absolute top-1 right-2 text-xl opacity-10 font-black">💰</div>
                         <div>
@@ -450,7 +449,7 @@
                         <span id="dash-total-users" class="text-2xl font-black text-white">0</span>
                     </div>
                     <div class="bg-gradient-to-b from-[#111113] to-black p-4 rounded-xl border border-neutral-800 flex flex-col justify-between shadow relative overflow-hidden">
-                        <div class="absolute top-1 right-2 text-xl opacity-10 font-black">💵</div>
+                        <div class="absolute top-1 right-2 text-xl opacity-10 text-emerald-500 font-black">💵</div>
                         <span class="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider block mb-1">Today Income</span>
                         <span id="dash-today-income" class="text-2xl font-black text-[#FF8C00]">0 Ks</span>
                     </div>
@@ -509,7 +508,7 @@
                         <p class="font-bold flex items-center gap-1"><i class="fa-solid fa-circle-info"></i> Ads တင်ခြင်းဆိုင်ရာ လမ်းညွှန်ချက် အသိပေးချက်</p>
                         <ul class="list-disc list-inside space-y-0.5 text-neutral-300">
                             <li>ပုံရိပ်အရွယ်အစားမှာ <span class="font-bold text-[#FF8C00]">16:9 ratio</span> ဖြစ်ရန် အကြံပြုပါသည်။</li>
-                            <li>ဖိုင်အရွယ်အစား <span class="font-bold text-[#FF8C00]">5MB</span> အောက် ဖြစ်ရပါမည်။</li>
+                            <li>ဖိုင်အရွယ်အစား <span class="font-bold text-[#FF8C00]">5MB</span> အောက် ဖြစ်ရပါမည်。</li>
                         </ul>
                     </div>
                     
@@ -606,7 +605,7 @@
                         </div>
                     </div>
 
-                    <div class="bg-black/40 p-3 rounded-lg border border-neutral-800/80 space-y-3">
+                    <div class="bg-black/40 p-3 rounded-lg border border-neutral-800/85 space-y-3">
                         <span class="text-[9px] font-black text-neutral-400 block uppercase"><i class="fa-solid fa-bullhorn text-[#FF8C00]"></i> Promo Campaign & Double Event Rules</span>
                         <div class="grid grid-cols-2 gap-2">
                             <div>
@@ -671,26 +670,49 @@
                 <!-- GLOBAL DISCOUNT MANAGER -->
                 <div class="bg-[#111113] p-4 rounded-xl border border-neutral-800 space-y-4">
                     <h3 class="text-[#FF8C00] font-bold text-xs flex items-center gap-1.5 pb-2 border-b border-neutral-800/60">
-                        <i class="fa-solid fa-percent text-amber-500"></i> Global Discount Percentage Manager
+                        <i class="fa-solid fa-percent text-amber-500"></i> Global Discount & New User Offer
                     </h3>
-                    <p class="text-[10px] text-neutral-500">ဂိမ်းအိုင်တမ်များနှင့် ဝန်ဆောင်မှုအားလုံးအတွက် Discount ရာခိုင်နှုန်း သတ်မှတ်ရန် သို့မဟုတ် ဖြုတ်ရန်</p>
+                    <p class="text-[10px] text-neutral-500">ဂိမ်းအိုင်တမ်များနှင့် ဝန်ဆောင်မှုအားလုံးအတွက် Discount ရာခိုင်နှုန်း၊ လျှော့ရသည့်အကြောင်းပြချက်နှင့် New User Promotion သတ်မှတ်ရန်</p>
                     <div class="space-y-3 bg-black/40 p-3 rounded-lg border border-neutral-800/60">
-                        <div class="grid grid-cols-2 gap-3 items-center">
+                        <div class="space-y-3">
                             <div>
                                 <label class="text-[9px] text-neutral-400 font-bold uppercase block mb-1">Active Discount (%)</label>
                                 <input type="number" id="discount-percent-input" min="0" max="100" placeholder="0 (No Discount)" class="w-full p-2.5 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none font-bold text-center text-[#FF8C00]">
                             </div>
-                            <div class="space-y-1">
-                                <span class="text-[9px] text-neutral-400 font-bold block">Status Indicator:</span>
-                                <span id="discount-status-label" class="text-xs font-bold text-gray-400">Disabled (0%)</span>
+
+                            <div>
+                                <label class="text-[9px] text-neutral-400 font-bold uppercase block mb-1">Discount လျှော့ရသည့် အကြောင်းအရင်း (Reason/Promo Info) <span class="text-red-500 font-bold">*</span></label>
+                                <textarea id="discount-reason-input" placeholder="ဥပမာ - Thingyan Special Promo / Weekend Sales (မဖြစ်မနေ ရေးသားပေးရန်)" class="w-full p-2.5 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none h-16 resize-none" style="box-sizing: border-box;"></textarea>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="text-[9px] text-neutral-400 font-bold uppercase block mb-1">🎁 New User Discount Status</label>
+                                    <select id="new-user-discount-toggle" class="w-full p-2.5 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none font-bold">
+                                        <option value="on">🎁 Turn ON (ရရှိမည်)</option>
+                                        <option value="off">🎁 Turn OFF (မရရှိပါ)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-[9px] text-neutral-400 font-bold uppercase block mb-1">🎁 New User Discount (%)</label>
+                                    <input type="number" id="new-user-discount-percent-input" min="0" max="100" placeholder="0 (No Promo)" class="w-full p-2.5 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none font-bold text-center text-[#FF8C00]">
+                                </div>
+                            </div>
+
+                            <div class="p-2.5 bg-black/80 rounded-lg border border-neutral-800/50 space-y-1 font-semibold">
+                                <span class="text-[9px] text-neutral-400 font-bold block">Status Summary:</span>
+                                <div id="discount-status-label" class="space-y-1">
+                                    <span class="text-xs font-bold text-gray-400">Disabled (0%)</span>
+                                </div>
                             </div>
                         </div>
+                        
                         <div class="flex gap-2">
                             <button onclick="saveDiscountConfig()" class="flex-1 py-2 bg-gradient-to-r from-orange-500 to-amber-500 text-black font-black text-xs rounded-lg transition">
-                                Save & Apply Discount
+                                Save Configurations
                             </button>
                             <button onclick="removeDiscountConfig()" class="py-2 px-4 bg-red-600/20 hover:bg-red-600 text-red-500 hover:text-white font-bold text-xs rounded-lg border border-red-500/20 transition">
-                                Remove (ဖြုတ်မည်)
+                                Clear All
                             </button>
                         </div>
                     </div>
@@ -737,9 +759,11 @@
                             <span class="text-[8px] text-neutral-500 block mt-0.5">Capcut ဆိုလျှင် Email / Password, TikTok ဆိုလျှင် Video Link ဟုရေးပေးပါ။</span>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="text" id="serv-pack" placeholder="Plan/Pack (e.g. 1 Month)" class="w-full p-2 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none">
+                        <!-- 3-Column Plan Addition UI (Package Name, Base Price, Individual Discount) -->
+                        <div class="grid grid-cols-3 gap-2">
+                            <input type="text" id="serv-pack" placeholder="Plan/Pack" class="w-full p-2 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none col-span-1">
                             <input type="number" id="serv-price" placeholder="Price (Ks)" class="w-full p-2 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none">
+                            <input type="number" id="serv-discount" min="0" max="100" placeholder="Disc %" class="w-full p-2 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none text-center font-bold">
                         </div>
 
                         <div class="space-y-1">
@@ -747,7 +771,7 @@
                             <input type="file" id="serv-icon-file" accept="image/png, image/jpeg" class="w-full text-xs text-neutral-400">
                         </div>
 
-                        <div class="grid grid-cols-2 gap-2 border-t border-neutral-850 pt-2.5">
+                        <div class="grid grid-cols-2 gap-2 border-t border-neutral-850 pt-2.5 font-semibold">
                             <div>
                                 <label class="text-[9px] text-neutral-400 font-bold block mb-1">Upload Plan PNG Icon</label>
                                 <input type="file" id="serv-plan-icon-file" accept="image/png" class="w-full text-xs text-neutral-400">
@@ -872,7 +896,7 @@
                 <!-- ADD & REMOVE ITEMS IN PRICE CATALOG -->
                 <div class="bg-[#111113] p-4 rounded-xl border border-neutral-800">
                     <h3 class="text-white font-bold text-xs mb-1"><i class="fa-solid fa-gem text-orange-500"></i> Game Item Pack Manager</h3>
-                    <p class="text-[10px] text-neutral-500 mb-3">Target Game ထဲရှိ Package Products များကို စီမံခန့်ခွဲရန်နှင့် Icon များ သတ်မှတ်ရန်</p>
+                    <p class="text-[10px] text-neutral-500 mb-3">Target Game ထဲရှိ Package Products များကို စီမံခန့်ခွဲရန်၊ သီးခြား Discount ရာခိုင်နှုန်း သတ်မှတ်ရန်နှင့် Icon များ သတ်မှတ်ရန်</p>
 
                     <div class="space-y-3">
                         <div class="bg-black/45 p-3 rounded-xl border border-neutral-800/80 space-y-3">
@@ -896,8 +920,9 @@
                                 <input type="text" id="item-custom-category" placeholder="Optional category code (e.g. skin, promo, premium)" class="w-full p-2.5 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none">
                             </div>
 
-                            <div class="grid grid-cols-2 gap-2">
-                                <div>
+                            <!-- 3-Column Pack Creation Block: Package Name, Base Price, Individual Discount Percent -->
+                            <div class="grid grid-cols-3 gap-2 font-semibold">
+                                <div class="col-span-1">
                                     <label class="text-[9px] text-neutral-400 font-bold block mb-1">Item Pack Name</label>
                                     <input type="text" id="new-item-name" placeholder="e.g. 50 Diamonds" class="w-full p-2.5 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none">
                                 </div>
@@ -905,9 +930,13 @@
                                     <label class="text-[9px] text-neutral-400 font-bold block mb-1">Price (Ks)</label>
                                     <input type="number" id="new-item-price" placeholder="e.g. 1500" class="w-full p-2.5 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none">
                                 </div>
+                                <div>
+                                    <label class="text-[9px] text-[#FF8C00] font-bold block mb-1">Discount (%)</label>
+                                    <input type="number" id="new-item-discount" min="0" max="100" placeholder="0" class="w-full p-2.5 bg-[#18181B] border border-neutral-800 rounded-lg text-xs text-white outline-none font-bold text-center">
+                                </div>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-2 border-t border-neutral-850 pt-2 flex items-center">
+                            <div class="grid grid-cols-2 gap-2 border-t border-neutral-850 pt-2 flex items-center font-semibold">
                                 <div>
                                     <label class="text-[9px] text-neutral-400 font-bold block mb-1">Upload PNG Item Icon</label>
                                     <input type="file" id="new-item-icon-file" accept="image/png" class="w-full text-xs text-neutral-400">
@@ -1160,7 +1189,7 @@
                     localStorage.removeItem('sr_auth');
                     currentUser = null;
                     showPage('page-login');
-                    customAlert("🚨 သင့်အကောင့်အား စည်းကမ်းဖောက်ဖျက်မှုကြောင့် Admin ဘက်မှ ပိတ်ပင် (Banned) လိုက်ပါသည်ဗျာ။");
+                    customAlert("🚨 သင့်အကောင့်အား စည်းကမ်းဖောက်ဖျက်မှုကြောင့် Admin ဘက်မှ ပိတ်ပင် (Banned) လိုက်ပါသည်ဗျာ।");
                 }
             }
         }, err => console.warn("User status listener error: ", err));
@@ -1406,16 +1435,39 @@
         if (!db) return;
         db.collection("appSettings").doc("discountConfig").onSnapshot(doc => {
             if (doc.exists) {
-                globalDiscountPercent = parseFloat(doc.data().discountPercent || 0);
+                const data = doc.data();
+                globalDiscountPercent = parseFloat(data.discountPercent || 0);
+                const newUserDiscountPercent = parseFloat(data.newUserDiscountPercent || 0);
+                
                 const input = document.getElementById("discount-percent-input");
+                const reasonInput = document.getElementById("discount-reason-input");
+                const toggle = document.getElementById("new-user-discount-toggle");
+                const newUserPercentInput = document.getElementById("new-user-discount-percent-input");
                 const label = document.getElementById("discount-status-label");
+                
                 if (input) input.value = globalDiscountPercent;
+                if (reasonInput) reasonInput.value = data.discountReason || "";
+                if (toggle) toggle.value = data.newUserDiscount || "off";
+                if (newUserPercentInput) newUserPercentInput.value = newUserDiscountPercent;
+                
                 if (label) {
+                    let textSummary = "";
                     if (globalDiscountPercent > 0) {
-                        label.innerHTML = `<span class="text-emerald-500 font-black">Active (${globalDiscountPercent}%) 🔥</span>`;
+                        textSummary += `<div class="text-emerald-500 font-black text-xs">Active (${globalDiscountPercent}%) 🔥</div>`;
+                        if (data.discountReason) {
+                            textSummary += `<div class="text-[10px] text-gray-400 font-semibold italic">အကြောင်းရင်း: ${data.discountReason}</div>`;
+                        }
                     } else {
-                        label.innerHTML = `<span class="text-neutral-500 font-bold">Disabled (0%)</span>`;
+                        textSummary += `<div class="text-neutral-500 font-bold text-xs">Disabled (0%)</div>`;
                     }
+
+                    const newUserDisc = data.newUserDiscount || "off";
+                    if (newUserDisc === "on") {
+                        textSummary += `<div class="text-amber-500 text-[11px] font-black mt-1">🎁 New User Discount: ON (${newUserDiscountPercent}%)</div>`;
+                    } else {
+                        textSummary += `<div class="text-neutral-500 text-[11px] font-bold mt-1">🎁 New User Discount: OFF (မရရှိပါ)</div>`;
+                    }
+                    label.innerHTML = textSummary;
                 }
             } else {
                 globalDiscountPercent = 0;
@@ -1425,14 +1477,23 @@
 
     async function saveDiscountConfig() {
         const inputVal = parseFloat(document.getElementById("discount-percent-input").value) || 0;
+        const reasonVal = document.getElementById("discount-reason-input").value.trim();
+        const newUserDiscount = document.getElementById("new-user-discount-toggle").value;
+        const newUserDiscountPercent = parseFloat(document.getElementById("new-user-discount-percent-input").value) || 0;
+
         if (inputVal < 0 || inputVal > 100) return customAlert("0% မှ 100% အတွင်းသာ သတ်မှတ်နိုင်ပါသည်ဗျာ။");
+        if (newUserDiscountPercent < 0 || newUserDiscountPercent > 100) return customAlert("New User Discount နှုန်းကို 0% မှ 100% အတွင်းသာ သတ်မှတ်နိုင်ပါသည်ဗျာ။");
+        if (inputVal > 0 && !reasonVal) return customAlert("ကျေးဇူးပြု၍ Discount လျှော့ရသည့် အကြောင်းအရင်း (Discount Reason) ကို အရင်ဆုံး မဖြစ်မနေ ရေးသားပေးပါဗျာ။");
         
         try {
             await db.collection("appSettings").doc("discountConfig").set({
                 discountPercent: inputVal,
+                discountReason: reasonVal,
+                newUserDiscount: newUserDiscount,
+                newUserDiscountPercent: newUserDiscountPercent,
                 updatedAt: new Date().toISOString()
             });
-            customAlert(`✅ Discount ${inputVal}% အား ဂိမ်းအိုင်တမ်များနှင့် Premium Plans အားလုံးတွင် အောင်မြင်စွာ သတ်မှတ်ပေးလိုက်ပါပြီဗျာ။`);
+            customAlert(`✅ Discount သတ်မှတ်ချက်များနှင့် New User Discount (${newUserDiscountPercent}%) အား အောင်မြင်စွာ သိမ်းဆည်းလိုက်ပါပြီဗျာ။`);
         } catch (e) {
             console.error(e);
             customAlert("သိမ်းဆည်းရန် ချိတ်ဆက်မှု အဆင်မပြေဖြစ်သွားပါသည်။");
@@ -1443,11 +1504,20 @@
         try {
             await db.collection("appSettings").doc("discountConfig").set({
                 discountPercent: 0,
+                discountReason: "",
+                newUserDiscount: "off",
+                newUserDiscountPercent: 0,
                 updatedAt: new Date().toISOString()
             });
             const input = document.getElementById("discount-percent-input");
+            const reasonInput = document.getElementById("discount-reason-input");
+            const toggle = document.getElementById("new-user-discount-toggle");
+            const newUserPercentInput = document.getElementById("new-user-discount-percent-input");
             if (input) input.value = 0;
-            customAlert("✅ Discount နှုန်းထားများ အားလုံးကို ပြန်လည်ဖြုတ်သိမ်းလိုက်ပါပြီဗျာ။");
+            if (reasonInput) reasonInput.value = "";
+            if (toggle) toggle.value = "off";
+            if (newUserPercentInput) newUserPercentInput.value = 0;
+            customAlert("✅ Discount နှုန်းထားများနှင့် သတ်မှတ်ချက်များကို ပြန်လည်ဖြုတ်သိမ်းလိုက်ပါပြီဗျာ။");
         } catch (e) {
             console.error(e);
             customAlert("ဖြုတ်သိမ်းရန် ချိတ်ဆက်မှု အဆင်မပြေဖြစ်သွားပါသည်။");
@@ -1490,7 +1560,6 @@
         }, err => console.warn(err));
     }
 
-    // --- Setup Dashboard real-time statistics ---
     function setupDashboardMetrics() {
         if (!db) return;
         
@@ -1590,7 +1659,6 @@
         renderOrdersByActiveSubTab();
     }
 
-    // --- Processing real-time orders ---
     function renderOrdersByActiveSubTab() {
         const oList = document.getElementById('adm-order-list');
         const totalCountEl = document.getElementById('orders-total-count');
@@ -1638,17 +1706,17 @@
             const itemIconSize = d.itemIconSize || 32;
 
             oList.innerHTML += `
-            <div class="list-card bg-[#111113] p-4 rounded-xl border border-neutral-800 space-y-3 relative overflow-hidden transition hover:border-neutral-700">
+            <div class="list-card bg-[#111113] p-4 rounded-xl border border-neutral-800 space-y-3 relative overflow-hidden transition hover:border-neutral-700 font-semibold">
                 <div class="absolute top-0 right-0 px-2.5 py-1 text-[9px] font-black rounded-bl-lg uppercase" style="color: ${statusColor}; background: ${statusColor}10">
                     ${status}
                 </div>
 
-                <div class="space-y-1">
+                <div class="space-y-1 font-semibold">
                     <p class="text-[#FF8C00] font-black text-sm">${userName}</p>
-                    <p class="text-[10px] text-neutral-500">📞 Phone: ${userId}</p>
+                    <p class="text-[10px] text-neutral-500 font-semibold">📞 Phone: ${userId}</p>
                 </div>
 
-                <div class="bg-black/60 p-3 rounded-lg border border-neutral-900 space-y-1.5 text-xs">
+                <div class="bg-black/60 p-3 rounded-lg border border-neutral-900 space-y-1.5 text-xs font-semibold">
                     <div class="flex items-center gap-3">
                         ${itemIcon ? `<img src="${itemIcon}" style="width: ${itemIconSize}px; height: ${itemIconSize}px;" class="object-cover rounded-lg border border-neutral-800" onerror="this.style.display='none'">` : '<div class="w-8 h-8 rounded bg-neutral-900 border border-neutral-800 flex items-center justify-center text-orange-500"><i class="fa-solid fa-gamepad text-xs"></i></div>'}
                         <div>
@@ -1721,14 +1789,22 @@
                         docData[arrayName].forEach((item, index) => {
                             const nameVal = item.name || 'Unnamed Pack';
                             const priceVal = item.price || 0;
+                            const discountVal = parseFloat(item.discountPercent || 0);
                             const iconUrl = item.iconUrl || '';
                             const iconSize = item.iconSize || 24;
                             
+                            // Visual Green Badge for items having active direct discounts
+                            let discountBadge = "";
+                            if (discountVal > 0) {
+                                discountBadge = `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded text-[9px] font-black">${discountVal}% OFF</span>`;
+                            }
+                            
                             html += `
-                            <div class="flex justify-between items-center bg-[#0d0d10] p-2 rounded-lg border border-neutral-850 text-xs">
+                            <div class="flex justify-between items-center bg-[#0d0d10] p-2 rounded-lg border border-neutral-850 text-xs font-semibold">
                                 <div class="flex items-center gap-2">
                                     ${iconUrl ? `<img src="${iconUrl}" style="width: ${iconSize}px; height: ${iconSize}px;" class="object-cover rounded border border-neutral-800" onerror="this.style.display='none'">` : '<div class="w-6 h-6 rounded bg-neutral-900 border border-neutral-800 flex items-center justify-center text-orange-500"><i class="fa-solid fa-gem text-[10px]"></i></div>'}
                                     <span class="text-gray-300 font-medium">${nameVal}</span>
+                                    ${discountBadge}
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <span class="text-[#FF8C00] font-black mr-2">${Number(priceVal).toLocaleString()} Ks</span>
@@ -1893,16 +1969,20 @@
         });
     }
 
-    // --- Adding new items ---
     async function addNewItem() {
         const targetGame = document.getElementById('item-target-game').value;
         let targetCategory = document.getElementById('item-target-category').value;
         const customCategory = document.getElementById('item-custom-category').value.trim().toLowerCase();
         const itemName = document.getElementById('new-item-name').value.trim();
         const itemPrice = parseFloat(document.getElementById('new-item-price').value);
+        const itemDiscount = parseFloat(document.getElementById('new-item-discount').value) || 0;
         
         const iconFile = document.getElementById('new-item-icon-file').files[0];
         const iconSize = parseInt(document.getElementById('new-item-icon-size').value) || 32;
+
+        if (itemDiscount < 0 || itemDiscount > 100) {
+            return customAlert("Discount သည် 0% မှ 100% အတွင်းသာ ဖြစ်ရပါမည်။");
+        }
 
         if(customCategory) {
             targetCategory = customCategory; 
@@ -1934,6 +2014,7 @@
             data[targetCategory].push({
                 name: itemName,
                 price: itemPrice,
+                discountPercent: itemDiscount, // Individual item discount
                 iconUrl: uploadedUrl,
                 iconSize: iconSize
             });
@@ -1943,6 +2024,7 @@
             
             document.getElementById('new-item-name').value = "";
             document.getElementById('new-item-price').value = "";
+            document.getElementById('new-item-discount').value = "";
             document.getElementById('item-custom-category').value = "";
             document.getElementById('new-item-icon-file').value = "";
 
@@ -1976,7 +2058,6 @@
         });
     }
 
-    // --- Editing existing items ---
     async function editPrice(docId, arrayName, index, currentName, currentPrice) {
         const docRef = db.collection("prices").doc(docId);
         const doc = await docRef.get();
@@ -1984,6 +2065,7 @@
         let itemObj = data[arrayName][index];
         let curIconUrl = itemObj.iconUrl || "";
         let curIconSize = itemObj.iconSize || 32;
+        let curDiscount = parseFloat(itemObj.discountPercent || 0);
 
         const customPrompt = document.createElement("div");
         customPrompt.className = "fixed inset-0 bg-black/85 z-[10002] flex items-center justify-center p-6";
@@ -1992,10 +2074,16 @@
             <h4 class="text-white font-black text-sm">ဈေးနှုန်း အသစ်ပြင်ဆင်မည်</h4>
             <p class="text-xs text-neutral-400 font-bold">${currentName}</p>
             
-            <div class="text-left space-y-3">
-                <div>
-                    <label class="text-[9px] text-neutral-400 font-bold block mb-1">Price (Ks)</label>
-                    <input type="number" id="custom-prompt-val" class="input-field text-center font-bold text-[#FF8C00]" value="${currentPrice}">
+            <div class="text-left space-y-3 font-semibold">
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-[9px] text-neutral-400 font-bold block mb-1">Price (Ks)</label>
+                        <input type="number" id="custom-prompt-val" class="input-field text-center font-bold text-[#FF8C00]" value="${currentPrice}">
+                    </div>
+                    <div>
+                        <label class="text-[9px] text-[#FF8C00] font-bold block mb-1">Discount (%)</label>
+                        <input type="number" id="custom-prompt-discount" min="0" max="100" class="input-field text-center font-bold text-emerald-400" value="${curDiscount}">
+                    </div>
                 </div>
                 
                 <div>
@@ -2004,7 +2092,7 @@
                 </div>
 
                 <div>
-                    <label class="text-[9px] text-neutral-400 font-bold block flex justify-between">
+                    <label class="text-[9px] text-neutral-400 font-bold block flex justify-between font-semibold">
                         <span>Item Icon Size</span>
                         <span id="edit-item-icon-size-val">${curIconSize}px</span>
                     </label>
@@ -2023,10 +2111,12 @@
 
         saveBtn.onclick = async () => {
             const newPrice = parseFloat(document.getElementById("custom-prompt-val").value);
+            const newDiscount = parseFloat(document.getElementById("custom-prompt-discount").value) || 0;
             const iconFile = document.getElementById("edit-item-icon-file").files[0];
             const iconSize = parseInt(document.getElementById("edit-item-icon-size").value);
 
             if (isNaN(newPrice)) return customAlert("ဈေးနှုန်းအမှန်ထည့်သွင်းပါ");
+            if (newDiscount < 0 || newDiscount > 100) return customAlert("Discount သည် 0% မှ 100% အတွင်းသာ ဖြစ်ရပါမည်။");
 
             saveBtn.innerText = "Saving Cloud...";
             saveBtn.disabled = true;
@@ -2038,6 +2128,7 @@
                 }
 
                 data[arrayName][index].price = newPrice; 
+                data[arrayName][index].discountPercent = newDiscount; // Set or clear individual discount
                 data[arrayName][index].iconUrl = uploadedUrl; 
                 data[arrayName][index].iconSize = iconSize; 
 
@@ -2058,7 +2149,6 @@
         };
     }
 
-    // --- Displaying user catalogs ---
     async function loadPriceList() {
         showPage('page-prices'); 
         const container = document.getElementById('price-container');
@@ -2102,15 +2192,22 @@
                         docData[key].forEach((item, index) => {
                             const nameVal = item.name || 'Unnamed Item';
                             const priceVal = parseFloat(item.price || 0);
+                            const itemDiscount = parseFloat(item.discountPercent || 0);
                             const iconUrl = item.iconUrl || '';
                             const iconSize = item.iconSize || 24;
 
+                            // Prioritize individual item discount, fallback to global discount
+                            const activeDiscount = itemDiscount > 0 ? itemDiscount : globalDiscountPercent;
+
                             let priceDisplayHtml = "";
-                            if (globalDiscountPercent > 0) {
-                                const discountedPrice = Math.round(priceVal * (1 - globalDiscountPercent / 100));
+                            if (activeDiscount > 0) {
+                                const discountedPrice = Math.round(priceVal * (1 - activeDiscount / 100));
                                 priceDisplayHtml = `
                                     <div class="flex flex-col items-end">
-                                        <span class="line-through text-neutral-500 text-[10px]">${Number(priceVal).toLocaleString()} Ks</span>
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="line-through text-neutral-500 text-[10px]">${Number(priceVal).toLocaleString()} Ks</span>
+                                            <span class="bg-emerald-500/10 text-emerald-400 text-[9px] px-1 rounded font-black">${activeDiscount}% Off</span>
+                                        </div>
                                         <span class="text-emerald-400 font-black text-xs">${Number(discountedPrice).toLocaleString()} Ks</span>
                                     </div>`;
                             } else {
@@ -2118,7 +2215,7 @@
                             }
                             
                             html += `
-                            <tr class="hover:bg-neutral-900/60 transition-colors cursor-pointer" onclick="orderGameItem('${doc.id}', '${key}', ${index}, '${nameVal}', ${priceVal}, '${iconUrl}', ${iconSize})">
+                            <tr class="hover:bg-neutral-900/60 transition-colors cursor-pointer font-semibold" onclick="orderGameItem('${doc.id}', '${key}', ${index}, '${nameVal}', ${priceVal}, '${iconUrl}', ${iconSize}, ${itemDiscount})">
                                 <td class="text-gray-300 font-semibold text-xs py-2.5 flex items-center gap-2.5">
                                     ${iconUrl ? `<img src="${iconUrl}" style="width: ${iconSize}px; height: ${iconSize}px;" class="object-cover rounded border border-neutral-900" onerror="this.style.display='none'">` : '<div class="w-6 h-6 rounded bg-neutral-900 border border-neutral-800 flex items-center justify-center text-orange-500"><i class="fa-solid fa-gem text-[10px]"></i></div>'}
                                     <span>${nameVal}</span>
@@ -2138,9 +2235,9 @@
     }
 
     // --- Formulating order checkout modal ---
-    async function orderGameItem(gameId, category, index, itemName, itemPrice, itemIconUrl, itemIconSize) {
+    async function orderGameItem(gameId, category, index, itemName, itemPrice, itemIconUrl, itemIconSize, itemDiscount = 0) {
         if (!currentUser) {
-            return customAlert("အော်ဒါတင်ရန် ဝါသနာပါက Login အရင်လုပ်ပါဗျာ။");
+            return customAlert("အော်ဒါတင်ရန် ဝါသနာပါက Login အရင်လုပ်ပါဗျာ।");
         }
         
         let fields = ["Player ID"];
@@ -2158,24 +2255,26 @@
             }
         } catch(e) { console.error(e); }
 
-        const activeFinalPrice = globalDiscountPercent > 0 ? Math.round(itemPrice * (1 - globalDiscountPercent / 100)) : itemPrice;
+        // Determine correct discount to apply (Item discount takes priority over global)
+        const activeDiscount = itemDiscount > 0 ? itemDiscount : globalDiscountPercent;
+        const activeFinalPrice = activeDiscount > 0 ? Math.round(itemPrice * (1 - activeDiscount / 100)) : itemPrice;
 
         const modal = document.createElement("div");
         modal.className = "fixed inset-0 bg-black/95 z-[10001] flex items-center justify-center p-6";
         
         let inputsHtml = fields.map((f, i) => `
-            <div class="space-y-1 text-left">
+            <div class="space-y-1 text-left font-semibold">
                 <label class="text-[10px] text-neutral-400 font-bold uppercase tracking-wider block">${f}</label>
                 <input type="text" id="order-field-${i}" class="input-field" placeholder="${f} ရိုက်ထည့်ပါ">
             </div>
         `).join("");
 
         let checkoutPriceHtml = "";
-        if (globalDiscountPercent > 0) {
+        if (activeDiscount > 0) {
             checkoutPriceHtml = `
                 <div class="flex justify-center items-center gap-2">
                     <span class="text-neutral-500 line-through text-xs font-semibold">${Number(itemPrice).toLocaleString()} Ks</span>
-                    <span class="text-emerald-400 font-black text-sm">${Number(activeFinalPrice).toLocaleString()} Ks (${globalDiscountPercent}% OFF!)</span>
+                    <span class="text-emerald-400 font-black text-sm">${Number(activeFinalPrice).toLocaleString()} Ks (${activeDiscount}% OFF!)</span>
                 </div>`;
         } else {
             checkoutPriceHtml = `<p class="text-xs text-[#FF8C00] font-black">ဈေးနှုန်း: ${Number(itemPrice).toLocaleString()} Ks</p>`;
@@ -2185,7 +2284,7 @@
         <div class="bg-[#111113] border border-neutral-800 p-6 rounded-2xl max-w-sm w-full text-center space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex items-center justify-center gap-3">
                 ${itemIconUrl ? `<img src="${itemIconUrl}" style="width: ${itemIconSize || 32}px; height: ${itemIconSize || 32}px" class="object-cover rounded-lg border border-neutral-800">` : `<div class="text-[#FF8C00] text-3xl"><i class="fa-solid fa-gamepad"></i></div>`}
-                <div class="text-left">
+                <div class="text-left font-semibold">
                     <h4 class="text-white font-black text-sm uppercase">${gameId.toUpperCase()}</h4>
                     <p class="text-xs text-neutral-400 font-semibold">${itemName}</p>
                 </div>
@@ -2197,7 +2296,7 @@
                 ${inputsHtml}
             </div>
 
-            <div class="bg-black/60 p-3 rounded-xl text-[11px] text-left text-neutral-400 border border-neutral-850">
+            <div class="bg-black/60 p-3 rounded-xl text-[11px] text-left text-neutral-400 border border-neutral-850 font-semibold">
                 <p>သင့်အကောင့်လက်ကျန်: <span class="text-[#FF8C00] font-black">${Number(currentUser.balance || 0).toLocaleString()} Ks</span></p>
                 ${(currentUser.balance || 0) < activeFinalPrice ? `<p class="text-red-500 font-bold mt-1">⚠️ လက်ကျန်ငွေ မလုံလောက်ပါ။ ကျေးဇူးပြု၍ ငွေအရင်ဖြည့်ပါ။</p>` : ''}
             </div>
@@ -2220,7 +2319,7 @@
             });
 
             if (missing) {
-                return customAlert("ကျေးဇူးပြု၍ လိုအပ်သောအချက်အလက်များ အားလုံးဖြည့်ပေးပါဗျာ။");
+                return customAlert("ကျေးဇူးပြု၍ လိုအပ်သောအချက်အလက်များ အားလုံးဖြည့်ပေးပါဗျာ।");
             }
 
             modal.remove();
@@ -2231,7 +2330,7 @@
                 if (!userSnap.exists) return customAlert("အသုံးပြုသူ ရှာမတွေ့ပါ။");
                 
                 const currentBal = parseFloat(userSnap.data().balance || 0);
-                if (currentBal < activeFinalPrice) return customAlert("လက်ကျန်ငွေ မလုံလောက်တော့ပါဗျာ။");
+                if (currentBal < activeFinalPrice) return customAlert("လက်ကျန်ငွေ မလုံလောက်တော့ပါဗျာ।");
 
                 const newBal = currentBal - activeFinalPrice;
                 await userRef.update({ balance: newBal });
@@ -2264,7 +2363,7 @@
 
                 await sendTelegramMessage(orderLog);
 
-                customAlert(`🎉 Order #${orderRandomId} အား အောင်မြင်စွာ တင်သွင်းပြီးပါပြီဗျာ။ စီမံခန့်ခွဲသူမှ မကြာမီ ဆောင်ရွက်ပေးပါလိမ့်မည်။`);
+                customAlert(`🎉 Order #${orderRandomId} အား အောင်မြင်စွာ တင်သွင်းပြီးပါပြီဗျာ। စီမံခန့်ခွဲသူမှ မကြာမီ ဆောင်ရွက်ပေးပါလိမ့်မည်။`);
             } catch(e) {
                 console.error(e);
                 customAlert("အော်ဒါတင်ခြင်း မအောင်မြင်ပါ။");
@@ -2299,7 +2398,7 @@
                 const balanceVal = u.balance || 0;
 
                 uList.innerHTML += `
-                <div class="list-card bg-[#111113] p-4 rounded-xl border border-neutral-800 space-y-3.5 relative hover:border-neutral-700 transition">
+                <div class="list-card bg-[#111113] p-4 rounded-xl border border-neutral-800 space-y-3.5 relative hover:border-neutral-700 transition font-semibold">
                     <div class="absolute top-4 right-4 text-[9px] font-black px-2 py-0.5 rounded-full uppercase border" style="border-color: ${statusColor}44; color: ${statusColor}; background: ${statusColor}11">
                         ${u.status || 'active'}
                     </div>
@@ -2310,11 +2409,11 @@
                         </div>
                         <div>
                             <h3 class="font-bold text-xs text-white">${nameVal}</h3>
-                            <p class="text-[10px] text-neutral-500">ID: <span class="text-[#FF8C00]">#${uId}</span> | 📞 ${phoneVal}</p>
+                            <p class="text-[10px] text-neutral-500 font-semibold">ID: <span class="text-[#FF8C00]">#${uId}</span> | 📞 ${phoneVal}</p>
                         </div>
                     </div>
 
-                    <div class="bg-black/60 p-2.5 rounded-lg flex justify-between items-center text-xs">
+                    <div class="bg-black/60 p-2.5 rounded-lg flex justify-between items-center text-xs font-semibold">
                         <span class="text-neutral-400">Balance Amount</span>
                         <span class="font-black text-[#FF8C00]">${Number(balanceVal).toLocaleString()} Ks</span>
                     </div>
@@ -2325,6 +2424,9 @@
                         <button onclick="adminUserAction('${phoneVal}', 'msg')" class="py-2 bg-[#FF8C00] text-black text-[10px] font-black rounded-lg transition">Send MSG</button>
                         <button onclick="adminUserAction('${phoneVal}', 'ban')" class="py-2 text-white text-[10px] font-bold rounded-lg transition" style="background: ${isBanned ? '#00cb44' : '#d32f2f'}">
                             ${isBanned ? 'UNBAN' : 'BAN'}
+                        </button>
+                        <button onclick="adminUserAction('${phoneVal}', 'edit_pass')" class="col-span-2 py-2.5 bg-neutral-900 border border-orange-500/30 hover:border-orange-500 text-orange-400 text-[10px] font-black rounded-lg transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-key"></i> Edit Password (စကားဝှက် ပြင်ဆင်ရန်)
                         </button>
                     </div>
 
@@ -2427,7 +2529,7 @@
             }
 
             html += `
-            <div class="bg-[#18181b] border border-neutral-800 p-4 rounded-xl space-y-3">
+            <div class="bg-[#18181b] border border-neutral-800 p-4 rounded-xl space-y-3 font-semibold">
                 <div class="flex justify-between items-start">
                     <div>
                         <h4 class="text-white font-bold text-xs">${data.name || 'Unknown'}</h4>
@@ -2436,11 +2538,11 @@
                     <span class="text-emerald-400 font-black text-xs">+ ${amount.toLocaleString()} Ks</span>
                 </div>
                 
-                <div class="bg-black/40 p-2.5 rounded-lg text-[11px] space-y-1 border border-neutral-900">
-                    <p class="text-neutral-400 flex justify-between"><span>Phone:</span> <span class="text-white font-semibold">${data.phone || 'N/A'}</span></p>
-                    <p class="text-neutral-400 flex justify-between"><span>ID:</span> <span class="text-white font-semibold">#${shortId}</span></p>
-                    <div class="text-center pt-2 mt-1 border-t border-neutral-800/60">
-                        <a href="${data.slipUrl || '#'}" target="_blank" class="text-[#FF8C00] font-bold text-[10px] inline-flex items-center gap-1">🖼️ Slip Screenshot ↗</a>
+                <div class="bg-black/40 p-2.5 rounded-lg text-[11px] space-y-1 border border-neutral-900 font-semibold">
+                    <p class="text-neutral-400 flex justify-between font-semibold"><span>Phone:</span> <span class="text-white font-semibold">${data.phone || 'N/A'}</span></p>
+                    <p class="text-neutral-400 flex justify-between font-semibold"><span>ID:</span> <span class="text-white font-semibold">#${shortId}</span></p>
+                    <div class="text-center pt-2 mt-1 border-t border-neutral-800/60 font-semibold">
+                        <a href="${data.slipUrl || '#'}" target="_blank" class="text-[#FF8C00] font-bold text-[10px] inline-flex items-center gap-1 font-semibold">🖼️ Slip Screenshot ↗</a>
                     </div>
                 </div>
 
@@ -2519,7 +2621,7 @@
             <div class="bg-[#111113] border border-neutral-800 p-6 rounded-2xl max-w-xs w-full text-center space-y-4 shadow-2xl">
                 <h4 class="text-white font-black text-sm">Customer ဆီ စာပို့မည်</h4>
                 <p class="text-xs text-neutral-400">ဖုန်းနံပါတ်: ${phone}</p>
-                <textarea id="msg-txt-val" class="input-field text-xs h-24" placeholder="ပေးပို့လိုသော စာသားကို ရေးသားပါ..."></textarea>
+                <textarea id="msg-txt-val" class="input-field text-xs h-24 font-semibold" placeholder="ပေးပို့လိုသော စာသားကို ရေးသားပါ..."></textarea>
                 <div class="flex gap-2">
                     <button id="btn-send" class="flex-1 py-2.5 bg-[#FF8C00] text-black font-black rounded-xl text-xs uppercase transition">Send</button>
                     <button id="btn-cancel" class="flex-1 py-2.5 bg-neutral-850 text-white font-bold rounded-xl text-xs uppercase transition">Cancel</button>
@@ -2549,6 +2651,68 @@
             await ref.update({ status: newStat });
             
             customAlert(`User with phone ${phone} status updated to: ${newStat.toUpperCase()}`);
+        } else if(type === 'edit_pass') {
+            try {
+                const doc = await db.collection("users").doc(phone).get();
+                if(!doc.exists) return customAlert("အသုံးပြုသူ ဝယ်ယူသူအား ရှာမတွေ့ပါဗျာ။");
+                
+                const currentPass = doc.data().pass || "";
+
+                const promptModal = document.createElement("div");
+                promptModal.className = "fixed inset-0 bg-black/85 z-[10002] flex items-center justify-center p-6";
+                promptModal.innerHTML = `
+                <div class="bg-[#111113] border border-neutral-800 p-6 rounded-2xl max-w-xs w-full text-center space-y-4 shadow-2xl font-semibold">
+                    <div class="text-[#FF8C00] text-3xl font-semibold"><i class="fa-solid fa-key"></i></div>
+                    <h4 class="text-white font-black text-sm font-semibold">စကားဝှက် ပြောင်းလဲမည်</h4>
+                    <p class="text-[11px] text-neutral-400 font-bold">ဖုန်းနံပါတ်: ${phone}</p>
+                    
+                    <div class="text-left font-semibold">
+                        <label class="text-[9px] text-neutral-400 font-bold block mb-1">လက်ရှိစကားဝှက် သို့မဟုတ် စကားဝှက်အသစ်</label>
+                        <input type="text" id="new-pass-val" class="input-field text-center font-bold text-[#FF8C00]" value="${currentPass}" placeholder="စကားဝှက်အသစ် ထည့်ပါ">
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        <button id="btn-save-pass" class="flex-1 py-2.5 bg-[#FF8C00] text-black font-black rounded-xl text-xs uppercase transition">Confirm</button>
+                        <button id="btn-cancel-pass" class="flex-1 py-2.5 bg-neutral-850 text-white font-bold rounded-xl text-xs uppercase transition">Cancel</button>
+                    </div>
+                </div>`;
+                document.body.appendChild(promptModal);
+
+                promptModal.querySelector("#btn-save-pass").onclick = async () => {
+                    const newPass = document.getElementById("new-pass-val").value.trim();
+                    promptModal.remove();
+
+                    if(!newPass) {
+                        customAlert("စကားဝှက်အသစ်ကို ထည့်သွင်းပေးပါရန်။");
+                        return;
+                    }
+                    
+                    try {
+                        const ref = db.collection("users").doc(phone);
+                        await ref.update({ pass: newPass });
+                        customAlert("စကားဝှက်ကို အောင်မြင်စွာ ပြောင်းလဲပြီးပါပြီဗျာ။");
+                        
+                        // Notify user in app inbox
+                        await db.collection("messages").add({
+                            to: phone,
+                            text: `🔐 သင့်အကောင့်၏ စကားဝှက်ကို Admin မှ အောင်မြင်စွာ ပြောင်းလဲပေးလိုက်ပါပြီဗျာ။ သင့်စကားဝှက်အသစ်မှာ [ ${newPass} ] ဖြစ်ပါသည်။`,
+                            time: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        
+                        await sendTelegramMessage(`🔐 <b>PASSWORD CHANGED</b>\n━━━━━━━━━━━━━━━━━━\n📞 Phone: ${phone}\nစကားဝှက်အသစ်ကို အောင်မြင်စွာ ပြောင်းလဲသတ်မှတ်လိုက်ပါပြီ။`);
+                    } catch (e) {
+                        console.error(e);
+                        customAlert("စကားဝှက် ပြောင်းလဲခြင်း မအောင်မြင်ပါ။");
+                    }
+                };
+
+                promptModal.querySelector("#btn-cancel-pass").onclick = () => {
+                    promptModal.remove();
+                };
+            } catch (err) {
+                console.error(err);
+                customAlert("အချက်အလက် ဆွဲယူခြင်း မအောင်မြင်ပါ။");
+            }
         }
     }
 
@@ -2572,7 +2736,7 @@
                 customConfirm(`အော်ဒါ #${orderId} အား အတည်ပြု (Confirm) ပြီးပါက Customer ဆီသို့ အကြောင်းကြားစာ ပို့ဆောင်ပေးမှာ သေချာပါသလားဗျာ?`, async () => {
                     await db.collection("orders").doc(id).update({ status: 'completed' });
                     
-                    const successMsg = `🎉 လူကြီးမင်း ဝယ်ယူထားသော ${gameName.toUpperCase()} (${itemName}) အော်ဒါ #${orderId} အား အောင်မြင်စွာ ဆောင်ရွက်ပြီးစီးသွားပါပြီခင်ဗျာ။\n\n🎁 အားပေးမှုကို ကျေးဇူးတင်ရှိပါသဖြင့် နောက်အကြိမ်ဝယ်ယူရာတွင် အထူး Discount 5% ရရှိရန် "SRDISC5" Promo Code အား အသုံးပြုနိုင်ပါသည်။`;
+                    const successMsg = `🎉 လူကြီးမင်း ဝယ်ယူထားသော ${gameName.toUpperCase()} (${itemName}) အော်ဒါ #${orderId} အား အောင်မြင်စွာ ဆောင်ရွက်ပြီးစီးသွားပါပြီခင်ဗျာ။`;
                     
                     await db.collection("messages").add({
                         to: userPhone,
@@ -2582,18 +2746,18 @@
 
                     await sendTelegramMessage(`✅ <b>ORDER COMPLETED</b>\n━━━━━━━━━━━━━━━━━━\n📞 Phone: ${userPhone}\n🎮 Game: ${gameName.toUpperCase()}\n📦 Pack: ${itemName}\n💰 Cost: ${orderPrice.toLocaleString()} Ks\nStatus: Order successfully processed!`);
 
-                    customAlert(`အော်ဒါ #${orderId} ကို Confirm လုပ်ပြီးပါပြီ။ Customer ဆီ စာပို့လိုက်ပါပြီဗျာ။`);
+                    customAlert(`အော်ဒါ #${orderId} ကို Confirm လုပ်ပြီးပါပြီ။ Customer ဆီ စာပို့လိုက်ပါပြီဗျာ।`);
                 });
             } else if (status === 'rejected') {
                 const rejectPrompt = document.createElement("div");
                 rejectPrompt.className = "fixed inset-0 bg-black/95 z-[10002] flex items-center justify-center p-6";
                 rejectPrompt.innerHTML = `
-                <div class="bg-[#111113] border border-neutral-800 p-6 rounded-2xl max-w-xs w-full text-center space-y-4 shadow-2xl">
-                    <div class="text-red-500 text-3xl"><i class="fa-solid fa-circle-xmark"></i></div>
+                <div class="bg-[#111113] border border-neutral-800 p-6 rounded-2xl max-w-xs w-full text-center space-y-4 shadow-2xl font-semibold">
+                    <div class="text-red-500 text-3xl font-semibold"><i class="fa-solid fa-circle-xmark"></i></div>
                     <h4 class="text-white font-black text-sm">အော်ဒါ ပယ်ဖျက်ခြင်း</h4>
                     <p class="text-xs text-neutral-400">Order #${orderId} အား ပယ်ဖျက်ရန် အကြောင်းပြချက်ကို ရွေးချယ်ပါ သို့မဟုတ် ရေးသားပါဗျာ။</p>
                     
-                    <div class="space-y-2 text-left">
+                    <div class="space-y-2 text-left font-semibold">
                         <label class="text-[10px] font-bold text-neutral-500 uppercase tracking-wider block">အကြောင်းပြချက် ပုံစံများ</label>
                         <select id="preset-reject-reason" class="w-full bg-[#18181b] border border-neutral-800 rounded-lg p-2 text-xs text-white outline-none" onchange="document.getElementById('custom-reject-reason').value = this.value">
                             <option value="မှားယွင်းသော Player Target ID ဖြစ်နေခြင်းကြောင့်">မှားယွင်းသော Player Target ID ဖြစ်နေခြင်းကြောင့်</option>
@@ -2602,14 +2766,6 @@
                             <option value="အခြားအကြောင်းပြချက် ရေးမည်">အခြားအကြောင်းပြချက် ရေးမည်...</option>
                         </select>
                         <textarea id="custom-reject-reason" class="input-field text-xs h-16 resize-none" placeholder="အကြောင်းပြချက်ကို ဤနေရာတွင် ရေးသားနိုင်ပါသည်"></textarea>
-                    </div>
-
-                    <div class="bg-black/60 p-2.5 rounded-lg border border-neutral-850 text-left space-y-1">
-                        <label class="text-[9px] text-[#FF8C00] font-bold block uppercase"><i class="fa-solid fa-tags"></i> Customer စိတ်ကျေနပ်စေရန် Discount ပေးမလား?</label>
-                        <select id="reject-discount-offer" class="w-full bg-black border border-neutral-850 rounded p-1 text-[10px] text-white font-semibold">
-                            <option value="YES">ပေးမည် (Promo Code: SRDISC5)</option>
-                            <option value="NO">မပေးပါ</option>
-                        </select>
                     </div>
 
                     <div class="flex gap-2">
@@ -2624,7 +2780,6 @@
                 rejectPrompt.querySelector("#btn-reject-cancel").onclick = () => rejectPrompt.remove();
                 rejectPrompt.querySelector("#btn-reject-confirm").onclick = async () => {
                     const reason = document.getElementById('custom-reject-reason').value.trim();
-                    const addDiscount = document.getElementById('reject-discount-offer').value === 'YES';
                     
                     if(!reason) return customAlert("ပယ်ဖျက်ရသည့် အကြောင်းပြချက်ကို ရေးပေးပါဗျာ။");
                     
@@ -2640,10 +2795,6 @@
                         await userRef.update({ balance: refundedBal });
                         
                         let rejectMsg = `❌ လူကြီးမင်း၏ ${gameName.toUpperCase()} (${itemName}) အော်ဒါ #${orderId} အား ပယ်ဖျက် (Reject) လိုက်ရပါသည်ဗျာ။\nအကြောင်းပြချက်: ${reason}။\n\n💰 အော်ဒါတန်ဖိုးငွေ ${orderPrice.toLocaleString()} Ks အား သင့်အကောင့်ထဲသို့ အပြည့်အဝ ပြန်လည် ထည့်သွင်း (Refund) ပေးထားပြီးဖြစ်ပါသဖြင့် စစ်ဆေးပေးပါဗျာ။`;
-                        
-                        if (addDiscount) {
-                            rejectMsg += `\n\n🎁 အဆင်မပြေမှုအတွက် တောင်းပန်သောအားဖြင့် နောက်တစ်ကြိမ် ဝယ်ယူရာတွင် Discount 5% ရရှိရန် "SRDISC5" Promo Code အား အသုံးပြုနိုင်ပါသည်။`;
-                        }
 
                         await db.collection("messages").add({
                             to: userPhone,
@@ -2653,7 +2804,7 @@
 
                         await sendTelegramMessage(`🔴 <b>ORDER REJECTED & REFUNDED</b>\n━━━━━━━━━━━━━━━━━━\n📞 Phone: ${userPhone}\n🎮 Game: ${gameName.toUpperCase()}\n📦 Pack: ${itemName}\n💰 Price: ${orderPrice.toLocaleString()} Ks\nRefund Status: fully returned\nReason: ${reason}`);
 
-                        customAlert(`အော်ဒါ #${orderId} အား ပယ်ဖျက်လိုက်ပြီး ဝယ်သူ၏ငွေ ${orderPrice.toLocaleString()} Ks ကို အကောင့်ထဲသို့ ပြန်လည်လွှဲပြောင်း (Refund) ပေးလိုက်ပါပြီဗျာ။`);
+                        customAlert(`အော်ဒါ #${orderId} အား ပယ်ဖျက်လိုက်ပြီး ဝယ်သူ၏ငွေ ${orderPrice.toLocaleString()} Ks ကို အကောင့်ထဲသို့ ပြန်လည်လွှဲပြောင်း (Refund) ပေးလိုက်ပါပြီဗျာ।`);
                     } else {
                         customAlert("မအောင်မြင်ပါ! Customer profile မရှိသောကြောင့် Refund မရနိုင်ပါ။");
                     }
@@ -2749,18 +2900,18 @@
         db.collection("ads").onSnapshot(snap => {
             activeContainer.innerHTML = "";
             if (snap.empty) {
-                activeContainer.innerHTML = "<p class='text-neutral-600 text-xs text-center py-2'>No active promotion banners.</p>";
+                activeContainer.innerHTML = "<p class='text-neutral-600 text-xs text-center py-2 font-semibold'>No active promotion banners.</p>";
                 return;
             }
 
             snap.forEach(doc => {
                 const ad = doc.data();
                 activeContainer.innerHTML += `
-                <div class="flex items-center gap-3 bg-black/60 border border-neutral-850 p-2 rounded-xl">
+                <div class="flex items-center gap-3 bg-black/60 border border-neutral-850 p-2 rounded-xl font-semibold">
                     <img src="${ad.imageUrl || ''}" class="w-14 h-9 object-cover rounded-md border border-neutral-800" onerror="this.src='https://placehold.co/100x60/222/fff?text=Ad'">
                     <div class="flex-1 min-w-0">
-                        <p class="text-[11px] text-white font-bold truncate">${ad.description || 'No description'}</p>
-                        <p class="text-[9px] text-neutral-400 truncate">Link: ${ad.link || '#'}</p>
+                        <p class="text-[11px] text-white font-bold truncate font-semibold">${ad.description || 'No description'}</p>
+                        <p class="text-[9px] text-neutral-400 truncate font-semibold">Link: ${ad.link || '#'}</p>
                     </div>
                     <button onclick="deleteAdBanner('${doc.id}')" class="text-red-500 hover:text-red-400 text-xs px-2" title="Remove Banner Ad"><i class="fa-solid fa-trash-can"></i></button>
                 </div>`;
@@ -2805,6 +2956,8 @@
                 reply = "Balance ထည့်ရန်: Users Tab ရှိ ဝယ်သူအကောင့်၏ <b>'+ Cash'</b> ကိုနှိပ်ပြီး ဂဏန်းရိုက်ထည့်ပါ။";
             } else if (q.includes("နုတ်") || q.includes("money -")) {
                 reply = "Balance လျှော့ရန်: Users Tab ရှိ ဝယ်သူအကောင့်၏ <b>'- Cash'</b> ကိုနှိပ်ပြီး နှုတ်လိုသော ပမာဏ ထည့်ပါ။";
+            } else if (q.includes("password") || q.includes("စကားဝှက်") || q.includes("pass")) {
+                reply = "ဝယ်သူ Password ပြင်ရန်: Users Tab ရှိ ဝယ်သူအကောင့်အောက်မှ <b>'Edit Password'</b> ကိုနှိပ်၍ အလွယ်တကူ စကားဝှက်သစ် ပြောင်းပေးနိုင်ပါသည်။";
             } else if (q.includes("order") || q.includes("အော်ဒါ")) {
                 reply = "အော်ဒါကြည့်ရန်: <b>Orders</b> Tab တွင် Pending ဖြစ်နေသည်များကို စစ်ဆေးပါ။ Confirm / Reject / Delete စသည်ဖြင့် လုပ်ဆောင်နိုင်သည်။";
             } else if (q.includes("complete") || q.includes("အောင်မြင်")) {
@@ -2825,7 +2978,7 @@
                 reply = "တောင်းပန်ပါတယ် Admin။ ထပ်မံသိရှိလိုသည်များကို Admin Suite Panel တက်ပ်များအလိုက် ဝင်ရောက်စမ်းသပ်ကြည့်နိုင်ပါတယ်ခင်ဗျာ။";
             }
 
-            chatBox.innerHTML += `<div class="bg-neutral-900 border-l-4 border-[#FF8C00] p-3 rounded-r-xl max-w-[85%] self-start text-xs text-neutral-300 my-1 leading-relaxed font-semibold">${reply}</div>`;
+            chatBox.innerHTML += `<div class="bg-neutral-900 border-l-4 border-[#FF8C00] p-3 rounded-r-xl max-w-[85%] self-start text-xs text-neutral-300 my-1 leading-relaxed font-semibold font-semibold">${reply}</div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
         }, 600);
     }
@@ -3040,12 +3193,17 @@
         const sFields = document.getElementById("serv-user-fields").value.trim();
         const sPack = document.getElementById("serv-pack").value.trim();
         const sPrice = parseFloat(document.getElementById("serv-price").value);
+        const sDiscount = parseFloat(document.getElementById("serv-discount").value) || 0;
         const brandingIconFile = document.getElementById("serv-icon-file").files[0];
         
         const planIconFile = document.getElementById("serv-plan-icon-file").files[0];
         const planIconSize = parseInt(document.getElementById("serv-plan-icon-size").value) || 32;
 
         const saveBtn = document.getElementById("btn-save-service");
+
+        if (sDiscount < 0 || sDiscount > 100) {
+            return customAlert("Discount သည် 0% မှ 100% အတွင်းသာ ဖြစ်ရပါမည်။");
+        }
 
         if (!sId || !sPack || isNaN(sPrice)) {
             return customAlert("ကျေးဇူးပြု၍ အချက်အလက်များ ပြည့်စုံစွာ ဖြည့်စွက်ပေးပါရန်။");
@@ -3080,6 +3238,7 @@
             plans.push({
                 packName: sPack,
                 price: sPrice,
+                discountPercent: sDiscount, // Individual service plan discount
                 iconUrl: uploadedPlanIconUrl,
                 iconSize: planIconSize
             });
@@ -3094,6 +3253,7 @@
             customAlert("Service အောင်မြင်စွာ တင်သွင်းပြီးပါပြီ။");
             document.getElementById("serv-pack").value = "";
             document.getElementById("serv-price").value = "";
+            document.getElementById("serv-discount").value = "";
             document.getElementById("serv-icon-file").value = "";
             document.getElementById("serv-plan-icon-file").value = "";
         } catch (e) {
@@ -3114,29 +3274,36 @@
         let planObj = data.plans[index];
         let curIconUrl = planObj.iconUrl || "";
         let curIconSize = planObj.iconSize || 32;
+        let curDiscount = parseFloat(planObj.discountPercent || 0);
 
         const customPrompt = document.createElement("div");
         customPrompt.className = "fixed inset-0 bg-black/85 z-[10002] flex items-center justify-center p-6";
         customPrompt.innerHTML = `
         <div class="bg-[#111113] border border-neutral-800 p-6 rounded-2xl max-w-sm w-full text-center space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
-            <h4 class="text-white font-black text-sm">Other Service Plan ပြင်ဆင်မည်</h4>
+            <h4 class="text-white font-black text-sm font-semibold">Other Service Plan ပြင်ဆင်မည်</h4>
             <p class="text-xs text-neutral-400 font-bold">${currentName}</p>
             
-            <div class="space-y-3 text-left">
+            <div class="space-y-3 text-left font-semibold">
                 <div>
                     <label class="text-[9px] text-neutral-400 font-bold block mb-1">Plan Name</label>
                     <input type="text" id="edit-plan-name" class="input-field" value="${currentName}">
                 </div>
-                <div>
-                    <label class="text-[9px] text-neutral-400 font-bold block mb-1">Price (Ks)</label>
-                    <input type="number" id="edit-plan-price" class="input-field text-center font-bold text-[#FF8C00]" value="${currentPrice}">
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-[9px] text-neutral-400 font-bold block mb-1">Price (Ks)</label>
+                        <input type="number" id="edit-plan-price" class="input-field text-center font-bold text-[#FF8C00]" value="${currentPrice}">
+                    </div>
+                    <div>
+                        <label class="text-[9px] text-[#FF8C00] font-bold block mb-1">Discount (%)</label>
+                        <input type="number" id="edit-plan-discount" min="0" max="100" class="input-field text-center font-bold text-emerald-400" value="${curDiscount}">
+                    </div>
                 </div>
                 <div>
                     <label class="text-[9px] text-neutral-400 font-bold block mb-1">Upload Plan PNG Icon</label>
                     <input type="file" id="edit-plan-icon" accept="image/png" class="w-full text-xs text-neutral-400">
                 </div>
                 <div>
-                    <label class="text-[9px] text-neutral-400 font-bold block flex justify-between">
+                    <label class="text-[9px] text-neutral-400 font-bold block flex justify-between font-semibold">
                         <span>Plan Icon Size</span>
                         <span id="edit-plan-icon-size-val">${curIconSize}px</span>
                     </label>
@@ -3145,8 +3312,8 @@
             </div>
 
             <div class="flex gap-2">
-                <button id="prompt-save-service" class="flex-1 py-2.5 bg-[#FF8C00] text-black font-black rounded-xl text-xs uppercase transition">Save</button>
-                <button id="prompt-cancel-service" class="flex-1 py-2.5 bg-neutral-850 text-white font-bold rounded-xl text-xs uppercase transition">Cancel</button>
+                <button id="prompt-save-service" class="flex-1 py-2.5 bg-[#FF8C00] text-black font-black rounded-xl text-xs uppercase transition font-semibold">Save</button>
+                <button id="prompt-cancel-service" class="flex-1 py-2.5 bg-neutral-850 text-white font-bold rounded-xl text-xs uppercase transition font-semibold">Cancel</button>
             </div>
         </div>`;
         document.body.appendChild(customPrompt);
@@ -3155,10 +3322,12 @@
         saveBtn.onclick = async () => {
             const newName = document.getElementById("edit-plan-name").value.trim();
             const newPrice = parseFloat(document.getElementById("edit-plan-price").value);
+            const newDiscount = parseFloat(document.getElementById("edit-plan-discount").value) || 0;
             const iconFile = document.getElementById("edit-plan-icon").files[0];
             const iconSize = parseInt(document.getElementById("edit-plan-icon-size").value);
 
             if (!newName || isNaN(newPrice)) return customAlert("အချက်အလက် မှန်ကန်စွာ ဖြည့်သွင်းပါ");
+            if (newDiscount < 0 || newDiscount > 100) return customAlert("Discount သည် 0% မှ 100% အတွင်းသာ ဖြစ်ရပါမည်။");
 
             saveBtn.innerText = "Processing Cloud Save...";
             saveBtn.disabled = true;
@@ -3171,6 +3340,7 @@
 
                 data.plans[index].packName = newName;
                 data.plans[index].price = newPrice;
+                data.plans[index].discountPercent = newDiscount; // Set or clear discount percent on service plan
                 data.plans[index].iconUrl = uploadedUrl;
                 data.plans[index].iconSize = iconSize;
 
@@ -3197,7 +3367,7 @@
             if (adminList) {
                 adminList.innerHTML = "";
                 if (snap.empty) {
-                    adminList.innerHTML = "<p class='text-neutral-600 text-xs text-center py-2'>No active premium plans.</p>";
+                    adminList.innerHTML = "<p class='text-neutral-600 text-xs text-center py-2 font-semibold'>No other services added yet.</p>";
                 }
                 snap.forEach(doc => {
                     const data = doc.data();
@@ -3207,14 +3377,23 @@
                     let plansHtml = plans.map((p, idx) => {
                         const planIcon = p.iconUrl || '';
                         const planIconSize = p.iconSize || 24;
+                        const planDiscount = parseFloat(p.discountPercent || 0);
+
+                        // If plan has a specific individual discount percent, show it in admin view
+                        let pDiscountBadge = "";
+                        if (planDiscount > 0) {
+                            pDiscountBadge = `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1 rounded text-[9px] font-black">${planDiscount}% OFF</span>`;
+                        }
+
                         return `
-                            <div class="flex justify-between items-center text-[11px] bg-black/40 p-1.5 rounded border border-neutral-900 mt-1">
+                            <div class="flex justify-between items-center text-[11px] bg-black/40 p-1.5 rounded border border-neutral-900 mt-1 font-semibold">
                                 <div class="flex items-center gap-2">
                                     ${planIcon ? `<img src="${planIcon}" style="width: ${planIconSize}px; height: ${planIconSize}px;" class="object-cover rounded border border-neutral-800" onerror="this.style.display='none'">` : '<div class="w-5 h-5 rounded bg-neutral-900 border border-neutral-800 flex items-center justify-center text-orange-500"><i class="fa-solid fa-shapes text-[9px]"></i></div>'}
                                     <span class="text-neutral-300 font-semibold">${p.packName}</span>
+                                    ${pDiscountBadge}
                                 </div>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-[#FF8C00] font-bold">${p.price.toLocaleString()} Ks</span>
+                                <div class="flex items-center gap-2 font-bold">
+                                    <span class="text-[#FF8C00]">${p.price.toLocaleString()} Ks</span>
                                     <button onclick="editOtherServicePlan('${sId}', ${idx}, '${p.packName}', ${p.price})" class="bg-[#FF8C00]/10 text-[#FF8C00] border border-[#FF8C00]/20 hover:bg-[#FF8C00] hover:text-black py-0.5 px-2 rounded font-bold text-[9px]">EDIT</button>
                                     <button onclick="deleteServicePlan('${sId}', ${idx})" class="text-red-500 hover:text-red-400 font-bold"><i class="fa-solid fa-xmark"></i></button>
                                 </div>
@@ -3223,7 +3402,7 @@
                     }).join("");
 
                     adminList.innerHTML += `
-                        <div class="bg-neutral-900/60 p-3 rounded-lg border border-neutral-800">
+                        <div class="bg-neutral-900/60 p-3 rounded-lg border border-neutral-800 font-semibold">
                             <div class="flex justify-between items-center pb-1 border-b border-neutral-800">
                                 <div class="flex items-center gap-2">
                                     <img src="${data.iconUrl || 'https://placehold.co/50/222/fff'}" class="w-5 h-5 rounded-md object-cover border border-neutral-800">
@@ -3267,7 +3446,6 @@
         });
     }
 
-    // --- Customer interactive grid layout ---
     async function loadOtherServicesGrid() {
         const grid = document.getElementById('services-grid-container');
         if (!grid) return;
@@ -3292,7 +3470,7 @@
 
                 if (plans.length > 0) {
                     html += `
-                    <div class="premium-border-glow bg-[#111113] p-5 rounded-2xl flex flex-col items-center justify-center text-center cursor-pointer gap-3" onclick="viewServicePlansDetail('${serviceId}')">
+                    <div class="premium-border-glow bg-[#111113] p-5 rounded-2xl flex flex-col items-center justify-center text-center cursor-pointer gap-3 font-semibold" onclick="viewServicePlansDetail('${serviceId}')">
                         <div class="flex items-center justify-center border border-neutral-800 rounded-xl overflow-hidden p-1 bg-black" style="width: ${localSizeConfig}px; height: ${localSizeConfig}px;">
                             <img src="${data.iconUrl || 'https://placehold.co/100x100/222/fff?text=' + data.serviceName}" 
                                  class="w-full h-full object-cover rounded-lg"
@@ -3337,7 +3515,7 @@
         detailsContainer.classList.remove('hidden');
 
         let html = `
-        <div class="bg-[#111113] p-5 rounded-2xl border border-neutral-800 flex items-center gap-3">
+        <div class="bg-[#111113] p-5 rounded-2xl border border-neutral-800 flex items-center gap-3 font-semibold">
             <img src="${data.iconUrl || 'https://placehold.co/50'}" class="w-12 h-12 object-cover rounded-xl border border-neutral-800">
             <div>
                 <h4 class="text-white font-black text-sm uppercase tracking-wider">${data.serviceName} Premium</h4>
@@ -3346,7 +3524,7 @@
         </div>
 
         <div class="bg-[#111113] p-4 rounded-2xl border border-neutral-800 space-y-3">
-            <table class="price-table mt-1">
+            <table class="price-table mt-1 font-semibold">
                 <thead>
                     <tr>
                         <th class="text-left text-[11px] font-bold py-2">Plan Details</th>
@@ -3359,13 +3537,20 @@
             const planIconUrl = p.iconUrl || data.iconUrl || "";
             const planIconSize = p.iconSize || 24;
             const originalPrice = parseFloat(p.price || 0);
+            const planDiscount = parseFloat(p.discountPercent || 0);
+
+            // Prioritize service plan specific discount, fallback to global discount
+            const activeDiscount = planDiscount > 0 ? planDiscount : globalDiscountPercent;
 
             let priceDisplayHtml = "";
-            if (globalDiscountPercent > 0) {
-                const discountedPrice = Math.round(originalPrice * (1 - globalDiscountPercent / 100));
+            if (activeDiscount > 0) {
+                const discountedPrice = Math.round(originalPrice * (1 - activeDiscount / 100));
                 priceDisplayHtml = `
-                    <div class="flex flex-col items-end">
-                        <span class="line-through text-neutral-500 text-[10px]">${Number(originalPrice).toLocaleString()} Ks</span>
+                    <div class="flex flex-col items-end font-bold">
+                        <div class="flex items-center gap-1.5">
+                            <span class="line-through text-neutral-500 text-[10px]">${Number(originalPrice).toLocaleString()} Ks</span>
+                            <span class="bg-emerald-500/10 text-emerald-400 text-[9px] px-1 rounded font-black">${activeDiscount}% Off</span>
+                        </div>
                         <span class="text-emerald-400 font-black text-xs">${Number(discountedPrice).toLocaleString()} Ks</span>
                     </div>`;
             } else {
@@ -3373,7 +3558,7 @@
             }
 
             html += `
-                <tr class="hover:bg-neutral-900/60 transition cursor-pointer" onclick="handleServicePurchaseOrder('${data.serviceName}', '${p.packName}', ${originalPrice}, '${planIconUrl}', ${planIconSize})">
+                <tr class="hover:bg-neutral-900/60 transition cursor-pointer font-semibold" onclick="handleServicePurchaseOrder('${data.serviceName}', '${p.packName}', ${originalPrice}, '${planIconUrl}', ${planIconSize}, ${planDiscount})">
                     <td class="text-gray-300 font-semibold text-xs py-2.5 flex items-center gap-2.5">
                         ${planIconUrl ? `<img src="${planIconUrl}" style="width: ${planIconSize}px; height: ${planIconSize}px;" class="object-cover rounded border border-neutral-900" onerror="this.style.display='none'">` : '<div class="w-6 h-6 rounded bg-neutral-900 border border-neutral-850 flex items-center justify-center text-orange-500"><i class="fa-solid fa-shapes text-[10px]"></i></div>'}
                         <span>${p.packName}</span>
@@ -3394,7 +3579,7 @@
     }
 
     // --- Processing other service purchase with order integration ---
-    async function handleServicePurchaseOrder(serviceName, packName, price, itemIconUrl, itemIconSize) {
+    async function handleServicePurchaseOrder(serviceName, packName, price, itemIconUrl, itemIconSize, planDiscount = 0) {
         if (!currentUser) {
             return customAlert("အော်ဒါတင်ရန် ဦးစွာ Login ဝင်ပါဗျာ।");
         }
@@ -3407,24 +3592,26 @@
             fields = serviceData.inputFields;
         }
 
-        const activeFinalPrice = globalDiscountPercent > 0 ? Math.round(price * (1 - globalDiscountPercent / 100)) : price;
+        // Determine correct discount to apply (Plan discount takes priority over global)
+        const activeDiscount = planDiscount > 0 ? planDiscount : globalDiscountPercent;
+        const activeFinalPrice = activeDiscount > 0 ? Math.round(price * (1 - activeDiscount / 100)) : price;
 
         const modal = document.createElement("div");
         modal.className = "fixed inset-0 bg-black/95 z-[10001] flex items-center justify-center p-6";
         
         let inputsHtml = fields.map((f, i) => `
-            <div class="space-y-1 text-left">
+            <div class="space-y-1 text-left font-semibold">
                 <label class="text-[10px] text-neutral-400 font-bold uppercase tracking-wider block">${f}</label>
                 <input type="text" id="service-order-field-${i}" class="input-field" placeholder="${f} ရိုက်ထည့်ပါ">
             </div>
         `).join("");
 
         let checkoutPriceHtml = "";
-        if (globalDiscountPercent > 0) {
+        if (activeDiscount > 0) {
             checkoutPriceHtml = `
                 <div class="flex justify-center items-center gap-2">
                     <span class="text-neutral-500 line-through text-xs font-semibold">${Number(price).toLocaleString()} Ks</span>
-                    <span class="text-emerald-400 font-black text-sm">${Number(activeFinalPrice).toLocaleString()} Ks (${globalDiscountPercent}% OFF!)</span>
+                    <span class="text-emerald-400 font-black text-sm">${Number(activeFinalPrice).toLocaleString()} Ks (${activeDiscount}% OFF!)</span>
                 </div>`;
         } else {
             checkoutPriceHtml = `<p class="text-xs text-[#FF8C00] font-black">ဈေးနှုန်း: ${Number(price).toLocaleString()} Ks</p>`;
@@ -3434,7 +3621,7 @@
         <div class="bg-[#111113] border border-neutral-800 p-6 rounded-2xl max-w-sm w-full text-center space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex items-center justify-center gap-3">
                 ${itemIconUrl ? `<img src="${itemIconUrl}" style="width: ${itemIconSize || 32}px; height: ${itemIconSize || 32}px" class="object-cover rounded-lg border border-neutral-800">` : `<div class="text-[#FF8C00] text-3xl"><i class="fa-solid fa-shapes"></i></div>`}
-                <div class="text-left">
+                <div class="text-left font-semibold">
                     <h4 class="text-white font-black text-sm uppercase">${serviceName}</h4>
                     <p class="text-xs text-neutral-400 font-semibold">${packName}</p>
                 </div>
@@ -3446,7 +3633,7 @@
                 ${inputsHtml}
             </div>
 
-            <div class="bg-black/60 p-3 rounded-xl text-[11px] text-left text-neutral-400 border border-neutral-850">
+            <div class="bg-black/60 p-3 rounded-xl text-[11px] text-left text-neutral-400 border border-neutral-850 font-semibold">
                 <p>သင့်အကောင့်လက်ကျန်: <span class="text-[#FF8C00] font-black">${Number(currentUser.balance || 0).toLocaleString()} Ks</span></p>
                 ${(currentUser.balance || 0) < activeFinalPrice ? `<p class="text-red-500 font-bold mt-1">⚠️ လက်ကျန်ငွေ မလုံလောက်ပါ။ ကျေးဇူးပြု၍ ငွေအရင်ဖြည့်ပါ။</p>` : ''}
             </div>
@@ -3469,7 +3656,7 @@
             });
 
             if (missing) {
-                return customAlert("ကျေးဇူးပြု၍ လိုအပ်သောအချက်အလက်များ အားလုံးဖြည့်ပေးပါဗျာ။");
+                return customAlert("ကျေးဇူးပြု၍ လိုအပ်သောအချက်အလက်များ အားလုံးဖြည့်ပေးပါဗျာ।");
             }
 
             modal.remove();
@@ -3556,18 +3743,18 @@
             if (adminGuides) {
                 adminGuides.innerHTML = "";
                 if (snap.empty) {
-                    adminGuides.innerHTML = "<p class='text-neutral-600 text-xs text-center py-2'>No published guides.</p>";
+                    adminGuides.innerHTML = "<p class='text-neutral-600 text-xs text-center py-2 font-semibold'>No published guides.</p>";
                 }
                 snap.forEach(doc => {
                     const data = doc.data();
                     adminGuides.innerHTML += `
-                        <div class="flex items-center gap-3 bg-black/60 border border-neutral-850 p-2 rounded-xl">
+                        <div class="flex items-center gap-3 bg-black/60 border border-neutral-850 p-2 rounded-xl font-semibold">
                             <img src="${data.imageUrl || ''}" class="w-12 h-12 object-cover rounded-md border border-neutral-800" onerror="this.src='https://placehold.co/100x100/222/fff?text=Guide'">
-                            <div class="flex-1 min-w-0 text-left">
-                                <p class="text-[11px] text-white font-bold truncate">${data.title}</p>
-                                <p class="text-[9px] text-neutral-400 truncate">${data.description}</p>
+                            <div class="flex-1 min-w-0 text-left font-semibold">
+                                <p class="text-[11px] text-white font-bold truncate font-semibold">${data.title}</p>
+                                <p class="text-[9px] text-neutral-400 truncate font-semibold">${data.description}</p>
                             </div>
-                            <button onclick="deleteGuideNews('${doc.id}')" class="text-red-500 hover:text-red-400 text-xs px-2"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="deleteGuideNews('${doc.id}')" class="text-red-500 hover:text-red-400 text-xs px-2 font-semibold"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     `;
                 });
@@ -3604,7 +3791,7 @@
             snap.forEach(doc => {
                 const data = doc.data();
                 html += `
-                    <div class="bg-[#111113] p-4 rounded-2xl border border-neutral-800 space-y-3">
+                    <div class="bg-[#111113] p-4 rounded-2xl border border-neutral-800 space-y-3 font-semibold">
                         <img src="${data.imageUrl || ''}" class="w-full h-44 object-cover rounded-xl border border-neutral-800" onerror="this.src='https://placehold.co/400x250/222/fff?text=No+Image'">
                         <div class="space-y-1">
                             <h4 class="text-[#FF8C00] font-black text-sm">${data.title}</h4>
@@ -3621,7 +3808,6 @@
         }
     }
 
-    // --- Integrating real-time referral events tracking ---
     function listenToReferralsData() {
         if (!db) return;
 
@@ -3717,7 +3903,7 @@
             let actionGroup = "";
             if (currentReferralFilter === 'pending') {
                 actionGroup = `
-                <div class="flex gap-2 text-[10px] pt-1">
+                <div class="flex gap-2 text-[10px] pt-1 font-bold">
                     <button onclick="approveReferralReward('${docId}')" class="flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-black font-black rounded-lg transition">Approve & Pay</button>
                     <button onclick="rejectReferralFraud('${docId}', 'rejected')" class="flex-1 py-1.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition">Reject Fraud</button>
                 </div>`;
@@ -3728,17 +3914,17 @@
             }
 
             container.innerHTML += `
-            <div class="bg-[#18181b] border border-neutral-800 p-4 rounded-xl space-y-3">
+            <div class="bg-[#18181b] border border-neutral-800 p-4 rounded-xl space-y-3 font-semibold">
                 <div class="flex justify-between items-start">
                     <div>
                         <span class="text-[9px] text-neutral-500 font-bold block uppercase">Referee (အကောင့်သစ်ဖွင့်သူ)</span>
                         <h4 class="text-white font-black text-sm">${d.refereeName || 'New User'}</h4>
-                        <p class="text-[10px] text-[#FF8C00]">📞 ${d.refereePhone || 'N/A'}</p>
+                        <p class="text-[10px] text-[#FF8C00] font-semibold">📞 ${d.refereePhone || 'N/A'}</p>
                     </div>
                     <div class="text-right">
                         <span class="text-[9px] text-neutral-500 font-bold block uppercase">Inviter (မိတ်ဆက်ပေးသူ)</span>
                         <h4 class="text-white font-bold text-xs">${d.inviterName || 'Inviter'}</h4>
-                        <p class="text-[10px] text-neutral-400">📞 ${d.inviterPhone || 'N/A'}</p>
+                        <p class="text-[10px] text-neutral-400 font-semibold">📞 ${d.inviterPhone || 'N/A'}</p>
                     </div>
                 </div>
 
@@ -3753,7 +3939,7 @@
                     </div>
                     <div class="flex justify-between text-neutral-400">
                         <span>Devices:</span>
-                        <span class="truncate max-w-[180px] ${deviceWarning ? 'text-red-400 font-bold' : 'text-neutral-400'}" title="${d.refereeDevice || ''}">${deviceWarning ? 'Duplicate Detected' : 'Unique Devices'}</span>
+                        <span class="truncate max-w-[180px] ${deviceWarning ? 'text-red-400 font-bold' : 'text-neutral-400'} font-semibold" title="${d.refereeDevice || ''}">${deviceWarning ? 'Duplicate Detected' : 'Unique Devices'}</span>
                     </div>
                     <div class="text-[9px] text-neutral-600 pt-1 border-t border-neutral-800/60 flex justify-between">
                         <span>Time: ${inviteTime}</span>
@@ -3877,8 +4063,8 @@
         modal.className = "fixed inset-0 bg-black/85 z-[10000] flex items-center justify-center p-6";
         modal.innerHTML = `
         <div class="bg-[#111113] border border-neutral-800 p-6 rounded-2xl max-w-xs w-full text-center space-y-4 shadow-2xl">
-            <div class="text-[#FF8C00] text-3xl"><i class="fa-solid fa-circle-exclamation"></i></div>
-            <p class="text-xs font-semibold text-gray-200 leading-relaxed">${message}</p>
+            <div class="text-[#FF8C00] text-3xl font-semibold"><i class="fa-solid fa-circle-exclamation"></i></div>
+            <p class="text-xs font-semibold text-gray-200 leading-relaxed font-semibold">${message}</p>
             <button class="w-full py-2.5 bg-[#FF8C00] hover:bg-orange-600 text-black font-black rounded-xl text-xs uppercase tracking-wider transition" onclick="this.parentElement.parentElement.remove()">Dismiss</button>
         </div>`;
         document.body.appendChild(modal);
@@ -3889,8 +4075,8 @@
         modal.className = "fixed inset-0 bg-black/95 z-[10001] flex items-center justify-center p-6";
         modal.innerHTML = `
         <div class="bg-[#111113] border border-neutral-800 p-6 rounded-2xl max-w-xs w-full text-center space-y-4 shadow-2xl">
-            <div class="text-[#FF8C00] text-3xl"><i class="fa-solid fa-circle-question"></i></div>
-            <p class="text-xs font-semibold text-gray-200 leading-relaxed">${message}</p>
+            <div class="text-[#FF8C00] text-3xl font-semibold"><i class="fa-solid fa-circle-question"></i></div>
+            <p class="text-xs font-semibold text-gray-200 leading-relaxed font-semibold">${message}</p>
             <div class="flex gap-2">
                 <button id="cust-confirm-yes" class="flex-1 py-2.5 bg-[#FF8C00] hover:bg-orange-600 text-black font-black rounded-xl text-xs uppercase tracking-wider transition">Yes</button>
                 <button id="cust-confirm-no" class="flex-1 py-2.5 bg-neutral-850 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition">No</button>
